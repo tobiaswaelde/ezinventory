@@ -7,6 +7,15 @@ export function setupApiDocs(app: INestApplication): void {
     .setTitle('EZ Inventory API')
     .setDescription('API specification for EZ Inventory')
     .setVersion('0.1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT access token'
+      },
+      'bearer'
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

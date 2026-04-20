@@ -19,13 +19,15 @@ Last updated: 2026-04-20
 - [x] Passkey base flow (register/login options + verify)
 - [x] Production-ready JWT access/refresh token flow
 - [x] Refresh token rotation/invalidation
-- [ ] CASL-based fine-grained authorization
+- [x] Access-token guard + authenticated `/auth/me` endpoint
+- [x] CASL-based fine-grained authorization baseline
 - [ ] Complete endpoint + DTO coverage in Scalar docs
 - [ ] Full server-side validation coverage for all modules
 
 ## 3. App (Nuxt, Mobile-First, PWA)
 
 - [x] Initial app shell and page structure
+- [x] Frontend auth baseline (login, refresh, logout, persisted session)
 - [ ] Mobile-first UI pass for MVP screens
 - [ ] PWA installability/offline caching finalization
 - [ ] Full client-side input validation coverage

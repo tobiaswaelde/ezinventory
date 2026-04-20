@@ -26,6 +26,7 @@ import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.d
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
+import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
 
 type AuthTokens = {
@@ -67,6 +68,23 @@ export class AuthService {
     }
 
     return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
+  }
+
+  async me(userId: string): Promise<AuthenticatedUser> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        role: true
+      }
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Authenticated user no longer exists.');
+    }
+
+    return user;
   }
 
   async passkeyRegisterOptions(dto: PasskeyRegisterOptionsDto): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {

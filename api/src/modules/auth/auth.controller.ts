@@ -1,6 +1,7 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js';
 import { AuthService } from '~/modules/auth/auth.service.js';
 import { LoginDto } from '~/modules/auth/dto/login.dto.js';
 import { PasskeyLoginOptionsDto } from '~/modules/auth/dto/passkey-login-options.dto.js';
@@ -8,11 +9,30 @@ import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.d
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
+import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
+import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
+
+  @Get('me')
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth('bearer')
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        email: { type: 'string', example: 'admin@example.com' },
+        role: { type: 'string', example: 'ADMIN' }
+      }
+    }
+  })
+  async me(@CurrentUser() user: AuthenticatedUser): Promise<AuthenticatedUser> {
+    return await this.authService.me(user.id);
+  }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)

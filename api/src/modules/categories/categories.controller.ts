@@ -1,15 +1,21 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
+import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
+import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
 import { CategoriesService } from '~/modules/categories/categories.service.js';
 import { CreateCategoryDto } from '~/modules/categories/dto/create-category.dto.js';
 
 @ApiTags('categories')
 @Controller('categories')
+@UseGuards(AccessTokenGuard, PoliciesGuard)
+@ApiBearerAuth('bearer')
 export class CategoriesController {
   constructor(@Inject(CategoriesService) private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @CheckPolicies({ action: 'create', subject: 'Category' })
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     schema: {
@@ -26,6 +32,7 @@ export class CategoriesController {
   }
 
   @Get()
+  @CheckPolicies({ action: 'read', subject: 'Category' })
   @ApiOkResponse({
     schema: {
       type: 'array',

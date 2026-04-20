@@ -1,15 +1,21 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
+import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
+import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
 import { CreateItemDto } from '~/modules/items/dto/create-item.dto.js';
 import { ItemsService } from '~/modules/items/items.service.js';
 
 @ApiTags('items')
 @Controller('items')
+@UseGuards(AccessTokenGuard, PoliciesGuard)
+@ApiBearerAuth('bearer')
 export class ItemsController {
   constructor(@Inject(ItemsService) private readonly itemsService: ItemsService) {}
 
   @Post()
+  @CheckPolicies({ action: 'create', subject: 'Item' })
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     schema: {
@@ -30,6 +36,7 @@ export class ItemsController {
   }
 
   @Get()
+  @CheckPolicies({ action: 'read', subject: 'Item' })
   @ApiOkResponse({
     schema: {
       type: 'array',

@@ -1,12 +1,12 @@
 import type { CreateItemPayload, ItemResponse } from '~/types/api/items';
 
 export function useApiClient() {
+  const { authorizedFetch } = useAuth();
   const baseURL = useRuntimeConfig().public.apiBaseUrl;
 
   const createItem = async (payload: CreateItemPayload): Promise<ItemResponse> => {
-    return await $fetch<ItemResponse>('/items', {
+    return await authorizedFetch<ItemResponse>('/items', {
       method: 'POST',
-      baseURL,
       body: payload
     });
   };
