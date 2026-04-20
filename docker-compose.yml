@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ezinventory-postgres
+    environment:
+      POSTGRES_DB: ezinventory
+      POSTGRES_USER: ezinventory
+      POSTGRES_PASSWORD: ezinventory
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: ezinventory-rustfs
+    ports:
+      - "9000:9000"
+    volumes:
+      - rustfs_data:/data
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ezinventory-api
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://ezinventory:ezinventory@postgres:5432/ezinventory
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: ezinventory-app
+    environment:
+      NUXT_PUBLIC_API_BASE_URL: http://localhost:3001/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  rustfs_data:

@@ -1,0 +1,15 @@
+{
+  "name": "ezinventory",
+  "private": true,
+  "version": "0.1.0",
+  "description": "EZ Inventory monorepo",
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "dev:api": "pnpm --filter @ezinventory/api dev",
+    "dev:app": "pnpm --filter @ezinventory/app dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  }
+}

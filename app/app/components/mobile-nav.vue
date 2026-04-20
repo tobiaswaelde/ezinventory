@@ -1,0 +1,7 @@
+<template>
+  <nav class="navbar">
+    <button class="nav-btn" @click="$router.push('/')">Home</button>
+    <button class="scan-btn" @click="$router.push('/scan')">Scan QR</button>
+    <button class="nav-btn" @click="$router.push('/settings')">Settings</button>
+  </nav>
+</template>
