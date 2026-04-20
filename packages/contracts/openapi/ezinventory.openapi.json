@@ -1,0 +1,1335 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/categories": {
+      "post": {
+        "operationId": "CategoriesController_createCategory",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "550e8400-e29b-41d4-a716-446655440123"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Food"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Food and frozen products"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "categories"
+        ]
+      },
+      "get": {
+        "operationId": "CategoriesController_listCategories",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string",
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin@example.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "ADMIN"
+                    },
+                    "preferredLanguage": {
+                      "type": "string",
+                      "enum": [
+                        "de",
+                        "en"
+                      ],
+                      "example": "en"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me/language": {
+      "patch": {
+        "operationId": "AuthController_updatePreferredLanguage",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "preferredLanguage": {
+                      "type": "string",
+                      "enum": [
+                        "de",
+                        "en"
+                      ],
+                      "example": "de"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "jwt-access-token"
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "jwt-refresh-token"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "new.user@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "jwt-access-token"
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "jwt-refresh-token"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/register-options": {
+      "post": {
+        "operationId": "AuthController_passkeyRegisterOptions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "challenge": {
+                      "type": "string",
+                      "example": "base64url-challenge"
+                    },
+                    "options": {
+                      "type": "object"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/register-verify": {
+      "post": {
+        "operationId": "AuthController_passkeyRegisterVerify",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verified": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "credentialId": {
+                      "type": "string",
+                      "example": "credential-base64url-id"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/login-options": {
+      "post": {
+        "operationId": "AuthController_passkeyLoginOptions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "challenge": {
+                      "type": "string",
+                      "example": "base64url-challenge"
+                    },
+                    "options": {
+                      "type": "object"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/passkeys/login-verify": {
+      "post": {
+        "operationId": "AuthController_passkeyLoginVerify",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "jwt-access-token"
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "jwt-refresh-token"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "jwt-access-token"
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "jwt-refresh-token"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "admin@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "loggedOut": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/items": {
+      "post": {
+        "operationId": "ItemsController_createItem",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "categoryId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "550e8400-e29b-41d4-a716-446655440001"
+                    },
+                    "sku": {
+                      "type": "string",
+                      "example": "SPAGHETTI-SAUCE-001"
+                    },
+                    "qrCodeValue": {
+                      "type": "string",
+                      "example": "item:spaghetti-sauce-001:550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Spaghetti Sauce"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "example": "jar"
+                    },
+                    "sizeLabel": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "Portion Pack"
+                    },
+                    "sizeValue": {
+                      "type": "number",
+                      "nullable": true,
+                      "example": 1.5
+                    },
+                    "sizeUnit": {
+                      "type": "string",
+                      "nullable": true,
+                      "example": "L"
+                    },
+                    "servings": {
+                      "type": "number",
+                      "nullable": true,
+                      "example": 3
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "items"
+        ]
+      },
+      "get": {
+        "operationId": "ItemsController_listItems",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "categoryId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "sku": {
+                        "type": "string"
+                      },
+                      "qrCodeValue": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "unit": {
+                        "type": "string"
+                      },
+                      "sizeLabel": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "sizeValue": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "sizeUnit": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "servings": {
+                        "type": "number",
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "items"
+        ]
+      }
+    },
+    "/api/v1/items/lookup": {
+      "get": {
+        "operationId": "ItemsController_lookupItem",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "categoryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sku": {
+                      "type": "string"
+                    },
+                    "qrCodeValue": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "unit": {
+                      "type": "string"
+                    },
+                    "sizeLabel": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "sizeValue": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "sizeUnit": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "servings": {
+                      "type": "number",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "items"
+        ]
+      }
+    },
+    "/api/v1/locations": {
+      "post": {
+        "operationId": "LocationsController_createLocation",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "iconSet": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "iconName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "isActive": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "locations"
+        ]
+      },
+      "get": {
+        "operationId": "LocationsController_listLocations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "iconSet": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "iconName": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "locations"
+        ]
+      }
+    },
+    "/api/v1/containers": {
+      "post": {
+        "operationId": "ContainersController_createContainer",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "locationId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "parentContainerId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "nullable": true
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "qrCodeValue": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "iconSet": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "iconName": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "isActive": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "containers"
+        ]
+      },
+      "get": {
+        "operationId": "ContainersController_listContainers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "locationId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "parentContainerId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "qrCodeValue": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "iconSet": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "iconName": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "isActive": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "containers"
+        ]
+      }
+    },
+    "/api/v1/setup/status": {
+      "get": {
+        "operationId": "SetupController_getSetupStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "setupInitialized": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "registrationMode": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "ADMIN_ONLY"
+                      ],
+                      "example": "ADMIN_ONLY"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "setup"
+        ]
+      }
+    },
+    "/api/v1/setup/bootstrap-admin": {
+      "post": {
+        "operationId": "SetupController_bootstrapAdmin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "setupInitialized": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "adminUserId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "setup"
+        ]
+      }
+    },
+    "/api/v1/setup/registration-mode": {
+      "patch": {
+        "operationId": "SetupController_updateRegistrationMode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "OPEN",
+                        "ADMIN_ONLY"
+                      ],
+                      "example": "ADMIN_ONLY"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      }
+    },
+    "/api/v1/setup/users": {
+      "post": {
+        "operationId": "SetupController_createUserByAdmin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "550e8400-e29b-41d4-a716-446655440777"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "team.member@example.com"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "ADMIN",
+                        "MANAGER",
+                        "STAFF",
+                        "VIEWER"
+                      ],
+                      "example": "STAFF"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      },
+      "get": {
+        "operationId": "SetupController_listUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "displayName": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "ADMIN",
+                          "MANAGER",
+                          "STAFF",
+                          "VIEWER"
+                        ]
+                      },
+                      "preferredLanguage": {
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "policyIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      }
+    },
+    "/api/v1/setup/users/{userId}/role": {
+      "patch": {
+        "operationId": "SetupController_updateUserRole",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "ADMIN",
+                        "MANAGER",
+                        "STAFF",
+                        "VIEWER"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      }
+    },
+    "/api/v1/setup/permission-policies": {
+      "get": {
+        "operationId": "SetupController_listPermissionPolicies",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "action": {
+                        "type": "string"
+                      },
+                      "subject": {
+                        "type": "string"
+                      },
+                      "inverted": {
+                        "type": "boolean"
+                      },
+                      "conditions": {
+                        "nullable": true
+                      },
+                      "reason": {
+                        "type": "string",
+                        "nullable": true
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      },
+      "post": {
+        "operationId": "SetupController_createPermissionPolicy",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "action": {
+                      "type": "string"
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "inverted": {
+                      "type": "boolean"
+                    },
+                    "conditions": {
+                      "nullable": true
+                    },
+                    "reason": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      }
+    },
+    "/api/v1/setup/users/{userId}/policies": {
+      "put": {
+        "operationId": "SetupController_replaceUserPolicies",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "policyIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "setup"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "EZ Inventory API",
+    "description": "API specification for EZ Inventory",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "JWT access token"
+      }
+    },
+    "schemas": {}
+  }
+}

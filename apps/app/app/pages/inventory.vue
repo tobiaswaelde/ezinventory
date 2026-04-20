@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ContainerResponse, ContainerType, LocationResponse } from '~/types/api/inventory';
+import type { ContainerResponse, ContainerType, LocationResponse } from '@ezinventory/contracts';
 
 const { isAuthenticated } = useAuth();
 const { createContainer, createLocation, listContainers, listLocations } = useApiClient();

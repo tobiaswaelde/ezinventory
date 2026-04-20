@@ -1,7 +1,14 @@
 import type { FetchOptions } from 'ofetch';
 
-import type { AuthTokens, AuthUser, LoginPayload } from '~/types/api/auth';
-import type { RegisterPayload } from '~/types/api/auth';
+import type {
+  AuthTokens,
+  AuthUser,
+  LoginPayload,
+  PasskeyLoginOptionsResponse,
+  PasskeyRegisterOptionsResponse,
+  PasskeyRegisterVerifyResponse,
+  RegisterPayload
+} from '@ezinventory/contracts';
 
 const ACCESS_TOKEN_KEY = 'ezinventory.access_token';
 const REFRESH_TOKEN_KEY = 'ezinventory.refresh_token';
@@ -118,16 +125,12 @@ export function useAuth() {
     return me;
   };
 
-  const registerPasskey = async (payload: { email: string; password: string; deviceName?: string }): Promise<{
-    verified: true;
-    credentialId: string;
-    email: string;
-  }> => {
+  const registerPasskey = async (payload: { email: string; password: string; deviceName?: string }): Promise<PasskeyRegisterVerifyResponse> => {
     if (!process.client) {
       throw new Error('Passkey registration is only available in the browser.');
     }
 
-    const registerOptions = await $fetch<{ challenge: string; options: Record<string, unknown>; email: string }>(
+    const registerOptions = await $fetch<PasskeyRegisterOptionsResponse>(
       '/auth/passkeys/register-options',
       {
         method: 'POST',
@@ -142,7 +145,7 @@ export function useAuth() {
     const { startRegistration } = await import('@simplewebauthn/browser');
     const response = await startRegistration({ optionsJSON: registerOptions.options as never });
 
-    return await $fetch<{ verified: true; credentialId: string; email: string }>('/auth/passkeys/register-verify', {
+    return await $fetch<PasskeyRegisterVerifyResponse>('/auth/passkeys/register-verify', {
       method: 'POST',
       baseURL,
       body: {
@@ -158,7 +161,7 @@ export function useAuth() {
       throw new Error('Passkey login is only available in the browser.');
     }
 
-    const loginOptions = await $fetch<{ challenge: string; options: Record<string, unknown>; email: string }>(
+    const loginOptions = await $fetch<PasskeyLoginOptionsResponse>(
       '/auth/passkeys/login-options',
       {
         method: 'POST',

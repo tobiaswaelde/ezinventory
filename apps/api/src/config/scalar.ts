@@ -1,8 +1,9 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { INestApplication } from '@nestjs/common';
 import type { Express } from 'express';
+import type { OpenAPIObject } from '@nestjs/swagger';
 
-export function setupApiDocs(app: INestApplication): void {
+export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
   const config = new DocumentBuilder()
     .setTitle('EZ Inventory API')
     .setDescription('API specification for EZ Inventory')
@@ -18,7 +19,11 @@ export function setupApiDocs(app: INestApplication): void {
     )
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  return SwaggerModule.createDocument(app, config);
+}
+
+export function setupApiDocs(app: INestApplication): void {
+  const document = createOpenApiDocument(app);
   SwaggerModule.setup('/api/openapi', app, document);
 
   const expressApp = app.getHttpAdapter().getInstance() as Express;

@@ -1,19 +1,20 @@
-import type { CreateItemPayload, ItemResponse } from '~/types/api/items';
-import type {
-  ContainerResponse,
-  CreateContainerPayload,
-  CreateLocationPayload,
-  LocationResponse
-} from '~/types/api/inventory';
 import type {
   AdminCreatedUser,
+  ContainerResponse,
+  CreateContainerPayload,
+  CreateItemPayload,
+  CreateLocationPayload,
   CreatePermissionPolicyPayload,
   CreateUserByAdminPayload,
+  ItemResponse,
+  LocationResponse,
   ManagedUser,
   PermissionPolicy,
+  ReplaceUserPoliciesResponse,
+  RoleBasedUser,
   SetupStatus,
   UpdateRegistrationModePayload
-} from '~/types/api/setup';
+} from '@ezinventory/contracts';
 
 export function useApiClient() {
   const { authorizedFetch } = useAuth();
@@ -94,8 +95,8 @@ export function useApiClient() {
     });
   };
 
-  const updateUserRole = async (userId: string, role: ManagedUser['role']): Promise<{ id: string; role: ManagedUser['role'] }> => {
-    return await authorizedFetch<{ id: string; role: ManagedUser['role'] }>(`/setup/users/${userId}/role`, {
+  const updateUserRole = async (userId: string, role: ManagedUser['role']): Promise<RoleBasedUser> => {
+    return await authorizedFetch<RoleBasedUser>(`/setup/users/${userId}/role`, {
       method: 'PATCH',
       body: { role }
     });
@@ -114,8 +115,8 @@ export function useApiClient() {
     });
   };
 
-  const replaceUserPolicies = async (userId: string, policyIds: string[]): Promise<{ userId: string; policyIds: string[] }> => {
-    return await authorizedFetch<{ userId: string; policyIds: string[] }>(`/setup/users/${userId}/policies`, {
+  const replaceUserPolicies = async (userId: string, policyIds: string[]): Promise<ReplaceUserPoliciesResponse> => {
+    return await authorizedFetch<ReplaceUserPoliciesResponse>(`/setup/users/${userId}/policies`, {
       method: 'PUT',
       body: { policyIds }
     });

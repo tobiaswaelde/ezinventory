@@ -6,7 +6,7 @@ import type {
   PermissionPolicy,
   RegistrationMode,
   UserRole
-} from '~/types/api/setup';
+} from '@ezinventory/contracts';
 
 const { user } = useAuth();
 const {

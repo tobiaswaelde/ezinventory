@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { ContainerResponse } from '~/types/api/inventory';
-import type { ItemResponse } from '~/types/api/items';
+import type { ContainerResponse, ItemResponse } from '@ezinventory/contracts';
 
 type LabelSourceType = 'items' | 'containers';
 

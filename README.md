@@ -21,6 +21,7 @@ Mobile-first, open-source inventory management with QR-first workflows.
 ## Quick Start
 ```bash
 pnpm install
+pnpm contracts:generate
 pnpm dev
 ```
 

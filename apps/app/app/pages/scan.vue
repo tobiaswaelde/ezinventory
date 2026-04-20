@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ItemResponse } from '~/types/api/items';
+import type { ItemResponse } from '@ezinventory/contracts';
 
 const { lookupItemByCode } = useApiClient();
 
