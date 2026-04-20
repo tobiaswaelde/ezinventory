@@ -3,6 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "description": "EZ Inventory monorepo",
+  "author": {
+    "name": "Tobias Wälde",
+    "email": "tobias.waelde@gmail.com",
+    "url": "https://tobiaswaelde.com"
+  },
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "dev": "pnpm -r --parallel dev",
