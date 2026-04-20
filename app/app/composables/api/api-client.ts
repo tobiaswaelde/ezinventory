@@ -16,6 +16,13 @@ export function useApiClient() {
     });
   };
 
+  const lookupItemByCode = async (code: string): Promise<ItemResponse> => {
+    return await authorizedFetch<ItemResponse>('/items/lookup', {
+      method: 'GET',
+      query: { code }
+    });
+  };
+
   const health = async (): Promise<{ status: 'ok' }> => {
     return await $fetch<{ status: 'ok' }>('/health', { baseURL });
   };
@@ -34,5 +41,5 @@ export function useApiClient() {
     });
   };
 
-  return { createItem, health, updateRegistrationMode, createUserByAdmin };
+  return { createItem, health, lookupItemByCode, updateRegistrationMode, createUserByAdmin };
 }

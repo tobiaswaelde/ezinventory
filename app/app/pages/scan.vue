@@ -1,23 +1,192 @@
 <script setup lang="ts">
+import type { ItemResponse } from '~/types/api/items';
+
+const { lookupItemByCode } = useApiClient();
+
+const videoRef = ref<HTMLVideoElement | null>(null);
 const scannedValue = ref('');
 const selectedAction = ref<'stock-out' | 'stock-in' | 'transfer'>('stock-out');
+const scannedItem = ref<ItemResponse | null>(null);
+const scanMessage = ref('');
+const actionMessage = ref('');
+const stockOutQuantity = ref(1);
+const isScanning = ref(false);
+
+let reader: { decodeFromVideoDevice: Function; reset: () => void } | null = null;
+let controls: { stop: () => void } | null = null;
+
+const lookupScannedCode = async (code: string): Promise<void> => {
+  scannedItem.value = null;
+  actionMessage.value = '';
+
+  if (!code.trim()) {
+    scanMessage.value = 'Please provide a scanned code.';
+    return;
+  }
+
+  try {
+    const item = await lookupItemByCode(code.trim());
+    scannedItem.value = item;
+    scanMessage.value = `Matched item: ${item.name}`;
+  } catch {
+    scanMessage.value = 'No item found for this code.';
+  }
+};
+
+const onDetected = async (code: string): Promise<void> => {
+  scannedValue.value = code;
+  await stopScanner();
+  await lookupScannedCode(code);
+};
+
+const startScanner = async (): Promise<void> => {
+  scanMessage.value = '';
+
+  if (isScanning.value || !videoRef.value) {
+    return;
+  }
+
+  if (!window.isSecureContext) {
+    scanMessage.value = 'Camera scanning requires HTTPS or localhost.';
+    return;
+  }
+
+  try {
+    const { BrowserMultiFormatReader, NotFoundException } = await import('@zxing/browser');
+
+    reader = new BrowserMultiFormatReader();
+    const devices = await BrowserMultiFormatReader.listVideoInputDevices();
+
+    const preferredDevice = devices.find((device) => /back|rear|environment/i.test(device.label));
+    const deviceId = preferredDevice?.deviceId;
+
+    isScanning.value = true;
+    controls = await reader.decodeFromVideoDevice(deviceId, videoRef.value, (result: { getText: () => string } | undefined, error: unknown) => {
+      if (result) {
+        void onDetected(result.getText());
+        return;
+      }
+
+      if (error && !(error instanceof NotFoundException)) {
+        scanMessage.value = 'Scanning error occurred.';
+      }
+    });
+
+    scanMessage.value = 'Scanner active. Point camera at a QR code.';
+  } catch {
+    isScanning.value = false;
+    scanMessage.value = 'Could not start camera scanner.';
+  }
+};
+
+const stopScanner = async (): Promise<void> => {
+  if (controls) {
+    controls.stop();
+    controls = null;
+  }
+
+  if (reader) {
+    reader.reset();
+    reader = null;
+  }
+
+  isScanning.value = false;
+};
+
+const applyQuickAction = async (): Promise<void> => {
+  if (!scannedItem.value) {
+    actionMessage.value = 'No scanned item available.';
+    return;
+  }
+
+  if (selectedAction.value !== 'stock-out') {
+    actionMessage.value = `${selectedAction.value} flow is planned next. Stock-out is the first quick action.`;
+    return;
+  }
+
+  if (!Number.isInteger(stockOutQuantity.value) || stockOutQuantity.value < 1) {
+    actionMessage.value = 'Quantity must be an integer >= 1.';
+    return;
+  }
+
+  actionMessage.value = `Prepared stock-out for ${scannedItem.value.name} (qty: ${stockOutQuantity.value}).`;
+};
+
+onBeforeUnmount(() => {
+  void stopScanner();
+});
 </script>
 
 <template>
   <section class="card">
     <h1>Scan QR</h1>
-    <p>Camera integration comes next. For now this screen mirrors the flow target.</p>
+    <p>Use camera scanner to identify an item and trigger quick actions.</p>
+
+    <div class="scanner-wrap">
+      <video ref="videoRef" class="scanner-video" muted playsinline></video>
+    </div>
+
+    <div class="scanner-actions">
+      <button class="scan-btn" :disabled="isScanning" @click="startScanner">
+        {{ isScanning ? 'Scanner Running' : 'Start Scanner' }}
+      </button>
+      <button class="nav-btn" :disabled="!isScanning" @click="stopScanner">Stop Scanner</button>
+    </div>
+
+    <p v-if="scanMessage">{{ scanMessage }}</p>
+
     <div class="field">
       <label for="code">Scanned code</label>
       <input id="code" v-model="scannedValue" placeholder="Paste scanned QR value" />
     </div>
+
+    <button class="nav-btn" @click="lookupScannedCode(scannedValue)">Lookup Code</button>
+  </section>
+
+  <section v-if="scannedItem" class="card">
+    <h2>Scanned Item</h2>
+    <p><strong>Name:</strong> {{ scannedItem.name }}</p>
+    <p><strong>SKU:</strong> {{ scannedItem.sku }}</p>
+    <p><strong>QR Value:</strong> {{ scannedItem.qrCodeValue }}</p>
+    <p><strong>Servings:</strong> {{ scannedItem.servings ?? 'n/a' }}</p>
+
     <div class="field">
-      <label for="action">Primary action</label>
+      <label for="action">Quick action</label>
       <select id="action" v-model="selectedAction">
         <option value="stock-out">Stock Out</option>
         <option value="stock-in">Stock In</option>
         <option value="transfer">Transfer</option>
       </select>
     </div>
+
+    <div class="field" v-if="selectedAction === 'stock-out'">
+      <label for="qty">Quantity</label>
+      <input id="qty" v-model.number="stockOutQuantity" type="number" min="1" step="1" />
+    </div>
+
+    <button class="scan-btn" @click="applyQuickAction">Apply Action</button>
+    <p v-if="actionMessage">{{ actionMessage }}</p>
   </section>
 </template>
+
+<style scoped>
+.scanner-wrap {
+  background: #0f172a;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.scanner-video {
+  width: 100%;
+  height: 240px;
+  display: block;
+  object-fit: cover;
+}
+
+.scanner-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+</style>

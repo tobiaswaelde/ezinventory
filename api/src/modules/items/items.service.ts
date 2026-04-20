@@ -7,7 +7,14 @@ import { PrismaService } from '~/prisma/prisma.service.js';
 export class ItemsService {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
-  async createItem(dto: CreateItemDto): Promise<{ id: string; categoryId: string; sku: string; name: string; servings: number | null }> {
+  async createItem(dto: CreateItemDto): Promise<{
+    id: string;
+    categoryId: string;
+    sku: string;
+    qrCodeValue: string;
+    name: string;
+    servings: number | null;
+  }> {
     return await this.prisma.item.create({
       data: {
         categoryId: dto.categoryId,
@@ -21,19 +28,44 @@ export class ItemsService {
         id: true,
         categoryId: true,
         sku: true,
+        qrCodeValue: true,
         name: true,
         servings: true
       }
     });
   }
 
-  async listItems(): Promise<Array<{ id: string; categoryId: string; sku: string; name: string; servings: number | null }>> {
+  async listItems(): Promise<Array<{ id: string; categoryId: string; sku: string; qrCodeValue: string; name: string; servings: number | null }>> {
     return await this.prisma.item.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         categoryId: true,
         sku: true,
+        qrCodeValue: true,
+        name: true,
+        servings: true
+      }
+    });
+  }
+
+  async lookupByCode(code: string): Promise<{
+    id: string;
+    categoryId: string;
+    sku: string;
+    qrCodeValue: string;
+    name: string;
+    servings: number | null;
+  } | null> {
+    return await this.prisma.item.findFirst({
+      where: {
+        OR: [{ id: code }, { qrCodeValue: code }, { sku: { equals: code, mode: 'insensitive' } }]
+      },
+      select: {
+        id: true,
+        categoryId: true,
+        sku: true,
+        qrCodeValue: true,
         name: true,
         servings: true
       }

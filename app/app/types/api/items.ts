@@ -7,4 +7,5 @@ export interface CreateItemPayload {
 
 export interface ItemResponse extends CreateItemPayload {
   id: string;
+  qrCodeValue: string;
 }

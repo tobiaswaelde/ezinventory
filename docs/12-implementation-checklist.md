@@ -40,8 +40,8 @@ Last updated: 2026-04-20
 - [ ] Multi-location support (end-to-end)
 - [ ] Freely nested containers/locations
 - [ ] Item size/portion support (e.g. freezer use case)
-- [ ] Quick stock-out actions from scanned item view
-- [ ] QR scanner button in navigation
+- [x] Quick stock-out actions from scanned item view (baseline)
+- [x] QR scanner button in navigation
 - [ ] Barcode/QR label generation
 - [ ] A4 grid PDF export for labels
 - [ ] Desktop printer-friendly flow
