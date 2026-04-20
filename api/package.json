@@ -11,6 +11,7 @@
     "test": "echo \"No tests yet\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:db:push": "prisma db push",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.7.0",
+    "argon2": "^0.44.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "dotenv": "^16.4.7",
@@ -32,7 +34,6 @@
     "eslint": "^9.21.0",
     "prisma": "^6.7.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
-    "@typescript-eslint/parser": "^8.46.2"
+    "typescript": "^5.7.3"
   }
 }

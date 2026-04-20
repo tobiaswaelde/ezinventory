@@ -1,12 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
+import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { PasskeyLoginOptionsDto } from './dto/passkey-login-options.dto.js';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+  constructor(@Inject(AuthService) private readonly authService: AuthService) {}
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
@@ -18,12 +21,8 @@ export class AuthController {
       }
     }
   })
-  login(@Body() dto: LoginDto): { accessToken: string; refreshToken: string; email: string } {
-    return {
-      accessToken: 'jwt-access-token',
-      refreshToken: 'jwt-refresh-token',
-      email: dto.email
-    };
+  async login(@Body() dto: LoginDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
+    return await this.authService.login(dto);
   }
 
   @Post('passkeys/login-options')
@@ -37,11 +36,7 @@ export class AuthController {
       }
     }
   })
-  passkeyLoginOptions(@Body() dto: PasskeyLoginOptionsDto): { challenge: string; rpId: string; email: string } {
-    return {
-      challenge: 'base64url-challenge',
-      rpId: 'localhost',
-      email: dto.email
-    };
+  async passkeyLoginOptions(@Body() dto: PasskeyLoginOptionsDto): Promise<{ challenge: string; rpId: string; email: string }> {
+    return await this.authService.passkeyLoginOptions(dto);
   }
 }

@@ -56,7 +56,7 @@ enum RegistrationMode {
 }
 
 model User {
-  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String                 @id @default(uuid()) @db.Uuid
   email             String                 @unique
   passwordHash      String
   displayName       String
@@ -75,7 +75,7 @@ model User {
 }
 
 model PermissionPolicy {
-  id         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id         String               @id @default(uuid()) @db.Uuid
   subject    String
   action     String
   conditions Json?
@@ -88,7 +88,7 @@ model PermissionPolicy {
 }
 
 model RolePermissionPolicy {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                 String           @id @default(uuid()) @db.Uuid
   role               UserRole
   permissionPolicyId String           @db.Uuid
   createdAt          DateTime         @default(now())
@@ -99,7 +99,7 @@ model RolePermissionPolicy {
 }
 
 model UserPermissionPolicy {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                 String           @id @default(uuid()) @db.Uuid
   userId             String           @db.Uuid
   permissionPolicyId String           @db.Uuid
   createdAt          DateTime         @default(now())
@@ -111,7 +111,7 @@ model UserPermissionPolicy {
 }
 
 model PasskeyCredential {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String   @id @default(uuid()) @db.Uuid
   userId       String   @db.Uuid
   credentialId String   @unique
   publicKey    String
@@ -125,14 +125,14 @@ model PasskeyCredential {
 }
 
 model SystemSetting {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(uuid()) @db.Uuid
   key       String   @unique
   value     Json
   updatedAt DateTime @updatedAt
 }
 
 model Location {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
   name        String   @unique
   code        String   @unique
   description String?
@@ -144,7 +144,7 @@ model Location {
 }
 
 model Container {
-  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String         @id @default(uuid()) @db.Uuid
   locationId        String         @db.Uuid
   parentContainerId String?        @db.Uuid
   type              ContainerType
@@ -167,7 +167,7 @@ model Container {
 }
 
 model Category {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
   name        String   @unique
   description String?
   iconSet     IconSet?
@@ -177,7 +177,7 @@ model Category {
 }
 
 model Item {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
   sku         String   @unique
   qrCodeValue String   @unique
   name        String
@@ -201,7 +201,7 @@ model Item {
 }
 
 model Stock {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
   itemId      String   @db.Uuid
   containerId String   @db.Uuid
   quantity    Int
@@ -214,7 +214,7 @@ model Stock {
 }
 
 model StockMovement {
-  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String       @id @default(uuid()) @db.Uuid
   type              MovementType
   itemId            String       @db.Uuid
   fromContainerId   String?      @db.Uuid
@@ -232,7 +232,7 @@ model StockMovement {
 }
 
 model ImageAttachment {
-  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id               String              @id @default(uuid()) @db.Uuid
   ownerType        AttachmentOwnerType
   ownerId          String              @db.Uuid
   fileName         String
@@ -249,7 +249,7 @@ model ImageAttachment {
 }
 
 model MediaAsset {
-  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id              String      @id @default(uuid()) @db.Uuid
   attachmentId    String      @unique @db.Uuid
   title           String
   tags            Json
@@ -263,7 +263,7 @@ model MediaAsset {
 }
 
 model MovementMediaLink {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String   @id @default(uuid()) @db.Uuid
   movementId   String   @db.Uuid
   mediaAssetId String   @db.Uuid
   createdAt    DateTime @default(now())
@@ -275,7 +275,7 @@ model MovementMediaLink {
 }
 
 model BarcodeLabel {
-  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String            @id @default(uuid()) @db.Uuid
   entityType        BarcodeEntityType
   entityId          String            @db.Uuid
   qrCodeValue       String
@@ -287,7 +287,7 @@ model BarcodeLabel {
 }
 
 model AuditLog {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id          String   @id @default(uuid()) @db.Uuid
   actorUserId String?  @db.Uuid
   action      String
   entityType  String

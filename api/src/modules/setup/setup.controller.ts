@@ -1,12 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Patch, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Patch, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { BootstrapAdminDto } from './dto/bootstrap-admin.dto.js';
-import { UpdateRegistrationModeDto } from './dto/update-registration-mode.dto.js';
+import { RegistrationMode, UpdateRegistrationModeDto } from './dto/update-registration-mode.dto.js';
+import { SetupService } from './setup.service.js';
 
 @ApiTags('setup')
 @Controller('setup')
 export class SetupController {
+  constructor(@Inject(SetupService) private readonly setupService: SetupService) {}
+
   @Post('bootstrap-admin')
   @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({
@@ -18,12 +21,10 @@ export class SetupController {
       }
     }
   })
-  bootstrapAdmin(@Body() dto: BootstrapAdminDto): { setupInitialized: true; adminUserId: string; email: string } {
-    return {
-      setupInitialized: true,
-      adminUserId: crypto.randomUUID(),
-      email: dto.email
-    };
+  async bootstrapAdmin(
+    @Body() dto: BootstrapAdminDto
+  ): Promise<{ setupInitialized: true; adminUserId: string; email: string }> {
+    return await this.setupService.bootstrapAdmin(dto);
   }
 
   @Patch('registration-mode')
@@ -35,7 +36,7 @@ export class SetupController {
       }
     }
   })
-  updateRegistrationMode(@Body() dto: UpdateRegistrationModeDto): { mode: string } {
-    return { mode: dto.mode };
+  async updateRegistrationMode(@Body() dto: UpdateRegistrationModeDto): Promise<{ mode: RegistrationMode }> {
+    return await this.setupService.updateRegistrationMode(dto);
   }
 }
