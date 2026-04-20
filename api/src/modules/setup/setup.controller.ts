@@ -1,9 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Patch, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { BootstrapAdminDto } from './dto/bootstrap-admin.dto.js';
-import { RegistrationMode, UpdateRegistrationModeDto } from './dto/update-registration-mode.dto.js';
-import { SetupService } from './setup.service.js';
+import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
+import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
+import { SetupService } from '~/modules/setup/setup.service.js';
 
 @ApiTags('setup')
 @Controller('setup')

@@ -12,13 +12,13 @@ import {
   type WebAuthnCredential
 } from '@simplewebauthn/server';
 
-import { ENV } from '../../config/env.js';
-import { PrismaService } from '../../prisma/prisma.service.js';
-import { LoginDto } from './dto/login.dto.js';
-import { PasskeyLoginOptionsDto } from './dto/passkey-login-options.dto.js';
-import { PasskeyLoginVerifyDto } from './dto/passkey-login-verify.dto.js';
-import { PasskeyRegisterOptionsDto } from './dto/passkey-register-options.dto.js';
-import { PasskeyRegisterVerifyDto } from './dto/passkey-register-verify.dto.js';
+import { ENV } from '~/config/env.js';
+import { PrismaService } from '~/prisma/prisma.service.js';
+import { LoginDto } from '~/modules/auth/dto/login.dto.js';
+import { PasskeyLoginOptionsDto } from '~/modules/auth/dto/passkey-login-options.dto.js';
+import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.dto.js';
+import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
+import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 
 @Injectable()
 export class AuthService {

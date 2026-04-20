@@ -2,10 +2,10 @@ import { ConflictException, Inject, Injectable, NotFoundException } from '@nestj
 import { UserRole } from '@prisma/client';
 import argon2 from 'argon2';
 
-import { PrismaService } from '../../prisma/prisma.service.js';
-import { BootstrapAdminDto } from './dto/bootstrap-admin.dto.js';
-import { RegistrationMode, UpdateRegistrationModeDto } from './dto/update-registration-mode.dto.js';
-import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from './setup.constants.js';
+import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
+import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
+import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/setup.constants.js';
+import { PrismaService } from '~/prisma/prisma.service.js';
 
 @Injectable()
 export class SetupService {

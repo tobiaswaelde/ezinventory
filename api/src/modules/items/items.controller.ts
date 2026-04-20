@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { CreateItemDto } from './dto/create-item.dto.js';
-import { ItemsService } from './items.service.js';
+import { CreateItemDto } from '~/modules/items/dto/create-item.dto.js';
+import { ItemsService } from '~/modules/items/items.service.js';
 
 @ApiTags('items')
 @Controller('items')

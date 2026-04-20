@@ -1,12 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
-import { AuthService } from './auth.service.js';
-import { LoginDto } from './dto/login.dto.js';
-import { PasskeyLoginOptionsDto } from './dto/passkey-login-options.dto.js';
-import { PasskeyLoginVerifyDto } from './dto/passkey-login-verify.dto.js';
-import { PasskeyRegisterOptionsDto } from './dto/passkey-register-options.dto.js';
-import { PasskeyRegisterVerifyDto } from './dto/passkey-register-verify.dto.js';
+import { AuthService } from '~/modules/auth/auth.service.js';
+import { LoginDto } from '~/modules/auth/dto/login.dto.js';
+import { PasskeyLoginOptionsDto } from '~/modules/auth/dto/passkey-login-options.dto.js';
+import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.dto.js';
+import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
+import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 
 @ApiTags('auth')
 @Controller('auth')
