@@ -1,0 +1,13 @@
+model BarcodeLabel {
+  id                String            @id @default(uuid()) @db.Uuid
+  entityType        BarcodeEntityType
+  entityId          String            @db.Uuid
+  qrCodeValue       String
+  template          LabelTemplate
+  generatedByUserId String            @db.Uuid
+  generatedAt       DateTime          @default(now())
+
+  generatedByUser User @relation("generated-labels", fields: [generatedByUserId], references: [id], onDelete: Restrict)
+
+  @@map("barcode_labels")
+}

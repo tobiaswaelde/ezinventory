@@ -1,0 +1,19 @@
+model StockMovement {
+  id                String       @id @default(uuid()) @db.Uuid
+  type              MovementType
+  itemId            String       @db.Uuid
+  fromContainerId   String?      @db.Uuid
+  toContainerId     String?      @db.Uuid
+  quantity          Int
+  reason            String?
+  performedByUserId String       @db.Uuid
+  createdAt         DateTime     @default(now())
+
+  item            Item                @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  fromContainer   Container?          @relation("from-container", fields: [fromContainerId], references: [id], onDelete: SetNull)
+  toContainer     Container?          @relation("to-container", fields: [toContainerId], references: [id], onDelete: SetNull)
+  performedByUser User                @relation("performed-movements", fields: [performedByUserId], references: [id], onDelete: Restrict)
+  mediaLinks      MovementMediaLink[]
+
+  @@map("stock_movements")
+}

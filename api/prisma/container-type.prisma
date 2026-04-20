@@ -1,0 +1,7 @@
+enum ContainerType {
+  SHELF
+  BOX
+  FRIDGE
+  BIN
+  CUSTOM
+}

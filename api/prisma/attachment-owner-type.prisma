@@ -1,0 +1,6 @@
+enum AttachmentOwnerType {
+  LOCATION
+  CONTAINER
+  ITEM
+  MOVEMENT
+}

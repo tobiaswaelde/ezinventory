@@ -1,0 +1,15 @@
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  actorUserId String?  @db.Uuid
+  action      String
+  entityType  String
+  entityId    String   @db.Uuid
+  before      Json?
+  after       Json?
+  requestId   String?
+  createdAt   DateTime @default(now())
+
+  actorUser User? @relation("audit-actor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}

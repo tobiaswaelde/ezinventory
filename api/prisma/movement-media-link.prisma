@@ -1,0 +1,12 @@
+model MovementMediaLink {
+  id           String   @id @default(uuid()) @db.Uuid
+  movementId   String   @db.Uuid
+  mediaAssetId String   @db.Uuid
+  createdAt    DateTime @default(now())
+
+  movement   StockMovement @relation(fields: [movementId], references: [id], onDelete: Cascade)
+  mediaAsset MediaAsset    @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@unique([movementId, mediaAssetId])
+  @@map("movement_media_links")
+}

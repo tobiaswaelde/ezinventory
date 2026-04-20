@@ -1,0 +1,4 @@
+enum IconSet {
+  TABLER
+  LUCIDE
+}

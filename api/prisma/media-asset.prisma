@@ -1,0 +1,15 @@
+model MediaAsset {
+  id              String   @id @default(uuid()) @db.Uuid
+  attachmentId    String   @unique @db.Uuid
+  title           String
+  tags            Json
+  isArchived      Boolean  @default(false)
+  createdByUserId String   @db.Uuid
+  createdAt       DateTime @default(now())
+
+  attachment    ImageAttachment     @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
+  createdByUser User                @relation("created-media-assets", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  movementLinks MovementMediaLink[]
+
+  @@map("media_assets")
+}

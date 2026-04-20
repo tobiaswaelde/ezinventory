@@ -1,0 +1,13 @@
+model Location {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  code        String   @unique
+  description String?
+  iconSet     IconSet?
+  iconName    String?
+  isActive    Boolean  @default(true)
+
+  containers Container[]
+
+  @@map("locations")
+}

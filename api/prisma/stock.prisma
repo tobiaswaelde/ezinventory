@@ -1,0 +1,13 @@
+model Stock {
+  id          String   @id @default(uuid()) @db.Uuid
+  itemId      String   @db.Uuid
+  containerId String   @db.Uuid
+  quantity    Int
+  updatedAt   DateTime @updatedAt
+
+  item      Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  container Container @relation(fields: [containerId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, containerId])
+  @@map("stocks")
+}

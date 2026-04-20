@@ -1,0 +1,20 @@
+model User {
+  id                String   @id @default(uuid()) @db.Uuid
+  email             String   @unique
+  passwordHash      String
+  displayName       String
+  role              UserRole
+  preferredLanguage String   @default("en")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  passkeyCredentials PasskeyCredential[]
+  userPolicies       UserPermissionPolicy[]
+  uploadedImages     ImageAttachment[]      @relation("uploaded-images")
+  createdMediaAssets MediaAsset[]           @relation("created-media-assets")
+  movements          StockMovement[]        @relation("performed-movements")
+  generatedLabels    BarcodeLabel[]         @relation("generated-labels")
+  auditLogs          AuditLog[]             @relation("audit-actor")
+
+  @@map("users")
+}
