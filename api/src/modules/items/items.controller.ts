@@ -1,11 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post } from '@nestjs/common';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateItemDto } from './dto/create-item.dto.js';
+import { ItemsService } from './items.service.js';
 
 @ApiTags('items')
 @Controller('items')
 export class ItemsController {
+  constructor(@Inject(ItemsService) private readonly itemsService: ItemsService) {}
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
@@ -13,16 +16,36 @@ export class ItemsController {
       type: 'object',
       properties: {
         id: { type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440000' },
+        categoryId: { type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440001' },
         sku: { type: 'string', example: 'SPAGHETTI-SAUCE-001' },
         name: { type: 'string', example: 'Spaghetti Sauce' },
-        servings: { type: 'number', example: 3 }
+        servings: { type: 'number', nullable: true, example: 3 }
       }
     }
   })
-  createItem(@Body() dto: CreateItemDto): CreateItemDto & { id: string } {
-    return {
-      id: crypto.randomUUID(),
-      ...dto
-    };
+  async createItem(
+    @Body() dto: CreateItemDto
+  ): Promise<{ id: string; categoryId: string; sku: string; name: string; servings: number | null }> {
+    return await this.itemsService.createItem(dto);
+  }
+
+  @Get()
+  @ApiOkResponse({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          categoryId: { type: 'string', format: 'uuid' },
+          sku: { type: 'string' },
+          name: { type: 'string' },
+          servings: { type: 'number', nullable: true }
+        }
+      }
+    }
+  })
+  async listItems(): Promise<Array<{ id: string; categoryId: string; sku: string; name: string; servings: number | null }>> {
+    return await this.itemsService.listItems();
   }
 }
