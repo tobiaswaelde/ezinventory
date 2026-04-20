@@ -1,17 +1,20 @@
 <script setup lang="ts">
 const { theme, loadTheme, setTheme } = useTheme();
-const { login, register, logout, isAuthenticated, user, initialized } = useAuth();
+const { login, register, registerPasskey, loginWithPasskey, logout, isAuthenticated, user, initialized } = useAuth();
 
 const mode = ref<'login' | 'register'>('login');
 const form = reactive({
   email: '',
   password: '',
   displayName: '',
-  preferredLanguage: 'en' as 'de' | 'en'
+  preferredLanguage: 'en' as 'de' | 'en',
+  passkeyDeviceName: ''
 });
 
 const submitting = ref(false);
+const passkeySubmitting = ref(false);
 const errorMessage = ref('');
+const passkeyMessage = ref('');
 
 onMounted(() => {
   loadTheme();
@@ -19,6 +22,7 @@ onMounted(() => {
 
 const submitAuth = async (): Promise<void> => {
   errorMessage.value = '';
+  passkeyMessage.value = '';
 
   if (!form.email.trim() || !form.password.trim()) {
     errorMessage.value = 'Please provide email and password.';
@@ -52,6 +56,53 @@ const submitAuth = async (): Promise<void> => {
         : 'Registration failed. It may be disabled or the user already exists.';
   } finally {
     submitting.value = false;
+  }
+};
+
+const submitPasskeyLogin = async (): Promise<void> => {
+  errorMessage.value = '';
+  passkeyMessage.value = '';
+
+  if (!form.email.trim()) {
+    errorMessage.value = 'Email is required for passkey login.';
+    return;
+  }
+
+  passkeySubmitting.value = true;
+
+  try {
+    await loginWithPasskey(form.email.trim());
+    passkeyMessage.value = 'Passkey login successful.';
+  } catch {
+    errorMessage.value = 'Passkey login failed. Ensure a passkey is already registered for this user.';
+  } finally {
+    passkeySubmitting.value = false;
+  }
+};
+
+const submitPasskeyRegister = async (): Promise<void> => {
+  errorMessage.value = '';
+  passkeyMessage.value = '';
+
+  if (!form.email.trim() || !form.password.trim()) {
+    errorMessage.value = 'Email and password are required to register a passkey.';
+    return;
+  }
+
+  passkeySubmitting.value = true;
+
+  try {
+    const result = await registerPasskey({
+      email: form.email.trim(),
+      password: form.password,
+      deviceName: form.passkeyDeviceName.trim() || undefined
+    });
+
+    passkeyMessage.value = `Passkey registered (${result.credentialId.slice(0, 10)}...).`;
+  } catch {
+    errorMessage.value = 'Passkey registration failed. Verify email/password and platform passkey support.';
+  } finally {
+    passkeySubmitting.value = false;
   }
 };
 
@@ -114,8 +165,24 @@ const submitLogout = async (): Promise<void> => {
       </div>
 
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <p v-if="passkeyMessage">{{ passkeyMessage }}</p>
+
       <button class="scan-btn" :disabled="submitting" @click="submitAuth">
         {{ submitting ? 'Submitting...' : mode === 'login' ? 'Login' : 'Register' }}
+      </button>
+
+      <hr style="margin: 1rem 0; border: 0; border-top: 1px solid #ddd" />
+
+      <div class="field">
+        <label for="passkeyDeviceName">Passkey Device Name (optional)</label>
+        <input id="passkeyDeviceName" v-model="form.passkeyDeviceName" type="text" placeholder="MacBook Touch ID" />
+      </div>
+
+      <button class="nav-btn" :disabled="passkeySubmitting" @click="submitPasskeyLogin">
+        {{ passkeySubmitting ? 'Processing...' : 'Login with Passkey' }}
+      </button>
+      <button class="nav-btn" :disabled="passkeySubmitting" @click="submitPasskeyRegister">
+        {{ passkeySubmitting ? 'Processing...' : 'Register Passkey' }}
       </button>
     </template>
   </section>

@@ -118,6 +118,74 @@ export function useAuth() {
     return me;
   };
 
+  const registerPasskey = async (payload: { email: string; password: string; deviceName?: string }): Promise<{
+    verified: true;
+    credentialId: string;
+    email: string;
+  }> => {
+    if (!process.client) {
+      throw new Error('Passkey registration is only available in the browser.');
+    }
+
+    const registerOptions = await $fetch<{ challenge: string; options: Record<string, unknown>; email: string }>(
+      '/auth/passkeys/register-options',
+      {
+        method: 'POST',
+        baseURL,
+        body: {
+          email: payload.email,
+          password: payload.password
+        }
+      }
+    );
+
+    const { startRegistration } = await import('@simplewebauthn/browser');
+    const response = await startRegistration({ optionsJSON: registerOptions.options as never });
+
+    return await $fetch<{ verified: true; credentialId: string; email: string }>('/auth/passkeys/register-verify', {
+      method: 'POST',
+      baseURL,
+      body: {
+        email: payload.email,
+        response,
+        deviceName: payload.deviceName
+      }
+    });
+  };
+
+  const loginWithPasskey = async (email: string): Promise<AuthUser> => {
+    if (!process.client) {
+      throw new Error('Passkey login is only available in the browser.');
+    }
+
+    const loginOptions = await $fetch<{ challenge: string; options: Record<string, unknown>; email: string }>(
+      '/auth/passkeys/login-options',
+      {
+        method: 'POST',
+        baseURL,
+        body: { email }
+      }
+    );
+
+    const { startAuthentication } = await import('@simplewebauthn/browser');
+    const response = await startAuthentication({ optionsJSON: loginOptions.options as never });
+
+    const tokens = await $fetch<AuthTokens>('/auth/passkeys/login-verify', {
+      method: 'POST',
+      baseURL,
+      body: {
+        email,
+        response
+      }
+    });
+
+    setTokens(tokens);
+    const me = await fetchMe();
+    persist();
+
+    return me;
+  };
+
   const refreshSession = async (): Promise<void> => {
     if (refreshing.value) {
       return;
@@ -220,6 +288,8 @@ export function useAuth() {
     isAuthenticated,
     login,
     register,
+    registerPasskey,
+    loginWithPasskey,
     logout,
     initAuth,
     fetchMe,
