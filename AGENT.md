@@ -24,7 +24,7 @@ This file captures project-specific guardrails for future coding agents working 
 - Support icon selection for key entities using Tabler/Lucide sets.
 
 ## Implementation Priorities
-1. Foundation: root layout (`api`, `app`), Docker, CI basics.
+1. Foundation: monorepo layout (`apps/api`, `apps/app`, `packages`), Docker, CI basics.
 2. API baseline: auth, validation pipe, Scalar integration, Prisma schema.
 3. UI baseline: mobile shell with persistent scan button.
 4. Core inventory domain: locations, containers, items, stock, movements.

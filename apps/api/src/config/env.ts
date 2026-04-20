@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { cleanEnv, port, str } from 'envalid';
 
 const rootEnvPath = path.resolve(process.cwd(), '.env');
-const nestedApiEnvPath = path.resolve(process.cwd(), 'api/.env');
+const nestedApiEnvPath = path.resolve(process.cwd(), 'apps/api/.env');
 
 if (existsSync(rootEnvPath)) {
   dotenv.config({ path: rootEnvPath });

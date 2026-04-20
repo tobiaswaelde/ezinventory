@@ -21,7 +21,7 @@ services:
 
   api:
     build:
-      context: ./api
+      context: ./apps/api
       dockerfile: Dockerfile
     container_name: ezinventory-api
     environment:
@@ -34,7 +34,7 @@ services:
 
   app:
     build:
-      context: ./app
+      context: ./apps/app
       dockerfile: Dockerfile
     container_name: ezinventory-app
     environment:

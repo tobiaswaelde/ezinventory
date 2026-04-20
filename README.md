@@ -13,8 +13,9 @@ Mobile-first, open-source inventory management with QR-first workflows.
 - API docs: Scalar
 
 ## Monorepo Layout
-- `api` - NestJS API
-- `app` - Nuxt frontend
+- `apps/api` - NestJS API
+- `apps/app` - Nuxt frontend
+- `packages` - shared workspace packages
 - `docs` - planning and architecture docs
 
 ## Quick Start

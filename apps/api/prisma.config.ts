@@ -4,7 +4,7 @@ import path from 'node:path';
 import { env, type PrismaConfig } from 'prisma/config';
 
 const rootEnvPath = path.resolve(process.cwd(), '.env');
-const nestedApiEnvPath = path.resolve(process.cwd(), 'api/.env');
+const nestedApiEnvPath = path.resolve(process.cwd(), 'apps/api/.env');
 
 dotenv.config({ path: rootEnvPath });
 dotenv.config({ path: nestedApiEnvPath, override: true });
