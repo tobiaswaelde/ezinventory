@@ -3,6 +3,20 @@ import { Expose } from 'class-transformer';
 
 import { HealthStatus } from '~/modules/health/dto/health-status.js';
 
+class HealthAuthorDto {
+  @Expose()
+  @ApiProperty({ required: false, example: process.env.npm_package_author_name })
+  name?: string;
+
+  @Expose()
+  @ApiProperty({ required: false, example: process.env.npm_package_author_email })
+  email?: string;
+
+  @Expose()
+  @ApiProperty({ required: false, example: process.env.npm_package_author_url })
+  url?: string;
+}
+
 export class HealthStatusDto {
   @Expose()
   @ApiProperty({ example: process.env.npm_package_name })
@@ -24,9 +38,9 @@ export class HealthStatusDto {
   @ApiProperty({
     type: 'object',
     properties: {
-      name: { type: 'string', required: false },
-      email: { type: 'string', required: false },
-      url: { type: 'string', required: false }
+      name: { type: 'string', nullable: true },
+      email: { type: 'string', nullable: true },
+      url: { type: 'string', nullable: true }
     },
     example: {
       name: process.env.npm_package_author_name,
@@ -34,11 +48,7 @@ export class HealthStatusDto {
       url: process.env.npm_package_author_url
     }
   })
-  author?: {
-    name?: string;
-    email?: string;
-    url?: string;
-  };
+  author?: HealthAuthorDto | undefined;
 
   @Expose()
   @ApiProperty({ description: 'Uptime in seconds', example: 12345.1234567 })
