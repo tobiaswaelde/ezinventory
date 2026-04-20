@@ -135,20 +135,20 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="scanner-actions">
-      <button class="scan-btn" :disabled="isScanning" @click="startScanner">
+      <UButton color="primary" variant="solid" :disabled="isScanning" @click="startScanner">
         {{ isScanning ? 'Scanner Running' : 'Start Scanner' }}
-      </button>
-      <button class="nav-btn" :disabled="!isScanning" @click="stopScanner">Stop Scanner</button>
+      </UButton>
+      <UButton color="neutral" variant="soft" :disabled="!isScanning" @click="stopScanner">Stop Scanner</UButton>
     </div>
 
     <p v-if="scanMessage">{{ scanMessage }}</p>
 
     <div class="field">
       <label for="code">Scanned code</label>
-      <input id="code" v-model="scannedValue" placeholder="Paste scanned QR value" />
+      <UInput id="code" v-model="scannedValue" placeholder="Paste scanned QR value" />
     </div>
 
-    <button class="nav-btn" @click="lookupScannedCode(scannedValue)">Lookup Code</button>
+    <UButton color="neutral" variant="soft" @click="lookupScannedCode(scannedValue)">Lookup Code</UButton>
   </section>
 
   <section v-if="scannedItem" class="card">
@@ -171,10 +171,10 @@ onBeforeUnmount(() => {
 
     <div class="field" v-if="selectedAction === 'stock-out'">
       <label for="qty">Quantity</label>
-      <input id="qty" v-model.number="stockOutQuantity" type="number" min="1" step="1" />
+      <UInput id="qty" v-model.number="stockOutQuantity" type="number" min="1" step="1" />
     </div>
 
-    <button class="scan-btn" @click="applyQuickAction">Apply Action</button>
+    <UButton color="primary" variant="solid" @click="applyQuickAction">Apply Action</UButton>
     <p v-if="actionMessage">{{ actionMessage }}</p>
   </section>
 </template>

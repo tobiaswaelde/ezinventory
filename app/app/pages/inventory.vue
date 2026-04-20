@@ -184,20 +184,20 @@ watch(
 
     <div class="field">
       <label for="location-name">Name</label>
-      <input id="location-name" v-model="locationForm.name" type="text" placeholder="Garage" />
+      <UInput id="location-name" v-model="locationForm.name" type="text" placeholder="Garage" />
     </div>
 
     <div class="field">
       <label for="location-code">Code</label>
-      <input id="location-code" v-model="locationForm.code" type="text" placeholder="GARAGE" />
+      <UInput id="location-code" v-model="locationForm.code" type="text" placeholder="GARAGE" />
     </div>
 
     <div class="field">
       <label for="location-description">Description</label>
-      <textarea id="location-description" v-model="locationForm.description" rows="2" placeholder="Optional" />
+      <UTextarea id="location-description" v-model="locationForm.description" :rows="2" placeholder="Optional" />
     </div>
 
-    <button class="nav-btn" @click="submitLocation">Save Location</button>
+    <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
   </section>
 
   <section class="card">
@@ -236,20 +236,20 @@ watch(
 
     <div class="field">
       <label for="container-name">Name</label>
-      <input id="container-name" v-model="containerForm.name" type="text" placeholder="Freezer Drawer 1" />
+      <UInput id="container-name" v-model="containerForm.name" type="text" placeholder="Freezer Drawer 1" />
     </div>
 
     <div class="field">
       <label for="container-code">Code</label>
-      <input id="container-code" v-model="containerForm.code" type="text" placeholder="FREEZER-DRAWER-1" />
+      <UInput id="container-code" v-model="containerForm.code" type="text" placeholder="FREEZER-DRAWER-1" />
     </div>
 
     <div class="field">
       <label for="container-description">Description</label>
-      <textarea id="container-description" v-model="containerForm.description" rows="2" placeholder="Optional" />
+      <UTextarea id="container-description" v-model="containerForm.description" :rows="2" placeholder="Optional" />
     </div>
 
-    <button class="scan-btn" @click="submitContainer">Save Container</button>
+    <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
   </section>
 
   <section class="card">

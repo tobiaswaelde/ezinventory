@@ -204,12 +204,12 @@ watch(
 
     <div class="field">
       <label for="copies">Copies Per Entity</label>
-      <input id="copies" v-model.number="copiesPerEntity" type="number" min="1" step="1" />
+      <UInput id="copies" v-model.number="copiesPerEntity" type="number" min="1" step="1" />
     </div>
 
     <div class="toolbar">
-      <button class="nav-btn" @click="selectAllVisible">Select All</button>
-      <button class="nav-btn" @click="clearSelection">Clear</button>
+      <UButton color="neutral" variant="soft" @click="selectAllVisible">Select All</UButton>
+      <UButton color="neutral" variant="soft" @click="clearSelection">Clear</UButton>
     </div>
 
     <div class="selector-list">
@@ -223,10 +223,10 @@ watch(
     </div>
 
     <div class="toolbar">
-      <button class="scan-btn" :disabled="generating" @click="generateLabels">
+      <UButton color="primary" variant="solid" :disabled="generating" @click="generateLabels">
         {{ generating ? 'Generating...' : 'Generate Labels' }}
-      </button>
-      <button class="nav-btn" :disabled="labelRows.length === 0" @click="printSheet">Print / Save PDF</button>
+      </UButton>
+      <UButton color="neutral" variant="soft" :disabled="labelRows.length === 0" @click="printSheet">Print / Save PDF</UButton>
     </div>
   </section>
 

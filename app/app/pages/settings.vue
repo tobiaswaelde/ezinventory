@@ -291,9 +291,9 @@ onMounted(async () => {
       </select>
     </div>
 
-    <button class="scan-btn" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
+    <UButton color="primary" variant="solid" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
       {{ modeSaving ? 'Saving...' : 'Save Mode' }}
-    </button>
+    </UButton>
     <p v-if="modeMessage">{{ modeMessage }}</p>
   </section>
 
@@ -302,17 +302,17 @@ onMounted(async () => {
 
     <div class="field">
       <label for="displayName">Display Name</label>
-      <input id="displayName" v-model="newUserForm.displayName" placeholder="Team Member" />
+      <UInput id="displayName" v-model="newUserForm.displayName" placeholder="Team Member" />
     </div>
 
     <div class="field">
       <label for="email">Email</label>
-      <input id="email" v-model="newUserForm.email" type="email" placeholder="team.member@example.com" />
+      <UInput id="email" v-model="newUserForm.email" type="email" placeholder="team.member@example.com" />
     </div>
 
     <div class="field">
       <label for="password">Password</label>
-      <input id="password" v-model="newUserForm.password" type="password" placeholder="************" />
+      <UInput id="password" v-model="newUserForm.password" type="password" placeholder="************" />
     </div>
 
     <div class="field">
@@ -330,9 +330,9 @@ onMounted(async () => {
       </select>
     </div>
 
-    <button class="scan-btn" :disabled="userSaving" @click="createManagedUser">
+    <UButton color="primary" variant="solid" :disabled="userSaving" @click="createManagedUser">
       {{ userSaving ? 'Creating...' : 'Create User' }}
-    </button>
+    </UButton>
     <p v-if="userMessage">{{ userMessage }}</p>
   </section>
 
@@ -356,12 +356,12 @@ onMounted(async () => {
 
     <div class="field">
       <label for="policy-reason">Reason (optional)</label>
-      <input id="policy-reason" v-model="newPolicyForm.reason" placeholder="Temporary stock-taking access" />
+      <UInput id="policy-reason" v-model="newPolicyForm.reason" placeholder="Temporary stock-taking access" />
     </div>
 
     <div class="field">
       <label for="policy-conditions">Conditions JSON (optional)</label>
-      <textarea id="policy-conditions" v-model="newPolicyForm.conditionsJson" rows="3" placeholder='{"id":{"$eq":"..."}}'></textarea>
+      <UTextarea id="policy-conditions" v-model="newPolicyForm.conditionsJson" :rows="3" placeholder='{"id":{"$eq":"..."}}' />
     </div>
 
     <label class="checkbox-row">
@@ -369,9 +369,9 @@ onMounted(async () => {
       <span>Inverted (`cannot` rule)</span>
     </label>
 
-    <button class="nav-btn" :disabled="policyCreating" @click="createPolicy">
+    <UButton color="neutral" variant="soft" :disabled="policyCreating" @click="createPolicy">
       {{ policyCreating ? 'Creating...' : 'Create Policy' }}
-    </button>
+    </UButton>
 
     <p v-if="policyMessage">{{ policyMessage }}</p>
 
@@ -403,9 +403,9 @@ onMounted(async () => {
         </select>
       </div>
 
-      <button class="nav-btn" :disabled="roleSavingByUser[managedUser.id]" @click="saveUserRole(managedUser.id)">
+      <UButton color="neutral" variant="soft" :disabled="roleSavingByUser[managedUser.id]" @click="saveUserRole(managedUser.id)">
         {{ roleSavingByUser[managedUser.id] ? 'Saving role...' : 'Save Role' }}
-      </button>
+      </UButton>
 
       <div class="policy-grid">
         <label v-for="policy in permissionPolicies" :key="policy.id" class="policy-check-row">
@@ -418,9 +418,9 @@ onMounted(async () => {
         </label>
       </div>
 
-      <button class="scan-btn" :disabled="policySavingByUser[managedUser.id]" @click="saveUserPolicies(managedUser.id)">
+      <UButton color="primary" variant="solid" :disabled="policySavingByUser[managedUser.id]" @click="saveUserPolicies(managedUser.id)">
         {{ policySavingByUser[managedUser.id] ? 'Saving policies...' : 'Save Policies' }}
-      </button>
+      </UButton>
     </article>
   </section>
 
@@ -430,29 +430,29 @@ onMounted(async () => {
 
     <div class="field">
       <label for="categoryId">Category UUID v4</label>
-      <input id="categoryId" v-model="itemForm.categoryId" placeholder="550e8400-e29b-41d4-a716-446655440001" />
+      <UInput id="categoryId" v-model="itemForm.categoryId" placeholder="550e8400-e29b-41d4-a716-446655440001" />
       <p v-if="itemErrors.categoryId" class="error">{{ itemErrors.categoryId }}</p>
     </div>
 
     <div class="field">
       <label for="sku">SKU</label>
-      <input id="sku" v-model="itemForm.sku" placeholder="SPAGHETTI-SAUCE-001" />
+      <UInput id="sku" v-model="itemForm.sku" placeholder="SPAGHETTI-SAUCE-001" />
       <p v-if="itemErrors.sku" class="error">{{ itemErrors.sku }}</p>
     </div>
 
     <div class="field">
       <label for="name">Name</label>
-      <input id="name" v-model="itemForm.name" placeholder="Spaghetti Sauce" />
+      <UInput id="name" v-model="itemForm.name" placeholder="Spaghetti Sauce" />
       <p v-if="itemErrors.name" class="error">{{ itemErrors.name }}</p>
     </div>
 
     <div class="field">
       <label for="servings">Servings (optional)</label>
-      <input id="servings" v-model="itemForm.servings" placeholder="3" />
+      <UInput id="servings" v-model="itemForm.servings" placeholder="3" />
       <p v-if="itemErrors.servings" class="error">{{ itemErrors.servings }}</p>
     </div>
 
-    <button class="scan-btn" @click="submitItem">Submit</button>
+    <UButton color="primary" variant="solid" @click="submitItem">Submit</UButton>
   </section>
 </template>
 
