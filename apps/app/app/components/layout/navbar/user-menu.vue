@@ -6,7 +6,7 @@
       label-key="label"
       value-key="value"
       class="w-28"
-      @update:model-value="(value) => setLocale(value as 'en' | 'de')"
+      @update:model-value="setLocaleSelectValue"
     />
 
     <UDropdownMenu :items="themeItems">
@@ -35,6 +35,14 @@ const localeOptions = [
   { label: 'Deutsch', value: 'de' }
 ] as const;
 
+type LocaleOptionValue = (typeof localeOptions)[number]['value'];
+
+const setLocaleSelectValue = (value: string | undefined): void => {
+  if (value === 'en' || value === 'de') {
+    setLocale(value as LocaleOptionValue);
+  }
+};
+
 const themeItems = computed(() => [
   {
     label: theme.value === 'light' ? 'Switch to dark' : 'Switch to light',
@@ -48,4 +56,3 @@ const onLogout = async (): Promise<void> => {
   await navigateTo('/');
 };
 </script>
-

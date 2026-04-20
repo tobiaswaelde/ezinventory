@@ -1,4 +1,4 @@
-import type { NavigationMenuItem } from '#ui/types';
+import type { NavigationMenuItem } from '@nuxt/ui';
 
 export function useNavigationItems() {
   const route = useRoute();
