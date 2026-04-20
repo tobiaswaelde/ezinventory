@@ -22,6 +22,12 @@ export function useApiClient() {
     });
   };
 
+  const listItems = async (): Promise<ItemResponse[]> => {
+    return await authorizedFetch<ItemResponse[]>('/items', {
+      method: 'GET'
+    });
+  };
+
   const createLocation = async (payload: CreateLocationPayload): Promise<LocationResponse> => {
     return await authorizedFetch<LocationResponse>('/locations', {
       method: 'POST',
@@ -81,6 +87,7 @@ export function useApiClient() {
     createUserByAdmin,
     health,
     listContainers,
+    listItems,
     listLocations,
     lookupItemByCode,
     updateRegistrationMode

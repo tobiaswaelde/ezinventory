@@ -42,9 +42,9 @@ Last updated: 2026-04-20
 - [x] Item size/portion support (e.g. freezer use case)
 - [x] Quick stock-out actions from scanned item view (baseline)
 - [x] QR scanner button in navigation
-- [ ] Barcode/QR label generation
-- [ ] A4 grid PDF export for labels
-- [ ] Desktop printer-friendly flow
+- [x] Barcode/QR label generation (baseline)
+- [x] A4 grid PDF export for labels (print-to-PDF baseline)
+- [x] Desktop printer-friendly flow (A4 print stylesheet baseline)
 
 ## 5. Media & Assets
 
