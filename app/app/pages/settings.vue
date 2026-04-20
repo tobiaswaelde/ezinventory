@@ -7,6 +7,7 @@ const form = reactive({
 });
 
 const errors = reactive<Record<string, string>>({});
+const { createItem } = useApiClient();
 
 const validate = (): boolean => {
   errors.categoryId = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(form.categoryId)
@@ -29,15 +30,11 @@ const validate = (): boolean => {
 const submit = async () => {
   if (!validate()) return;
 
-  await $fetch('/items', {
-    method: 'POST',
-    baseURL: useRuntimeConfig().public.apiBaseUrl,
-    body: {
-      categoryId: form.categoryId,
-      sku: form.sku,
-      name: form.name,
-      servings: form.servings ? Number(form.servings) : undefined
-    }
+  await createItem({
+    categoryId: form.categoryId,
+    sku: form.sku,
+    name: form.name,
+    servings: form.servings ? Number(form.servings) : undefined
   });
 
   alert('Valid payload sent to API.');
