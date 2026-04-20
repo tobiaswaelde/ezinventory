@@ -15,6 +15,7 @@ These documents define the project baseline for building **EZ Inventory** as an 
 9. [Barcode/QR and Label Strategy](./09-barcode-label-strategy.md)
 10. [Docker & Deployment Blueprint](./10-docker-deployment.md)
 11. [Documentation with README + VitePress](./11-documentation-vitepress.md)
+12. [Implementation Checklist](./12-implementation-checklist.md)
 
 ## Current Direction
 
