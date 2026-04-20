@@ -20,7 +20,7 @@
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@typescript-eslint/parser": "^8.46.2",
+    "@ezinventory/eslint-config": "workspace:*",
     "@vite-pwa/nuxt": "^1.1.1",
     "eslint": "^9.21.0"
   }

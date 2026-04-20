@@ -1,0 +1,13 @@
+{
+  "name": "@ezinventory/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./base.mjs",
+    "./base": "./base.mjs"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^8.59.0"
+  }
+}

@@ -78,6 +78,9 @@ importers:
         specifier: ^7.8.1
         version: 7.8.2
     devDependencies:
+      '@ezinventory/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@types/express':
         specifier: ^5.0.1
         version: 5.0.6
@@ -87,9 +90,6 @@ importers:
       '@types/pg':
         specifier: ^8.15.6
         version: 8.20.0
-      '@typescript-eslint/parser':
-        specifier: ^8.59.0
-        version: 8.59.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       eslint:
         specifier: ^9.21.0
         version: 9.39.4(jiti@2.6.1)
@@ -130,9 +130,9 @@ importers:
         specifier: ^1.5.4
         version: 1.5.4
     devDependencies:
-      '@typescript-eslint/parser':
-        specifier: ^8.46.2
-        version: 8.59.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      '@ezinventory/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
       '@vite-pwa/nuxt':
         specifier: ^1.1.1
         version: 1.1.1(magicast@0.5.2)(vite@7.3.2(@types/node@22.19.17)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(workbox-build@7.4.0)(workbox-window@7.4.0)
@@ -145,6 +145,12 @@ importers:
       openapi-typescript:
         specifier: ^7.10.1
         version: 7.13.0(typescript@5.9.3)
+
+  packages/eslint-config:
+    dependencies:
+      '@typescript-eslint/parser':
+        specifier: ^8.59.0
+        version: 8.59.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
 
 packages:
 

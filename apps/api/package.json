@@ -36,10 +36,10 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@ezinventory/eslint-config": "workspace:*",
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.5",
     "@types/pg": "^8.15.6",
-    "@typescript-eslint/parser": "^8.59.0",
     "eslint": "^9.21.0",
     "prisma": "^7.7.0",
     "tsc-alias": "^1.8.16",

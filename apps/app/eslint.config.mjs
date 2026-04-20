@@ -1,18 +1,5 @@
-import tsParser from '@typescript-eslint/parser';
+import { createTypeScriptConfig } from '@ezinventory/eslint-config/base';
 
-export default [
-  {
-    ignores: ['.nuxt/**', '.output/**', 'node_modules/**']
-  },
-  {
-    files: ['**/*.ts'],
-    languageOptions: {
-      parser: tsParser,
-      ecmaVersion: 2022,
-      sourceType: 'module'
-    },
-    rules: {
-      'no-console': 'off'
-    }
-  }
-];
+export default createTypeScriptConfig({
+  ignores: ['.nuxt/**', '.output/**']
+});

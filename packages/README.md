@@ -6,3 +6,4 @@ Suggested examples:
 - `@ezinventory/shared-types`
 - `@ezinventory/ui`
 - `@ezinventory/config`
+- `@ezinventory/eslint-config`
