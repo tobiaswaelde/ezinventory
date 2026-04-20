@@ -50,6 +50,9 @@ importers:
       '@prisma/client':
         specifier: ^7.7.0
         version: 7.7.0(prisma@7.7.0(@types/react@19.2.14)(magicast@0.5.2)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(typescript@5.9.3))(typescript@5.9.3)
+      '@scalar/nestjs-api-reference':
+        specifier: 1.1.7
+        version: 1.1.7
       '@simplewebauthn/server':
         specifier: ^13.3.0
         version: 13.3.0
@@ -2329,6 +2332,26 @@ packages:
     resolution: {integrity: sha512-Nd/SgG27WoA9e+/TdK74KnHz852TLa94ovOYySo/yMPuTmpckK/jIF2jSwS3g7ELSKXK13/cVdmg1Z/DaCWKxA==}
     cpu: [x64]
     os: [win32]
+
+  '@scalar/client-side-rendering@0.1.0':
+    resolution: {integrity: sha512-SUuLgDmY1mUYOrGB2vpKj2HnYmPibKOewIV0gugv6k/qajE9R88uIj6u0DxAJVOLgihvKdMGyeXsnUs4fTLZYg==}
+    engines: {node: '>=22'}
+
+  '@scalar/core@0.5.0':
+    resolution: {integrity: sha512-quPUndgBB1fwUkdIgJiCVA3vR6hyCgMYgca9YPI+RwbAB7/H/1otNEKfLBzLVbNllXlGnY4BxmGSft4fUg49jg==}
+    engines: {node: '>=22'}
+
+  '@scalar/helpers@0.4.3':
+    resolution: {integrity: sha512-Gv2V7SFreLx3DltzF2lKXdaJSH5cP1LOyt9PxON1cSWGxkrs3sg93c1taEJsW24E9ckfYXkL5hjCAVLfAN3wQw==}
+    engines: {node: '>=22'}
+
+  '@scalar/nestjs-api-reference@1.1.7':
+    resolution: {integrity: sha512-gsiVuKwE391eGkibo2cbUb/n9maYu83kplKKuSB9aP7u/+t9SU8OKYMbwncCvoFB1bEX+VR7Uo1/poJvd2OpYg==}
+    engines: {node: '>=22'}
+
+  '@scalar/types@0.8.0':
+    resolution: {integrity: sha512-3GP0eqe+4XR8MyKOSCTly/VRobT3sKoFBX1ZSuuZAlcBROqzRkBSzQ+kloGWqTR60vP9GAwW7SnHo72MdCP0DQ==}
+    engines: {node: '>=22'}
 
   '@scarf/scarf@1.4.0':
     resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
@@ -4985,6 +5008,11 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  nanoid@5.1.9:
+    resolution: {integrity: sha512-ZUvP7KeBLe3OZ1ypw6dI/TzYJuvHP77IM4Ry73waSQTLn8/g8rpdjfyVAh7t1/+FjBtG4lCP42MEbDxOsRpBMw==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   nanotar@0.3.0:
     resolution: {integrity: sha512-Kv2JYYiCzt16Kt5QwAc9BFG89xfPNBx+oQL4GQXD9nLqPkZBiNaqaCWtwnbk/q7UVsTYevvM1b0UF8zmEI4pCg==}
 
@@ -7066,6 +7094,9 @@ packages:
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
+
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
 snapshots:
 
@@ -9636,6 +9667,28 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.60.2':
     optional: true
+
+  '@scalar/client-side-rendering@0.1.0':
+    dependencies:
+      '@scalar/types': 0.8.0
+
+  '@scalar/core@0.5.0':
+    dependencies:
+      '@scalar/client-side-rendering': 0.1.0
+      '@scalar/types': 0.8.0
+
+  '@scalar/helpers@0.4.3': {}
+
+  '@scalar/nestjs-api-reference@1.1.7':
+    dependencies:
+      '@scalar/core': 0.5.0
+
+  '@scalar/types@0.8.0':
+    dependencies:
+      '@scalar/helpers': 0.4.3
+      nanoid: 5.1.9
+      type-fest: 5.6.0
+      zod: 4.3.6
 
   '@scarf/scarf@1.4.0': {}
 
@@ -12484,6 +12537,8 @@ snapshots:
 
   nanoid@3.3.11: {}
 
+  nanoid@5.1.9: {}
+
   nanotar@0.3.0: {}
 
   natural-compare@1.4.0: {}
@@ -14980,3 +15035,5 @@ snapshots:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.7.0
+
+  zod@4.3.6: {}

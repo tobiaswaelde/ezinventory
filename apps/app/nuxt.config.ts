@@ -2,6 +2,11 @@ export default defineNuxtConfig({
   srcDir: 'app/',
   devtools: { enabled: true },
   modules: ['@nuxt/ui', '@vite-pwa/nuxt'],
+  typescript: {
+    tsConfig: {
+      extends: '../../../tsconfig.json'
+    }
+  },
   colorMode: {
     preference: 'light',
     fallback: 'light',

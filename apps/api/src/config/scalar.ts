@@ -1,10 +1,9 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import type { INestApplication } from '@nestjs/common';
-import type { Express } from 'express';
-import type { OpenAPIObject } from '@nestjs/swagger';
+import { apiReference } from '@scalar/nestjs-api-reference';
+import { DocumentBuilder, SwaggerModule, type OpenAPIObject } from '@nestjs/swagger';
 
 export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('EZ Inventory API')
     .setDescription('API specification for EZ Inventory')
     .setVersion('0.1.0')
@@ -19,31 +18,35 @@ export function createOpenApiDocument(app: INestApplication): OpenAPIObject {
     )
     .build();
 
-  return SwaggerModule.createDocument(app, config);
+  return SwaggerModule.createDocument(app, swaggerConfig);
 }
 
 export function setupApiDocs(app: INestApplication): void {
   const document = createOpenApiDocument(app);
-  SwaggerModule.setup('/api/openapi', app, document);
 
-  const expressApp = app.getHttpAdapter().getInstance() as Express;
+  app.use(
+    '/docs',
+    apiReference({
+      content: document,
+      theme: 'saturn',
+      hideClientButton: true,
+      telemetry: false,
+      persistAuth: true,
+      expandAllResponses: true,
+      showDeveloperTools: 'never',
+      defaultHttpClient: {
+        targetKey: 'node',
+        clientKey: 'axios'
+      },
+      metaData: {
+        title: 'EZ Inventory API'
+      },
+      tagsSorter: 'alpha'
+    })
+  );
 
-  expressApp.get('/api/openapi.json', (_req, res) => {
+  // Keep a stable JSON endpoint for contract generation and tooling.
+  app.getHttpAdapter().get('/api/openapi.json', (_req, res) => {
     res.json(document);
-  });
-
-  expressApp.get('/api/docs', (_req, res) => {
-    res.type('html').send(`<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>EZ Inventory API Docs</title>
-  </head>
-  <body>
-    <script id="api-reference" data-url="/api/openapi.json"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-  </body>
-</html>`);
   });
 }

@@ -25,6 +25,7 @@
     "@nestjs/swagger": "^11.2.0",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
+    "@scalar/nestjs-api-reference": "1.1.7",
     "@simplewebauthn/server": "^13.3.0",
     "argon2": "^0.44.0",
     "class-transformer": "^0.5.1",
