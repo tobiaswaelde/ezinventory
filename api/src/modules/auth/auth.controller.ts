@@ -7,6 +7,7 @@ import { PasskeyLoginOptionsDto } from '~/modules/auth/dto/passkey-login-options
 import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.dto.js';
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
+import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -96,5 +97,35 @@ export class AuthController {
   })
   async passkeyLoginVerify(@Body() dto: PasskeyLoginVerifyDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
     return await this.authService.passkeyLoginVerify(dto);
+  }
+
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string', example: 'jwt-access-token' },
+        refreshToken: { type: 'string', example: 'jwt-refresh-token' },
+        email: { type: 'string', example: 'admin@example.com' }
+      }
+    }
+  })
+  async refresh(@Body() dto: RefreshTokenDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
+    return await this.authService.refresh(dto);
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        loggedOut: { type: 'boolean', example: true }
+      }
+    }
+  })
+  async logout(@Body() dto: RefreshTokenDto): Promise<{ loggedOut: true }> {
+    return await this.authService.logout(dto);
   }
 }

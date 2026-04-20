@@ -10,6 +10,7 @@ model User {
 
   passkeyCredentials PasskeyCredential[]
   passkeyChallenges  PasskeyChallenge[]
+  refreshSessions    RefreshTokenSession[]
   userPolicies       UserPermissionPolicy[]
   uploadedImages     ImageAttachment[]      @relation("uploaded-images")
   createdMediaAssets MediaAsset[]           @relation("created-media-assets")

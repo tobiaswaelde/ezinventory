@@ -1,5 +1,12 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PasskeyChallengePurpose } from '@prisma/client';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { PasskeyChallengePurpose, UserRole } from '@prisma/client';
 import argon2 from 'argon2';
 import {
   generateAuthenticationOptions,
@@ -13,23 +20,41 @@ import {
 } from '@simplewebauthn/server';
 
 import { ENV } from '~/config/env.js';
-import { PrismaService } from '~/prisma/prisma.service.js';
 import { LoginDto } from '~/modules/auth/dto/login.dto.js';
 import { PasskeyLoginOptionsDto } from '~/modules/auth/dto/passkey-login-options.dto.js';
 import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.dto.js';
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
+import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
+import { PrismaService } from '~/prisma/prisma.service.js';
+
+type AuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+  email: string;
+};
+
+type RefreshTokenPayload = {
+  sub: string;
+  sid: string;
+  type: 'refresh';
+};
 
 @Injectable()
 export class AuthService {
   private readonly challengeLifetimeMs = 5 * 60 * 1000;
+  private readonly tokenIssuer = 'ezinventory-api';
+  private readonly tokenAudience = 'ezinventory-app';
 
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(JwtService) private readonly jwtService: JwtService
+  ) {}
 
-  async login(dto: LoginDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
+  async login(dto: LoginDto): Promise<AuthTokens> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
-      select: { email: true, passwordHash: true }
+      select: { id: true, email: true, passwordHash: true, role: true }
     });
 
     if (!user) {
@@ -41,12 +66,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials.');
     }
 
-    return this.issueTokens(user.email);
+    return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
   }
 
-  async passkeyRegisterOptions(
-    dto: PasskeyRegisterOptionsDto
-  ): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {
+  async passkeyRegisterOptions(dto: PasskeyRegisterOptionsDto): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
       select: {
@@ -97,9 +120,7 @@ export class AuthService {
     };
   }
 
-  async passkeyRegisterVerify(
-    dto: PasskeyRegisterVerifyDto
-  ): Promise<{ verified: true; credentialId: string; email: string }> {
+  async passkeyRegisterVerify(dto: PasskeyRegisterVerifyDto): Promise<{ verified: true; credentialId: string; email: string }> {
     const email = dto.email.toLowerCase();
 
     const user = await this.prisma.user.findUnique({
@@ -194,13 +215,14 @@ export class AuthService {
     };
   }
 
-  async passkeyLoginVerify(dto: PasskeyLoginVerifyDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
+  async passkeyLoginVerify(dto: PasskeyLoginVerifyDto): Promise<AuthTokens> {
     const email = dto.email.toLowerCase();
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
         id: true,
         email: true,
+        role: true,
         passkeyCredentials: {
           select: {
             id: true,
@@ -253,15 +275,177 @@ export class AuthService {
       }
     });
 
-    return this.issueTokens(user.email);
+    return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
   }
 
-  private issueTokens(email: string): { accessToken: string; refreshToken: string; email: string } {
+  async refresh(dto: RefreshTokenDto): Promise<AuthTokens> {
+    const payload = await this.verifyRefreshToken(dto.refreshToken);
+
+    const session = await this.prisma.refreshTokenSession.findUnique({
+      where: { id: payload.sid },
+      select: {
+        id: true,
+        userId: true,
+        tokenHash: true,
+        expiresAt: true,
+        revokedAt: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true
+          }
+        }
+      }
+    });
+
+    if (!session || session.userId !== payload.sub) {
+      throw new UnauthorizedException('Refresh session is invalid.');
+    }
+
+    if (session.revokedAt !== null) {
+      throw new UnauthorizedException('Refresh session has been revoked.');
+    }
+
+    if (session.expiresAt.getTime() < Date.now()) {
+      await this.prisma.refreshTokenSession.update({
+        where: { id: session.id },
+        data: { revokedAt: new Date() }
+      });
+      throw new UnauthorizedException('Refresh token has expired.');
+    }
+
+    const tokenMatches = await argon2.verify(session.tokenHash, dto.refreshToken);
+    if (!tokenMatches) {
+      await this.prisma.refreshTokenSession.update({
+        where: { id: session.id },
+        data: { revokedAt: new Date() }
+      });
+      throw new UnauthorizedException('Refresh token is invalid.');
+    }
+
+    await this.prisma.refreshTokenSession.update({
+      where: { id: session.id },
+      data: { revokedAt: new Date() }
+    });
+
+    return await this.issueTokens({
+      id: session.user.id,
+      email: session.user.email,
+      role: session.user.role
+    });
+  }
+
+  async logout(dto: RefreshTokenDto): Promise<{ loggedOut: true }> {
+    const payload = await this.verifyRefreshToken(dto.refreshToken);
+
+    const session = await this.prisma.refreshTokenSession.findUnique({
+      where: { id: payload.sid },
+      select: { id: true, userId: true, revokedAt: true }
+    });
+
+    if (!session || session.userId !== payload.sub || session.revokedAt !== null) {
+      throw new UnauthorizedException('Refresh session is invalid.');
+    }
+
+    await this.prisma.refreshTokenSession.update({
+      where: { id: session.id },
+      data: { revokedAt: new Date() }
+    });
+
+    return { loggedOut: true };
+  }
+
+  private async issueTokens(user: { id: string; email: string; role: UserRole }): Promise<AuthTokens> {
+    const sessionId = crypto.randomUUID();
+
+    const accessToken = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+        type: 'access'
+      },
+      {
+        secret: ENV.AUTH_ACCESS_TOKEN_SECRET,
+        issuer: this.tokenIssuer,
+        audience: this.tokenAudience,
+        expiresIn: this.parseDurationToMs(ENV.AUTH_ACCESS_TOKEN_TTL) / 1000
+      }
+    );
+
+    const refreshToken = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        sid: sessionId,
+        type: 'refresh'
+      },
+      {
+        secret: ENV.AUTH_REFRESH_TOKEN_SECRET,
+        issuer: this.tokenIssuer,
+        audience: this.tokenAudience,
+        expiresIn: this.parseDurationToMs(ENV.AUTH_REFRESH_TOKEN_TTL) / 1000
+      }
+    );
+
+    await this.prisma.refreshTokenSession.create({
+      data: {
+        id: sessionId,
+        userId: user.id,
+        tokenHash: await argon2.hash(refreshToken),
+        expiresAt: new Date(Date.now() + this.parseDurationToMs(ENV.AUTH_REFRESH_TOKEN_TTL))
+      }
+    });
+
+    await this.prisma.refreshTokenSession.deleteMany({
+      where: {
+        userId: user.id,
+        OR: [{ revokedAt: { not: null } }, { expiresAt: { lt: new Date() } }]
+      }
+    });
+
     return {
-      accessToken: `access-${crypto.randomUUID()}`,
-      refreshToken: `refresh-${crypto.randomUUID()}`,
-      email
+      accessToken,
+      refreshToken,
+      email: user.email
     };
+  }
+
+  private async verifyRefreshToken(refreshToken: string): Promise<RefreshTokenPayload> {
+    try {
+      const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(refreshToken, {
+        secret: ENV.AUTH_REFRESH_TOKEN_SECRET,
+        issuer: this.tokenIssuer,
+        audience: this.tokenAudience
+      });
+
+      if (payload.type !== 'refresh' || typeof payload.sub !== 'string' || typeof payload.sid !== 'string') {
+        throw new UnauthorizedException('Refresh token payload is invalid.');
+      }
+
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Refresh token is invalid or expired.');
+    }
+  }
+
+  private parseDurationToMs(duration: string): number {
+    const matched = duration.match(/^(\d+)(s|m|h|d)$/);
+    if (!matched) {
+      throw new InternalServerErrorException('Invalid auth token TTL format in environment.');
+    }
+
+    const value = Number(matched[1]);
+    const unit = matched[2];
+
+    const unitMs: Record<string, number> = {
+      s: 1000,
+      m: 60 * 1000,
+      h: 60 * 60 * 1000,
+      d: 24 * 60 * 60 * 1000
+    };
+
+    return value * unitMs[unit];
   }
 
   private async storeChallenge(userId: string, purpose: PasskeyChallengePurpose, challenge: string): Promise<void> {

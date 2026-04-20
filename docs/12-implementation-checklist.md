@@ -17,8 +17,8 @@ Last updated: 2026-04-20
 - [x] Env validation with `envalid`
 - [x] Scalar/OpenAPI base integration
 - [x] Passkey base flow (register/login options + verify)
-- [ ] Production-ready JWT access/refresh token flow
-- [ ] Refresh token rotation/invalidation
+- [x] Production-ready JWT access/refresh token flow
+- [x] Refresh token rotation/invalidation
 - [ ] CASL-based fine-grained authorization
 - [ ] Complete endpoint + DTO coverage in Scalar docs
 - [ ] Full server-side validation coverage for all modules
@@ -76,4 +76,3 @@ Last updated: 2026-04-20
 - [ ] App component/unit tests
 - [ ] End-to-end happy path tests (setup, login, scan, stock-out)
 - [ ] Coverage reporting in CI
-
