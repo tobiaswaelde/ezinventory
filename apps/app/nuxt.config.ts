@@ -22,6 +22,12 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      htmlAttrs: {
+        class: 'h-full'
+      },
+      bodyAttrs: {
+        class: 'h-full'
+      },
       title: 'EZ Inventory'
     }
   },
@@ -33,8 +39,8 @@ export default defineNuxtConfig({
       name: 'EZ Inventory',
       short_name: 'EZInventory',
       description: 'Mobile-first inventory management with QR/barcode workflows.',
-      theme_color: '#1f6feb',
-      background_color: '#f3f5f7',
+      theme_color: '#06b6d4',
+      background_color: '#fafafa',
       display: 'standalone',
       orientation: 'portrait',
       scope: '/',
