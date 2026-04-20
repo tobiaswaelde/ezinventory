@@ -16,6 +16,10 @@ const locationForm = reactive({
   code: '',
   description: ''
 });
+const locationErrors = reactive({
+  name: '',
+  code: ''
+});
 
 const containerForm = reactive({
   locationId: '',
@@ -25,6 +29,13 @@ const containerForm = reactive({
   code: '',
   description: ''
 });
+const containerErrors = reactive({
+  locationId: '',
+  name: '',
+  code: ''
+});
+
+const codePattern = /^[A-Z0-9-]{2,40}$/;
 
 const sortedLocations = computed(() => {
   return [...locations.value].sort((a, b) => a.name.localeCompare(b.name));
@@ -129,8 +140,13 @@ const refreshData = async (): Promise<void> => {
 };
 
 const submitLocation = async (): Promise<void> => {
-  if (!locationForm.name.trim() || !locationForm.code.trim()) {
-    errorMessage.value = 'Location name and code are required.';
+  locationErrors.name = locationForm.name.trim() ? '' : 'Name is required.';
+  locationErrors.code = codePattern.test(locationForm.code.trim().toUpperCase())
+    ? ''
+    : 'Code must be 2-40 chars, uppercase letters/numbers/hyphen only.';
+
+  if (locationErrors.name || locationErrors.code) {
+    errorMessage.value = 'Please fix the location form errors.';
     return;
   }
 
@@ -155,8 +171,14 @@ const submitLocation = async (): Promise<void> => {
 };
 
 const submitContainer = async (): Promise<void> => {
-  if (!containerForm.locationId || !containerForm.name.trim() || !containerForm.code.trim()) {
-    errorMessage.value = 'Container location, name and code are required.';
+  containerErrors.locationId = containerForm.locationId ? '' : 'Location is required.';
+  containerErrors.name = containerForm.name.trim() ? '' : 'Name is required.';
+  containerErrors.code = codePattern.test(containerForm.code.trim().toUpperCase())
+    ? ''
+    : 'Code must be 2-40 chars, uppercase letters/numbers/hyphen only.';
+
+  if (containerErrors.locationId || containerErrors.name || containerErrors.code) {
+    errorMessage.value = 'Please fix the container form errors.';
     return;
   }
 
@@ -210,11 +232,13 @@ watch(
     <div class="field">
       <label for="location-name">Name</label>
       <UInput id="location-name" v-model="locationForm.name" type="text" placeholder="Garage" />
+      <p v-if="locationErrors.name" class="error">{{ locationErrors.name }}</p>
     </div>
 
     <div class="field">
       <label for="location-code">Code</label>
       <UInput id="location-code" v-model="locationForm.code" type="text" placeholder="GARAGE" />
+      <p v-if="locationErrors.code" class="error">{{ locationErrors.code }}</p>
     </div>
 
     <div class="field">
@@ -240,6 +264,7 @@ watch(
         value-attribute="value"
         placeholder="Select location"
       />
+      <p v-if="containerErrors.locationId" class="error">{{ containerErrors.locationId }}</p>
     </div>
 
     <div class="field">
@@ -267,11 +292,13 @@ watch(
     <div class="field">
       <label for="container-name">Name</label>
       <UInput id="container-name" v-model="containerForm.name" type="text" placeholder="Freezer Drawer 1" />
+      <p v-if="containerErrors.name" class="error">{{ containerErrors.name }}</p>
     </div>
 
     <div class="field">
       <label for="container-code">Code</label>
       <UInput id="container-code" v-model="containerForm.code" type="text" placeholder="FREEZER-DRAWER-1" />
+      <p v-if="containerErrors.code" class="error">{{ containerErrors.code }}</p>
     </div>
 
     <div class="field">

@@ -59,6 +59,11 @@ const newUserForm = reactive({
   role: 'STAFF' as UserRole,
   preferredLanguage: 'en' as 'de' | 'en'
 });
+const newUserErrors = reactive({
+  email: '',
+  password: '',
+  displayName: ''
+});
 const userSaving = ref(false);
 const userMessage = ref('');
 
@@ -76,6 +81,9 @@ const newPolicyForm = reactive({
   subject: 'Item' as CaslSubject,
   inverted: false,
   reason: '',
+  conditionsJson: ''
+});
+const newPolicyErrors = reactive({
   conditionsJson: ''
 });
 const policyCreating = ref(false);
@@ -173,9 +181,16 @@ const loadAdminData = async (): Promise<void> => {
 
 const createManagedUser = async (): Promise<void> => {
   userMessage.value = '';
+  newUserErrors.email = '';
+  newUserErrors.password = '';
+  newUserErrors.displayName = '';
 
-  if (!newUserForm.email.trim() || !newUserForm.password.trim() || !newUserForm.displayName.trim()) {
-    userMessage.value = 'Email, password and display name are required.';
+  newUserErrors.displayName = newUserForm.displayName.trim().length >= 2 ? '' : 'Display name must be at least 2 characters.';
+  newUserErrors.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUserForm.email.trim()) ? '' : 'Valid email is required.';
+  newUserErrors.password = newUserForm.password.length >= 8 ? '' : 'Password must be at least 8 characters.';
+
+  if (newUserErrors.displayName || newUserErrors.email || newUserErrors.password) {
+    userMessage.value = 'Please fix the user form errors.';
     return;
   }
 
@@ -243,6 +258,7 @@ const saveUserPolicies = async (targetUserId: string): Promise<void> => {
 
 const createPolicy = async (): Promise<void> => {
   policyMessage.value = '';
+  newPolicyErrors.conditionsJson = '';
   policyCreating.value = true;
 
   try {
@@ -269,8 +285,10 @@ const createPolicy = async (): Promise<void> => {
     policyMessage.value = 'Permission policy created.';
     newPolicyForm.reason = '';
     newPolicyForm.conditionsJson = '';
+    newPolicyErrors.conditionsJson = '';
     await loadAdminData();
   } catch {
+    newPolicyErrors.conditionsJson = 'Conditions must be valid JSON object (or left empty).';
     policyMessage.value = 'Could not create permission policy. Verify JSON in conditions.';
   } finally {
     policyCreating.value = false;
@@ -317,16 +335,19 @@ onMounted(async () => {
     <div class="field">
       <label for="displayName">Display Name</label>
       <UInput id="displayName" v-model="newUserForm.displayName" placeholder="Team Member" />
+      <p v-if="newUserErrors.displayName" class="error">{{ newUserErrors.displayName }}</p>
     </div>
 
     <div class="field">
       <label for="email">Email</label>
       <UInput id="email" v-model="newUserForm.email" type="email" placeholder="team.member@example.com" />
+      <p v-if="newUserErrors.email" class="error">{{ newUserErrors.email }}</p>
     </div>
 
     <div class="field">
       <label for="password">Password</label>
       <UInput id="password" v-model="newUserForm.password" type="password" placeholder="************" />
+      <p v-if="newUserErrors.password" class="error">{{ newUserErrors.password }}</p>
     </div>
 
     <div class="field">
@@ -391,6 +412,7 @@ onMounted(async () => {
     <div class="field">
       <label for="policy-conditions">Conditions JSON (optional)</label>
       <UTextarea id="policy-conditions" v-model="newPolicyForm.conditionsJson" :rows="3" placeholder='{"id":{"$eq":"..."}}' />
+      <p v-if="newPolicyErrors.conditionsJson" class="error">{{ newPolicyErrors.conditionsJson }}</p>
     </div>
 
     <label class="checkbox-row">
