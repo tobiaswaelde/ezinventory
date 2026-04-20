@@ -12,6 +12,37 @@ import { PrismaService } from '~/prisma/prisma.service.js';
 export class SetupService {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
+  async getSetupStatus(): Promise<{ setupInitialized: boolean; registrationMode: RegistrationMode }> {
+    const setupInitializedSetting = await this.prisma.systemSetting.findUnique({
+      where: { key: SETUP_INITIALIZED_KEY },
+      select: { value: true }
+    });
+
+    const setupInitialized = setupInitializedSetting?.value === true;
+
+    if (!setupInitialized) {
+      return {
+        setupInitialized: false,
+        registrationMode: RegistrationMode.ADMIN_ONLY
+      };
+    }
+
+    const registrationModeSetting = await this.prisma.systemSetting.findUnique({
+      where: { key: REGISTRATION_MODE_KEY },
+      select: { value: true }
+    });
+
+    const registrationMode =
+      typeof registrationModeSetting?.value === 'string' && Object.values(RegistrationMode).includes(registrationModeSetting.value as RegistrationMode)
+        ? (registrationModeSetting.value as RegistrationMode)
+        : RegistrationMode.ADMIN_ONLY;
+
+    return {
+      setupInitialized: true,
+      registrationMode
+    };
+  }
+
   async bootstrapAdmin(dto: BootstrapAdminDto): Promise<{ setupInitialized: true; adminUserId: string; email: string }> {
     const existingAdmin = await this.prisma.user.findFirst({
       where: { role: UserRole.ADMIN },

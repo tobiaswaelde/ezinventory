@@ -8,6 +8,7 @@ import type {
 import type {
   AdminCreatedUser,
   CreateUserByAdminPayload,
+  SetupStatus,
   UpdateRegistrationModePayload
 } from '~/types/api/setup';
 
@@ -73,6 +74,10 @@ export function useApiClient() {
     });
   };
 
+  const getSetupStatus = async (): Promise<SetupStatus> => {
+    return await $fetch<SetupStatus>('/setup/status', { baseURL });
+  };
+
   const createUserByAdmin = async (payload: CreateUserByAdminPayload): Promise<AdminCreatedUser> => {
     return await authorizedFetch<AdminCreatedUser>('/setup/users', {
       method: 'POST',
@@ -85,6 +90,7 @@ export function useApiClient() {
     createItem,
     createLocation,
     createUserByAdmin,
+    getSetupStatus,
     health,
     listContainers,
     listItems,

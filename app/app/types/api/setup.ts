@@ -4,6 +4,11 @@ export type UpdateRegistrationModePayload = {
   mode: RegistrationMode;
 };
 
+export type SetupStatus = {
+  setupInitialized: boolean;
+  registrationMode: RegistrationMode;
+};
+
 export type CreateUserByAdminPayload = {
   email: string;
   password: string;

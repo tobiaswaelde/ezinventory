@@ -58,7 +58,7 @@ Last updated: 2026-04-20
 
 - [x] Initial setup/admin bootstrap baseline
 - [x] Passkey UX flow completion in frontend (baseline implemented)
-- [ ] Registration mode switch after initial setup
+- [x] Registration mode switch after initial setup
 - [x] Option to disable public signup (API-enforced via registration mode)
 - [x] Create users via dedicated admin UI flow (baseline in settings)
 - [ ] User management UI with fine-grained permissions

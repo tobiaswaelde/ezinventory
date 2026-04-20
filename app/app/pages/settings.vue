@@ -2,9 +2,10 @@
 import type { RegistrationMode } from '~/types/api/setup';
 
 const { user } = useAuth();
-const { createItem, updateRegistrationMode, createUserByAdmin } = useApiClient();
+const { createItem, createUserByAdmin, getSetupStatus, updateRegistrationMode } = useApiClient();
 
 const isAdmin = computed(() => user.value?.role === 'ADMIN');
+const setupInitialized = ref(false);
 
 const itemForm = reactive({
   categoryId: '',
@@ -74,6 +75,18 @@ const saveRegistrationMode = async (): Promise<void> => {
   }
 };
 
+const loadSetupStatus = async (): Promise<void> => {
+  modeMessage.value = '';
+
+  try {
+    const status = await getSetupStatus();
+    setupInitialized.value = status.setupInitialized;
+    registrationMode.value = status.registrationMode;
+  } catch {
+    modeMessage.value = 'Could not load current setup status.';
+  }
+};
+
 const createManagedUser = async (): Promise<void> => {
   userMessage.value = '';
 
@@ -101,6 +114,10 @@ const createManagedUser = async (): Promise<void> => {
     userSaving.value = false;
   }
 };
+
+onMounted(() => {
+  void loadSetupStatus();
+});
 </script>
 
 <template>
@@ -112,6 +129,7 @@ const createManagedUser = async (): Promise<void> => {
   <section v-if="isAdmin" class="card">
     <h2>Registration Mode</h2>
     <p>Control whether public registration is open or admin-only.</p>
+    <p><strong>Setup initialized:</strong> {{ setupInitialized ? 'yes' : 'no' }}</p>
 
     <div class="field">
       <label for="registrationMode">Mode</label>
@@ -121,7 +139,7 @@ const createManagedUser = async (): Promise<void> => {
       </select>
     </div>
 
-    <button class="scan-btn" :disabled="modeSaving" @click="saveRegistrationMode">
+    <button class="scan-btn" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
       {{ modeSaving ? 'Saving...' : 'Save Mode' }}
     </button>
     <p v-if="modeMessage">{{ modeMessage }}</p>

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 
@@ -14,6 +14,20 @@ import { SetupService } from '~/modules/setup/setup.service.js';
 @Controller('setup')
 export class SetupController {
   constructor(@Inject(SetupService) private readonly setupService: SetupService) {}
+
+  @Get('status')
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        setupInitialized: { type: 'boolean', example: true },
+        registrationMode: { type: 'string', enum: ['OPEN', 'ADMIN_ONLY'], example: 'ADMIN_ONLY' }
+      }
+    }
+  })
+  async getSetupStatus(): Promise<{ setupInitialized: boolean; registrationMode: RegistrationMode }> {
+    return await this.setupService.getSetupStatus();
+  }
 
   @Post('bootstrap-admin')
   @HttpCode(HttpStatus.CREATED)
