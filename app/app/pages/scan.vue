@@ -93,6 +93,14 @@ const stopScanner = async (): Promise<void> => {
   isScanning.value = false;
 };
 
+const formatSize = (item: ItemResponse): string => {
+  if (!item.sizeLabel && item.sizeValue === null && !item.sizeUnit) {
+    return 'n/a';
+  }
+
+  return `${item.sizeLabel ?? ''} ${item.sizeValue ?? ''} ${item.sizeUnit ?? ''}`.trim();
+};
+
 const applyQuickAction = async (): Promise<void> => {
   if (!scannedItem.value) {
     actionMessage.value = 'No scanned item available.';
@@ -148,6 +156,8 @@ onBeforeUnmount(() => {
     <p><strong>Name:</strong> {{ scannedItem.name }}</p>
     <p><strong>SKU:</strong> {{ scannedItem.sku }}</p>
     <p><strong>QR Value:</strong> {{ scannedItem.qrCodeValue }}</p>
+    <p><strong>Unit:</strong> {{ scannedItem.unit }}</p>
+    <p><strong>Size:</strong> {{ formatSize(scannedItem) }}</p>
     <p><strong>Servings:</strong> {{ scannedItem.servings ?? 'n/a' }}</p>
 
     <div class="field">

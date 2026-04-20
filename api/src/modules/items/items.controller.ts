@@ -6,7 +6,7 @@ import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
 import { CreateItemDto } from '~/modules/items/dto/create-item.dto.js';
 import { LookupItemQueryDto } from '~/modules/items/dto/lookup-item-query.dto.js';
-import { ItemsService } from '~/modules/items/items.service.js';
+import { type ItemResponse, ItemsService } from '~/modules/items/items.service.js';
 
 @ApiTags('items')
 @Controller('items')
@@ -27,13 +27,15 @@ export class ItemsController {
         sku: { type: 'string', example: 'SPAGHETTI-SAUCE-001' },
         qrCodeValue: { type: 'string', example: 'item:spaghetti-sauce-001:550e8400-e29b-41d4-a716-446655440000' },
         name: { type: 'string', example: 'Spaghetti Sauce' },
+        unit: { type: 'string', example: 'jar' },
+        sizeLabel: { type: 'string', nullable: true, example: 'Portion Pack' },
+        sizeValue: { type: 'number', nullable: true, example: 1.5 },
+        sizeUnit: { type: 'string', nullable: true, example: 'L' },
         servings: { type: 'number', nullable: true, example: 3 }
       }
     }
   })
-  async createItem(
-    @Body() dto: CreateItemDto
-  ): Promise<{ id: string; categoryId: string; sku: string; qrCodeValue: string; name: string; servings: number | null }> {
+  async createItem(@Body() dto: CreateItemDto): Promise<ItemResponse> {
     return await this.itemsService.createItem(dto);
   }
 
@@ -50,12 +52,16 @@ export class ItemsController {
           sku: { type: 'string' },
           qrCodeValue: { type: 'string' },
           name: { type: 'string' },
+          unit: { type: 'string' },
+          sizeLabel: { type: 'string', nullable: true },
+          sizeValue: { type: 'number', nullable: true },
+          sizeUnit: { type: 'string', nullable: true },
           servings: { type: 'number', nullable: true }
         }
       }
     }
   })
-  async listItems(): Promise<Array<{ id: string; categoryId: string; sku: string; qrCodeValue: string; name: string; servings: number | null }>> {
+  async listItems(): Promise<ItemResponse[]> {
     return await this.itemsService.listItems();
   }
 
@@ -70,13 +76,15 @@ export class ItemsController {
         sku: { type: 'string' },
         qrCodeValue: { type: 'string' },
         name: { type: 'string' },
+        unit: { type: 'string' },
+        sizeLabel: { type: 'string', nullable: true },
+        sizeValue: { type: 'number', nullable: true },
+        sizeUnit: { type: 'string', nullable: true },
         servings: { type: 'number', nullable: true }
       }
     }
   })
-  async lookupItem(
-    @Query() query: LookupItemQueryDto
-  ): Promise<{ id: string; categoryId: string; sku: string; qrCodeValue: string; name: string; servings: number | null }> {
+  async lookupItem(@Query() query: LookupItemQueryDto): Promise<ItemResponse> {
     const item = await this.itemsService.lookupByCode(query.code.trim());
 
     if (!item) {
