@@ -16,6 +16,7 @@ These documents define the project baseline for building **EZ Inventory** as an 
 10. [Docker & Deployment Blueprint](./10-docker-deployment.md)
 11. [Documentation with README + VitePress](./11-documentation-vitepress.md)
 12. [Implementation Checklist](./12-implementation-checklist.md)
+13. [Nx Evaluation](./13-nx-evaluation.md)
 
 ## Current Direction
 
