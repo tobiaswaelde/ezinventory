@@ -7,7 +7,10 @@ import type {
 } from '~/types/api/inventory';
 import type {
   AdminCreatedUser,
+  CreatePermissionPolicyPayload,
   CreateUserByAdminPayload,
+  ManagedUser,
+  PermissionPolicy,
   SetupStatus,
   UpdateRegistrationModePayload
 } from '~/types/api/setup';
@@ -85,17 +88,55 @@ export function useApiClient() {
     });
   };
 
+  const listUsers = async (): Promise<ManagedUser[]> => {
+    return await authorizedFetch<ManagedUser[]>('/setup/users', {
+      method: 'GET'
+    });
+  };
+
+  const updateUserRole = async (userId: string, role: ManagedUser['role']): Promise<{ id: string; role: ManagedUser['role'] }> => {
+    return await authorizedFetch<{ id: string; role: ManagedUser['role'] }>(`/setup/users/${userId}/role`, {
+      method: 'PATCH',
+      body: { role }
+    });
+  };
+
+  const listPermissionPolicies = async (): Promise<PermissionPolicy[]> => {
+    return await authorizedFetch<PermissionPolicy[]>('/setup/permission-policies', {
+      method: 'GET'
+    });
+  };
+
+  const createPermissionPolicy = async (payload: CreatePermissionPolicyPayload): Promise<PermissionPolicy> => {
+    return await authorizedFetch<PermissionPolicy>('/setup/permission-policies', {
+      method: 'POST',
+      body: payload
+    });
+  };
+
+  const replaceUserPolicies = async (userId: string, policyIds: string[]): Promise<{ userId: string; policyIds: string[] }> => {
+    return await authorizedFetch<{ userId: string; policyIds: string[] }>(`/setup/users/${userId}/policies`, {
+      method: 'PUT',
+      body: { policyIds }
+    });
+  };
+
   return {
     createContainer,
     createItem,
     createLocation,
+    createPermissionPolicy,
     createUserByAdmin,
     getSetupStatus,
     health,
     listContainers,
     listItems,
     listLocations,
+    listPermissionPolicies,
+    listUsers,
     lookupItemByCode,
+    replaceUserPolicies,
+    updateUserRole,
     updateRegistrationMode
   };
 }

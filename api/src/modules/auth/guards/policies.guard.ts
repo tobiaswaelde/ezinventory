@@ -17,7 +17,7 @@ export class PoliciesGuard implements CanActivate {
     @Inject(CaslAbilityFactory) private readonly caslAbilityFactory: CaslAbilityFactory
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredPolicies = this.reflector.getAllAndOverride<RequiredPolicy[]>(CHECK_POLICIES_KEY, [
       context.getHandler(),
       context.getClass()
@@ -32,7 +32,7 @@ export class PoliciesGuard implements CanActivate {
       throw new UnauthorizedException('User context is missing.');
     }
 
-    const ability = this.caslAbilityFactory.createForUser(request.user);
+    const ability = await this.caslAbilityFactory.createForUser(request.user);
     const allAllowed = requiredPolicies.every((policy) => ability.can(policy.action, policy.subject));
 
     if (!allAllowed) {

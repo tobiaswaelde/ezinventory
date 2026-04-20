@@ -1,12 +1,37 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 import argon2 from 'argon2';
 
+import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.types.js';
 import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
+import { CreatePermissionPolicyDto } from '~/modules/setup/dto/create-permission-policy.dto.js';
 import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
+import { ReplaceUserPoliciesDto } from '~/modules/setup/dto/replace-user-policies.dto.js';
 import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
+import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
 import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/setup.constants.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
+
+type UserWithPolicies = {
+  id: string;
+  email: string;
+  displayName: string;
+  role: UserRole;
+  preferredLanguage: string;
+  createdAt: Date;
+  updatedAt: Date;
+  policyIds: string[];
+};
+
+type PermissionPolicyResponse = {
+  id: string;
+  action: CaslAction;
+  subject: CaslSubject;
+  inverted: boolean;
+  conditions: unknown;
+  reason: string | null;
+  createdAt: Date;
+};
 
 @Injectable()
 export class SetupService {
@@ -134,5 +159,157 @@ export class SetupService {
     });
 
     return user;
+  }
+
+  async listUsers(): Promise<UserWithPolicies[]> {
+    const users = await this.prisma.user.findMany({
+      orderBy: [{ createdAt: 'asc' }],
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        role: true,
+        preferredLanguage: true,
+        createdAt: true,
+        updatedAt: true,
+        userPolicies: {
+          select: {
+            permissionPolicyId: true
+          }
+        }
+      }
+    });
+
+    return users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      role: user.role,
+      preferredLanguage: user.preferredLanguage,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      policyIds: user.userPolicies.map((policy) => policy.permissionPolicyId)
+    }));
+  }
+
+  async updateUserRole(userId: string, dto: UpdateUserRoleDto): Promise<{ id: string; role: UserRole }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { role: dto.role },
+      select: {
+        id: true,
+        role: true
+      }
+    });
+
+    return updated;
+  }
+
+  async listPermissionPolicies(): Promise<PermissionPolicyResponse[]> {
+    const policies = await this.prisma.permissionPolicy.findMany({
+      orderBy: [{ createdAt: 'desc' }],
+      select: {
+        id: true,
+        action: true,
+        subject: true,
+        inverted: true,
+        conditions: true,
+        reason: true,
+        createdAt: true
+      }
+    });
+
+    return policies.map((policy) => ({
+      id: policy.id,
+      action: policy.action as CaslAction,
+      subject: policy.subject as CaslSubject,
+      inverted: policy.inverted,
+      conditions: policy.conditions,
+      reason: policy.reason,
+      createdAt: policy.createdAt
+    }));
+  }
+
+  async createPermissionPolicy(dto: CreatePermissionPolicyDto): Promise<PermissionPolicyResponse> {
+    const created = await this.prisma.permissionPolicy.create({
+      data: {
+        action: dto.action,
+        subject: dto.subject,
+        conditions: dto.conditions ? (dto.conditions as Prisma.InputJsonValue) : Prisma.JsonNull,
+        inverted: dto.inverted ?? false,
+        reason: dto.reason ?? null
+      },
+      select: {
+        id: true,
+        action: true,
+        subject: true,
+        inverted: true,
+        conditions: true,
+        reason: true,
+        createdAt: true
+      }
+    });
+
+    return {
+      id: created.id,
+      action: created.action as CaslAction,
+      subject: created.subject as CaslSubject,
+      inverted: created.inverted,
+      conditions: created.conditions,
+      reason: created.reason,
+      createdAt: created.createdAt
+    };
+  }
+
+  async replaceUserPolicies(userId: string, dto: ReplaceUserPoliciesDto): Promise<{ userId: string; policyIds: string[] }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    if (dto.policyIds.length > 0) {
+      const existingPolicies = await this.prisma.permissionPolicy.findMany({
+        where: { id: { in: dto.policyIds } },
+        select: { id: true }
+      });
+
+      if (existingPolicies.length !== dto.policyIds.length) {
+        throw new NotFoundException('One or more permission policies do not exist.');
+      }
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.userPermissionPolicy.deleteMany({
+        where: { userId }
+      }),
+      ...(dto.policyIds.length > 0
+        ? [
+            this.prisma.userPermissionPolicy.createMany({
+              data: dto.policyIds.map((permissionPolicyId) => ({
+                userId,
+                permissionPolicyId
+              }))
+            })
+          ]
+        : [])
+    ]);
+
+    return {
+      userId,
+      policyIds: dto.policyIds
+    };
   }
 }
