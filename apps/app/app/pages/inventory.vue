@@ -246,8 +246,9 @@ const refreshData = async (): Promise<void> => {
     locations.value = nextLocations;
     containers.value = nextContainers;
 
-    if (!containerForm.locationId && nextLocations.length > 0) {
-      containerForm.locationId = nextLocations[0].id;
+    const firstLocation = nextLocations.at(0);
+    if (!containerForm.locationId && firstLocation) {
+      containerForm.locationId = firstLocation.id;
     }
   } catch {
     errorMessage.value = 'Could not load inventory structure.';

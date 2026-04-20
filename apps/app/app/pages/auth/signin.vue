@@ -1,42 +1,56 @@
 <template>
   <div class="auth-content">
-    <h1>Sign in</h1>
-    <p class="text-muted">Sign in with password or passkey.</p>
+    <UAuthForm
+      title="Sign in"
+      description="Sign in with your password."
+      :fields="passwordFields"
+      :submit="{ label: 'Sign in', color: 'primary', block: true }"
+      :loading="submitting"
+      @submit="submit"
+    >
+      <template #validation>
+        <UAlert
+          v-if="signinError"
+          color="error"
+          variant="soft"
+          title="Authentication Error"
+          :description="signinError"
+        />
+      </template>
 
-    <UAlert
-      v-if="errorMessage"
-      color="error"
-      variant="soft"
-      title="Authentication Error"
-      :description="errorMessage"
-    />
+      <template #footer>
+        <p class="auth-switch">
+          No account yet?
+          <NuxtLink to="/auth/signup">Create one</NuxtLink>
+        </p>
+      </template>
+    </UAuthForm>
 
-    <div class="field">
-      <label for="email">Email</label>
-      <UInput id="email" v-model="form.email" type="email" autocomplete="email" placeholder="admin@example.com" />
-    </div>
-
-    <div class="field">
-      <label for="password">Password</label>
-      <UInput id="password" v-model="form.password" type="password" autocomplete="current-password" placeholder="************" />
-    </div>
-
-    <div class="auth-actions">
-      <UButton color="primary" :loading="submitting" @click="submit">Sign in</UButton>
-      <UButton color="neutral" variant="soft" :loading="passkeySubmitting" @click="submitPasskey">
-        Sign in with passkey
-      </UButton>
-    </div>
-
-    <p class="auth-switch">
-      No account yet?
-      <NuxtLink to="/auth/signup">Create one</NuxtLink>
-    </p>
+    <UAuthForm
+      title="Passkey"
+      description="Sign in with your registered passkey."
+      :fields="passkeyFields"
+      :submit="{ label: 'Sign in with passkey', color: 'neutral', variant: 'soft', block: true }"
+      :loading="passkeySubmitting"
+      @submit="submitPasskey"
+    >
+      <template #validation>
+        <UAlert
+          v-if="passkeyError"
+          color="error"
+          variant="soft"
+          title="Passkey Error"
+          :description="passkeyError"
+        />
+      </template>
+    </UAuthForm>
   </div>
 </template>
 
 
 <script setup lang="ts">
+import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui';
+
 definePageMeta({
   layout: 'auth'
 });
@@ -45,12 +59,38 @@ const { login, loginWithPasskey, isAuthenticated } = useAuth();
 
 const submitting = ref(false);
 const passkeySubmitting = ref(false);
-const errorMessage = ref('');
+const signinError = ref('');
+const passkeyError = ref('');
 
-const form = reactive({
-  email: '',
-  password: ''
-});
+const passwordFields: AuthFormField[] = [
+  {
+    name: 'email',
+    type: 'email',
+    label: 'Email',
+    placeholder: 'admin@example.com',
+    autocomplete: 'email',
+    required: true
+  },
+  {
+    name: 'password',
+    type: 'password',
+    label: 'Password',
+    placeholder: '************',
+    autocomplete: 'current-password',
+    required: true
+  }
+];
+
+const passkeyFields: AuthFormField[] = [
+  {
+    name: 'email',
+    type: 'email',
+    label: 'Email',
+    placeholder: 'admin@example.com',
+    autocomplete: 'email',
+    required: true
+  }
+];
 
 watch(
   () => isAuthenticated.value,
@@ -63,39 +103,46 @@ watch(
   { immediate: true }
 );
 
-const submit = async (): Promise<void> => {
-  errorMessage.value = '';
+const submit = async (event: FormSubmitEvent<{ email?: string; password?: string }>): Promise<void> => {
+  signinError.value = '';
+  passkeyError.value = '';
 
-  if (!form.email.trim() || !form.password.trim()) {
-    errorMessage.value = 'Please provide email and password.';
+  const email = event.data.email?.trim() ?? '';
+  const password = event.data.password ?? '';
+
+  if (!email || !password.trim()) {
+    signinError.value = 'Please provide email and password.';
     return;
   }
 
   submitting.value = true;
 
   try {
-    await login({ email: form.email.trim(), password: form.password });
+    await login({ email, password });
   } catch {
-    errorMessage.value = 'Login failed. Please verify your credentials.';
+    signinError.value = 'Login failed. Please verify your credentials.';
   } finally {
     submitting.value = false;
   }
 };
 
-const submitPasskey = async (): Promise<void> => {
-  errorMessage.value = '';
+const submitPasskey = async (event: FormSubmitEvent<{ email?: string }>): Promise<void> => {
+  signinError.value = '';
+  passkeyError.value = '';
 
-  if (!form.email.trim()) {
-    errorMessage.value = 'Email is required for passkey login.';
+  const email = event.data.email?.trim() ?? '';
+
+  if (!email) {
+    passkeyError.value = 'Email is required for passkey login.';
     return;
   }
 
   passkeySubmitting.value = true;
 
   try {
-    await loginWithPasskey(form.email.trim());
+    await loginWithPasskey(email);
   } catch {
-    errorMessage.value = 'Passkey login failed.';
+    passkeyError.value = 'Passkey login failed.';
   } finally {
     passkeySubmitting.value = false;
   }
@@ -111,11 +158,6 @@ const submitPasskey = async (): Promise<void> => {
 
 .auth-content h1 {
   margin: 0;
-}
-
-.auth-actions {
-  display: grid;
-  gap: 0.5rem;
 }
 
 .auth-switch {

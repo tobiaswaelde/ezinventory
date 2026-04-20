@@ -1,5 +1,3 @@
-import type { FetchOptions } from 'ofetch';
-
 import type {
   AuthTokens,
   AuthUser,
@@ -274,7 +272,7 @@ export function useAuth() {
     initialized.value = true;
   };
 
-  const authorizedFetch = async <T>(path: string, options: FetchOptions<'json'> = {}, retry = true): Promise<T> => {
+  const authorizedFetch = async <T>(path: string, options: AuthorizedFetchOptions = {}, retry = true): Promise<T> => {
     if (!accessToken.value) {
       throw new Error('Not authenticated.');
     }
@@ -316,3 +314,6 @@ export function useAuth() {
     updatePreferredLanguage
   };
 }
+  type AuthorizedFetchOptions = Omit<NonNullable<Parameters<typeof $fetch>[1]>, 'baseURL' | 'headers'> & {
+    headers?: Record<string, string>;
+  };

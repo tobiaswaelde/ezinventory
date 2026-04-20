@@ -32,6 +32,9 @@ export default defineNuxtConfig({
     }
   },
   pwa: {
+    pwaAssets: {
+      disabled: true
+    },
     registerType: 'autoUpdate',
     includeAssets: ['pwa-192x192.svg', 'pwa-512x512.svg'],
     manifest: {

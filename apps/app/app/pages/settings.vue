@@ -430,7 +430,13 @@ const saveUserRole = async (targetUserId: string): Promise<void> => {
   roleSavingByUser.value[targetUserId] = true;
 
   try {
-    await updateUserRole(targetUserId, roleDraftByUser.value[targetUserId]);
+    const nextRole = roleDraftByUser.value[targetUserId];
+    if (!nextRole) {
+      usersMessage.value = 'No role selected for this user.';
+      return;
+    }
+
+    await updateUserRole(targetUserId, nextRole);
     usersMessage.value = 'User role updated.';
     await loadAdminData();
   } catch {

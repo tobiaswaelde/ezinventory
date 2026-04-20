@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import type { ItemResponse } from '@ezinventory/contracts';
+import type { BrowserMultiFormatReader } from '@zxing/browser';
 
 const { lookupItemByCode } = useApiClient();
 
@@ -86,7 +87,7 @@ const quickActionOptions = [
   { label: 'Transfer', value: 'transfer' }
 ] as const;
 
-let reader: { decodeFromVideoDevice: Function; reset: () => void } | null = null;
+let reader: BrowserMultiFormatReader | null = null;
 let controls: { stop: () => void } | null = null;
 
 const lookupScannedCode = async (code: string): Promise<void> => {
@@ -126,16 +127,17 @@ const startScanner = async (): Promise<void> => {
   }
 
   try {
-    const { BrowserMultiFormatReader, NotFoundException } = await import('@zxing/browser');
-
-    reader = new BrowserMultiFormatReader();
+    const { BrowserMultiFormatReader } = await import('@zxing/browser');
+    const { NotFoundException } = await import('@zxing/library');
+    const readerInstance = new BrowserMultiFormatReader();
+    reader = readerInstance;
     const devices = await BrowserMultiFormatReader.listVideoInputDevices();
 
     const preferredDevice = devices.find((device) => /back|rear|environment/i.test(device.label));
     const deviceId = preferredDevice?.deviceId;
 
     isScanning.value = true;
-    controls = await reader.decodeFromVideoDevice(deviceId, videoRef.value, (result: { getText: () => string } | undefined, error: unknown) => {
+    controls = await readerInstance.decodeFromVideoDevice(deviceId, videoRef.value, (result: { getText: () => string } | undefined, error: unknown) => {
       if (result) {
         void onDetected(result.getText());
         return;
@@ -160,7 +162,6 @@ const stopScanner = async (): Promise<void> => {
   }
 
   if (reader) {
-    reader.reset();
     reader = null;
   }
 
