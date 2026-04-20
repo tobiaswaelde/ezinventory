@@ -33,7 +33,7 @@ Last updated: 2026-04-20
 - [ ] Full client-side input validation coverage
 - [x] i18n integration (`de`, `en`) (baseline)
 - [x] Persist language per user profile (baseline)
-- [ ] Persist theme in local storage or cookies
+- [x] Persist theme in local storage or cookies
 
 ## 4. Inventory Domain Features
 

@@ -6,6 +6,14 @@
   --muted: #64748b;
 }
 
+.dark {
+  --bg: #0b1220;
+  --fg: #e2e8f0;
+  --card: #111b2e;
+  --accent: #60a5fa;
+  --muted: #94a3b8;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -37,8 +45,8 @@ body {
   right: 0;
   bottom: 0;
   padding: 0.8rem 1rem calc(0.8rem + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.95);
-  border-top: 1px solid #e2e8f0;
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
   display: flex;
   overflow-x: auto;
   gap: 0.75rem;
@@ -65,10 +73,10 @@ body {
 }
 
 .locale-select {
-  border: 1px solid #cbd5e1;
+  border: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
   border-radius: 999px;
   padding: 0.6rem 0.75rem;
-  background: white;
+  background: var(--card);
   font-weight: 600;
 }
 
@@ -79,7 +87,7 @@ body {
 }
 
 input {
-  border: 1px solid #cbd5e1;
+  border: 1px solid color-mix(in srgb, var(--fg) 20%, transparent);
   border-radius: 10px;
   padding: 0.7rem;
   font-size: 0.95rem;

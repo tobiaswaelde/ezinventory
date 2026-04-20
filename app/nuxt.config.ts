@@ -2,6 +2,13 @@ export default defineNuxtConfig({
   srcDir: 'app/',
   devtools: { enabled: true },
   modules: ['@nuxt/ui'],
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    classSuffix: '',
+    storageKey: 'ezinventory.theme',
+    dataValue: 'theme'
+  },
   css: ['~/assets/main.css'],
   runtimeConfig: {
     public: {

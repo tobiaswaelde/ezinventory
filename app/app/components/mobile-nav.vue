@@ -5,6 +5,9 @@
     <UButton color="neutral" variant="soft" size="sm" @click="$router.push('/labels')">{{ t('nav_labels') }}</UButton>
     <UButton color="primary" variant="solid" size="md" @click="$router.push('/scan')">{{ t('nav_scan') }}</UButton>
     <UButton color="neutral" variant="soft" size="sm" @click="$router.push('/settings')">{{ t('nav_settings') }}</UButton>
+    <UButton color="neutral" variant="soft" size="sm" @click="setTheme(theme === 'light' ? 'dark' : 'light')">
+      {{ theme === 'light' ? 'Dark' : 'Light' }}
+    </UButton>
     <USelect
       class="locale-select"
       :model-value="locale"
@@ -18,6 +21,7 @@
 
 <script setup lang="ts">
 const { initLocale, locale, setLocale, t } = useI18n();
+const { theme, loadTheme, setTheme } = useTheme();
 const localeOptions = [
   { label: 'EN', value: 'en' },
   { label: 'DE', value: 'de' }
@@ -25,6 +29,7 @@ const localeOptions = [
 
 onMounted(() => {
   initLocale();
+  loadTheme();
 });
 
 const onLocaleChange = async (nextLocale: string): Promise<void> => {
