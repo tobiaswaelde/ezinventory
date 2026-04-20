@@ -116,9 +116,9 @@ const submitLogout = async (): Promise<void> => {
     <h1>EZ Inventory</h1>
     <p>Mobile-first inventory management bootstrap is running.</p>
     <p><strong>Theme:</strong> {{ theme }}</p>
-    <button class="nav-btn" @click="setTheme(theme === 'light' ? 'dark' : 'light')">
+    <UButton color="neutral" variant="soft" @click="setTheme(theme === 'light' ? 'dark' : 'light')">
       Toggle Theme
-    </button>
+    </UButton>
   </section>
 
   <section class="card">
@@ -129,7 +129,7 @@ const submitLogout = async (): Promise<void> => {
     <template v-else-if="isAuthenticated && user">
       <p><strong>Signed in as:</strong> {{ user.email }}</p>
       <p><strong>Role:</strong> {{ user.role }}</p>
-      <button class="nav-btn" @click="submitLogout">Logout</button>
+      <UButton color="neutral" variant="soft" @click="submitLogout">Logout</UButton>
     </template>
 
     <template v-else>
@@ -167,9 +167,9 @@ const submitLogout = async (): Promise<void> => {
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       <p v-if="passkeyMessage">{{ passkeyMessage }}</p>
 
-      <button class="scan-btn" :disabled="submitting" @click="submitAuth">
+      <UButton color="primary" variant="solid" :disabled="submitting" @click="submitAuth">
         {{ submitting ? 'Submitting...' : mode === 'login' ? 'Login' : 'Register' }}
-      </button>
+      </UButton>
 
       <hr style="margin: 1rem 0; border: 0; border-top: 1px solid #ddd" />
 
@@ -178,12 +178,12 @@ const submitLogout = async (): Promise<void> => {
         <input id="passkeyDeviceName" v-model="form.passkeyDeviceName" type="text" placeholder="MacBook Touch ID" />
       </div>
 
-      <button class="nav-btn" :disabled="passkeySubmitting" @click="submitPasskeyLogin">
+      <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyLogin">
         {{ passkeySubmitting ? 'Processing...' : 'Login with Passkey' }}
-      </button>
-      <button class="nav-btn" :disabled="passkeySubmitting" @click="submitPasskeyRegister">
+      </UButton>
+      <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyRegister">
         {{ passkeySubmitting ? 'Processing...' : 'Register Passkey' }}
-      </button>
+      </UButton>
     </template>
   </section>
 

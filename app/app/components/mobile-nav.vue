@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar">
-    <button class="nav-btn" @click="$router.push('/')">{{ t('nav_home') }}</button>
-    <button class="nav-btn" @click="$router.push('/inventory')">{{ t('nav_inventory') }}</button>
-    <button class="nav-btn" @click="$router.push('/labels')">{{ t('nav_labels') }}</button>
-    <button class="scan-btn" @click="$router.push('/scan')">{{ t('nav_scan') }}</button>
-    <button class="nav-btn" @click="$router.push('/settings')">{{ t('nav_settings') }}</button>
+    <UButton color="neutral" variant="soft" size="sm" @click="$router.push('/')">{{ t('nav_home') }}</UButton>
+    <UButton color="neutral" variant="soft" size="sm" @click="$router.push('/inventory')">{{ t('nav_inventory') }}</UButton>
+    <UButton color="neutral" variant="soft" size="sm" @click="$router.push('/labels')">{{ t('nav_labels') }}</UButton>
+    <UButton color="primary" variant="solid" size="md" @click="$router.push('/scan')">{{ t('nav_scan') }}</UButton>
+    <UButton color="neutral" variant="soft" size="sm" @click="$router.push('/settings')">{{ t('nav_settings') }}</UButton>
     <select v-model="locale" class="locale-select" @change="onLocaleChange">
       <option value="en">EN</option>
       <option value="de">DE</option>

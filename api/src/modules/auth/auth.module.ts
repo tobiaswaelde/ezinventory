@@ -11,6 +11,6 @@ import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
   imports: [JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, CaslAbilityFactory, AccessTokenGuard, PoliciesGuard],
-  exports: [CaslAbilityFactory, AccessTokenGuard, PoliciesGuard]
+  exports: [JwtModule, CaslAbilityFactory, AccessTokenGuard, PoliciesGuard]
 })
 export class AuthModule {}
