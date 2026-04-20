@@ -9,6 +9,7 @@ import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.d
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
+import { RegisterDto } from '~/modules/auth/dto/register.dto.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 
@@ -32,6 +33,22 @@ export class AuthController {
   })
   async me(@CurrentUser() user: AuthenticatedUser): Promise<AuthenticatedUser> {
     return await this.authService.me(user.id);
+  }
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string', example: 'jwt-access-token' },
+        refreshToken: { type: 'string', example: 'jwt-refresh-token' },
+        email: { type: 'string', example: 'new.user@example.com' }
+      }
+    }
+  })
+  async register(@Body() dto: RegisterDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
+    return await this.authService.register(dto);
   }
 
   @Post('login')

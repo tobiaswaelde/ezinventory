@@ -9,6 +9,13 @@ export type LoginPayload = {
   password: string;
 };
 
+export type RegisterPayload = {
+  email: string;
+  password: string;
+  displayName: string;
+  preferredLanguage?: 'de' | 'en';
+};
+
 export type AuthTokens = {
   accessToken: string;
   refreshToken: string;

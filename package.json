@@ -8,8 +8,19 @@
     "dev": "pnpm -r --parallel dev",
     "dev:api": "pnpm --filter @ezinventory/api dev",
     "dev:app": "pnpm --filter @ezinventory/app dev",
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "test": "pnpm -r test"
+    "build": "nx run-many -t build",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
+    "affected:build": "nx affected -t build",
+    "affected:lint": "nx affected -t lint",
+    "affected:test": "nx affected -t test",
+    "graph": "nx graph"
+  },
+  "devDependencies": {
+    "@nx/docker": "22.6.5",
+    "@nx/eslint": "22.6.5",
+    "@nx/nuxt": "22.6.5",
+    "@nx/vite": "22.6.5",
+    "nx": "22.6.5"
   }
 }

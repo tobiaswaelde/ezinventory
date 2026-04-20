@@ -1,6 +1,7 @@
 import type { FetchOptions } from 'ofetch';
 
 import type { AuthTokens, AuthUser, LoginPayload } from '~/types/api/auth';
+import type { RegisterPayload } from '~/types/api/auth';
 
 const ACCESS_TOKEN_KEY = 'ezinventory.access_token';
 const REFRESH_TOKEN_KEY = 'ezinventory.refresh_token';
@@ -91,6 +92,20 @@ export function useAuth() {
 
   const login = async (payload: LoginPayload): Promise<AuthUser> => {
     const tokens = await $fetch<AuthTokens>('/auth/login', {
+      method: 'POST',
+      baseURL,
+      body: payload
+    });
+
+    setTokens(tokens);
+    const me = await fetchMe();
+    persist();
+
+    return me;
+  };
+
+  const register = async (payload: RegisterPayload): Promise<AuthUser> => {
+    const tokens = await $fetch<AuthTokens>('/auth/register', {
       method: 'POST',
       baseURL,
       body: payload
@@ -204,6 +219,7 @@ export function useAuth() {
     initialized,
     isAuthenticated,
     login,
+    register,
     logout,
     initAuth,
     fetchMe,

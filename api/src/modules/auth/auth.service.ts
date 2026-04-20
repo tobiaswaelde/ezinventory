@@ -1,8 +1,11 @@
 import {
   BadRequestException,
+  ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -26,8 +29,11 @@ import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.d
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
+import { RegisterDto } from '~/modules/auth/dto/register.dto.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
+import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/setup.constants.js';
+import { RegistrationMode } from '~/modules/setup/dto/update-registration-mode.dto.js';
 
 type AuthTokens = {
   accessToken: string;
@@ -85,6 +91,57 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async register(dto: RegisterDto): Promise<AuthTokens> {
+    const setupInitializedSetting = await this.prisma.systemSetting.findUnique({
+      where: { key: SETUP_INITIALIZED_KEY },
+      select: { value: true }
+    });
+
+    if (!setupInitializedSetting || setupInitializedSetting.value !== true) {
+      throw new NotFoundException('Setup is not initialized yet.');
+    }
+
+    const registrationModeSetting = await this.prisma.systemSetting.findUnique({
+      where: { key: REGISTRATION_MODE_KEY },
+      select: { value: true }
+    });
+
+    const registrationModeValue =
+      typeof registrationModeSetting?.value === 'string' ? registrationModeSetting.value : RegistrationMode.ADMIN_ONLY;
+
+    if (registrationModeValue !== RegistrationMode.OPEN) {
+      throw new ForbiddenException('Public registration is disabled.');
+    }
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase() },
+      select: { id: true }
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists.');
+    }
+
+    const passwordHash = await argon2.hash(dto.password);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email.toLowerCase(),
+        displayName: dto.displayName,
+        passwordHash,
+        role: UserRole.STAFF,
+        preferredLanguage: dto.preferredLanguage ?? 'en'
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true
+      }
+    });
+
+    return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
   }
 
   async passkeyRegisterOptions(dto: PasskeyRegisterOptionsDto): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {

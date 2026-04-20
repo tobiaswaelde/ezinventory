@@ -2,7 +2,7 @@
 
 ![Version](https://img.shields.io/github/v/release/tobiaswaelde/ezinventory)
 ![Coverage](https://img.shields.io/codecov/c/github/tobiaswaelde/ezinventory)
-![CI](https://img.shields.io/github/actions/workflow/status/tobiaswaelde/ezinventory/ci.yml?branch=main)
+![Lint](https://img.shields.io/github/actions/workflow/status/tobiaswaelde/ezinventory/lint.yml?branch=main)
 
 Mobile-first, open-source inventory management with QR-first workflows.
 

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 const { theme, loadTheme, setTheme } = useTheme();
-const { login, logout, isAuthenticated, user, initialized } = useAuth();
+const { login, register, logout, isAuthenticated, user, initialized } = useAuth();
 
+const mode = ref<'login' | 'register'>('login');
 const form = reactive({
   email: '',
-  password: ''
+  password: '',
+  displayName: '',
+  preferredLanguage: 'en' as 'de' | 'en'
 });
 
 const submitting = ref(false);
@@ -14,7 +17,7 @@ onMounted(() => {
   loadTheme();
 });
 
-const submitLogin = async (): Promise<void> => {
+const submitAuth = async (): Promise<void> => {
   errorMessage.value = '';
 
   if (!form.email.trim() || !form.password.trim()) {
@@ -22,13 +25,31 @@ const submitLogin = async (): Promise<void> => {
     return;
   }
 
+  if (mode.value === 'register' && form.displayName.trim().length < 2) {
+    errorMessage.value = 'Display name must have at least 2 characters.';
+    return;
+  }
+
   submitting.value = true;
 
   try {
-    await login({ email: form.email.trim(), password: form.password });
+    if (mode.value === 'login') {
+      await login({ email: form.email.trim(), password: form.password });
+    } else {
+      await register({
+        email: form.email.trim(),
+        password: form.password,
+        displayName: form.displayName.trim(),
+        preferredLanguage: form.preferredLanguage
+      });
+    }
+
     form.password = '';
   } catch {
-    errorMessage.value = 'Login failed. Please verify your credentials.';
+    errorMessage.value =
+      mode.value === 'login'
+        ? 'Login failed. Please verify your credentials.'
+        : 'Registration failed. It may be disabled or the user already exists.';
   } finally {
     submitting.value = false;
   }
@@ -62,16 +83,39 @@ const submitLogout = async (): Promise<void> => {
 
     <template v-else>
       <div class="field">
+        <label>Mode</label>
+        <select v-model="mode">
+          <option value="login">Login</option>
+          <option value="register">Register</option>
+        </select>
+      </div>
+
+      <div v-if="mode === 'register'" class="field">
+        <label for="displayName">Display Name</label>
+        <input id="displayName" v-model="form.displayName" type="text" autocomplete="name" placeholder="Alex Doe" />
+      </div>
+
+      <div class="field">
         <label for="email">Email</label>
         <input id="email" v-model="form.email" type="email" autocomplete="email" placeholder="admin@example.com" />
       </div>
+
       <div class="field">
         <label for="password">Password</label>
         <input id="password" v-model="form.password" type="password" autocomplete="current-password" placeholder="************" />
       </div>
+
+      <div v-if="mode === 'register'" class="field">
+        <label for="preferredLanguage">Preferred Language</label>
+        <select id="preferredLanguage" v-model="form.preferredLanguage">
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </div>
+
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <button class="scan-btn" :disabled="submitting" @click="submitLogin">
-        {{ submitting ? 'Signing in...' : 'Login' }}
+      <button class="scan-btn" :disabled="submitting" @click="submitAuth">
+        {{ submitting ? 'Submitting...' : mode === 'login' ? 'Login' : 'Register' }}
       </button>
     </template>
   </section>

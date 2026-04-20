@@ -2,6 +2,8 @@
 
 Last updated: 2026-04-20
 
+Status: Adopted (lightweight setup)
+
 ## Current State
 
 - Monorepo with 2 apps (`api`, `app`)
@@ -28,14 +30,11 @@ Yes, but it is **not mandatory yet** at the current project size.
 - Current `pnpm` setup is simple and already works well
 - Nx adds tooling/config complexity before the bigger scale benefits are fully felt
 
-## Recommendation
+## Applied Decision
 
-- Keep current setup for now.
-- Re-evaluate Nx when one of these happens:
-  - 3+ runnable projects (e.g. docs app, worker, e2e app)
-  - shared internal libraries are introduced
-  - CI times become a pain point
-  - remote caching becomes a clear productivity win
+- Nx has been initialized in the existing workspace.
+- Root task orchestration now uses Nx (`run-many` / `affected` scripts).
+- Existing package scripts in `api` and `app` remain the source of truth for local commands.
 
 ## Migration Paths
 
@@ -65,7 +64,8 @@ Goal: avoid extra complexity until it provides clear value.
    - shared libs + cross-project dependency graph matter
    - affected-only CI would save meaningful minutes
 
-## Suggested Decision
+## Next Nx Improvements
 
-- **Now:** stay on `pnpm` only
-- **Later trigger:** migrate to Nx when MVP expands beyond `api` + `app`
+1. Enable Nx Cloud remote cache for CI
+2. Add `affected` commands in workflows for build/test
+3. Introduce shared internal libs and enforce project boundaries
