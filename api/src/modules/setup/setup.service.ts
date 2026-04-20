@@ -3,6 +3,7 @@ import { UserRole } from '@prisma/client';
 import argon2 from 'argon2';
 
 import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
+import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
 import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
 import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/setup.constants.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
@@ -72,5 +73,35 @@ export class SetupService {
     });
 
     return { mode: dto.mode };
+  }
+
+  async createUserByAdmin(dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRole }> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email.toLowerCase() },
+      select: { id: true }
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists.');
+    }
+
+    const passwordHash = await argon2.hash(dto.password);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email.toLowerCase(),
+        displayName: dto.displayName,
+        passwordHash,
+        role: dto.role,
+        preferredLanguage: dto.preferredLanguage ?? 'en'
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true
+      }
+    });
+
+    return user;
   }
 }

@@ -1,7 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Inject, Patch, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, HttpCode, HttpStatus, Inject, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 
+import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
+import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
+import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
 import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
+import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
 import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
 import { SetupService } from '~/modules/setup/setup.service.js';
 
@@ -28,6 +33,9 @@ export class SetupController {
   }
 
   @Patch('registration-mode')
+  @UseGuards(AccessTokenGuard, PoliciesGuard)
+  @CheckPolicies({ action: 'manage', subject: 'all' })
+  @ApiBearerAuth('bearer')
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -38,5 +46,24 @@ export class SetupController {
   })
   async updateRegistrationMode(@Body() dto: UpdateRegistrationModeDto): Promise<{ mode: RegistrationMode }> {
     return await this.setupService.updateRegistrationMode(dto);
+  }
+
+  @Post('users')
+  @UseGuards(AccessTokenGuard, PoliciesGuard)
+  @CheckPolicies({ action: 'create', subject: 'User' })
+  @ApiBearerAuth('bearer')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440777' },
+        email: { type: 'string', example: 'team.member@example.com' },
+        role: { type: 'string', enum: Object.values(UserRole), example: 'STAFF' }
+      }
+    }
+  })
+  async createUserByAdmin(@Body() dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRole }> {
+    return await this.setupService.createUserByAdmin(dto);
   }
 }
