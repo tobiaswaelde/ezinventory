@@ -135,33 +135,27 @@ const submitLogout = async (): Promise<void> => {
     <template v-else>
       <div class="field">
         <label>Mode</label>
-        <select v-model="mode">
-          <option value="login">Login</option>
-          <option value="register">Register</option>
-        </select>
+        <USelect v-model="mode" :options="['login', 'register']" />
       </div>
 
       <div v-if="mode === 'register'" class="field">
         <label for="displayName">Display Name</label>
-        <input id="displayName" v-model="form.displayName" type="text" autocomplete="name" placeholder="Alex Doe" />
+        <UInput id="displayName" v-model="form.displayName" type="text" autocomplete="name" placeholder="Alex Doe" />
       </div>
 
       <div class="field">
         <label for="email">Email</label>
-        <input id="email" v-model="form.email" type="email" autocomplete="email" placeholder="admin@example.com" />
+        <UInput id="email" v-model="form.email" type="email" autocomplete="email" placeholder="admin@example.com" />
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" v-model="form.password" type="password" autocomplete="current-password" placeholder="************" />
+        <UInput id="password" v-model="form.password" type="password" autocomplete="current-password" placeholder="************" />
       </div>
 
       <div v-if="mode === 'register'" class="field">
         <label for="preferredLanguage">Preferred Language</label>
-        <select id="preferredLanguage" v-model="form.preferredLanguage">
-          <option value="en">English</option>
-          <option value="de">Deutsch</option>
-        </select>
+        <USelect id="preferredLanguage" v-model="form.preferredLanguage" :options="['en', 'de']" />
       </div>
 
       <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -175,7 +169,7 @@ const submitLogout = async (): Promise<void> => {
 
       <div class="field">
         <label for="passkeyDeviceName">Passkey Device Name (optional)</label>
-        <input id="passkeyDeviceName" v-model="form.passkeyDeviceName" type="text" placeholder="MacBook Touch ID" />
+        <UInput id="passkeyDeviceName" v-model="form.passkeyDeviceName" type="text" placeholder="MacBook Touch ID" />
       </div>
 
       <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyLogin">
