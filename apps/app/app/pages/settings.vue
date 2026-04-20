@@ -1,3 +1,213 @@
+<template>
+  <section class="card">
+    <h1>Settings</h1>
+    <p>Authenticated as: <strong>{{ user?.email ?? 'n/a' }}</strong> ({{ user?.role ?? 'n/a' }})</p>
+  </section>
+
+  <section v-if="isAdmin" class="card">
+    <h2>Registration Mode</h2>
+    <p>Control whether public registration is open or admin-only.</p>
+    <p><strong>Setup initialized:</strong> {{ setupInitialized ? 'yes' : 'no' }}</p>
+
+    <div class="field">
+      <label for="registrationMode">Mode</label>
+      <USelect
+        id="registrationMode"
+        v-model="registrationMode"
+        :options="registrationModeOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <UButton color="primary" variant="solid" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
+      {{ modeSaving ? 'Saving...' : 'Save Mode' }}
+    </UButton>
+    <p v-if="modeMessage">{{ modeMessage }}</p>
+  </section>
+
+  <section v-if="isAdmin" class="card">
+    <h2>Create User (Admin)</h2>
+
+    <div class="field">
+      <label for="displayName">Display Name</label>
+      <UInput id="displayName" v-model="newUserForm.displayName" placeholder="Team Member" />
+      <p v-if="newUserErrors.displayName" class="error">{{ newUserErrors.displayName }}</p>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <UInput id="email" v-model="newUserForm.email" type="email" placeholder="team.member@example.com" />
+      <p v-if="newUserErrors.email" class="error">{{ newUserErrors.email }}</p>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <UInput id="password" v-model="newUserForm.password" type="password" placeholder="************" />
+      <p v-if="newUserErrors.password" class="error">{{ newUserErrors.password }}</p>
+    </div>
+
+    <div class="field">
+      <label for="role">Role</label>
+      <USelect
+        id="role"
+        v-model="newUserForm.role"
+        :options="roleSelectOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field">
+      <label for="preferredLanguage">Preferred Language</label>
+      <USelect
+        id="preferredLanguage"
+        v-model="newUserForm.preferredLanguage"
+        :options="languageOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <UButton color="primary" variant="solid" :disabled="userSaving" @click="createManagedUser">
+      {{ userSaving ? 'Creating...' : 'Create User' }}
+    </UButton>
+    <p v-if="userMessage">{{ userMessage }}</p>
+  </section>
+
+  <section v-if="isAdmin" class="card">
+    <h2>Permission Policies</h2>
+    <p>Create reusable policy entries and assign them to individual users below.</p>
+
+    <div class="field">
+      <label for="policy-action">Action</label>
+      <USelect
+        id="policy-action"
+        v-model="newPolicyForm.action"
+        :options="actionSelectOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field">
+      <label for="policy-subject">Subject</label>
+      <USelect
+        id="policy-subject"
+        v-model="newPolicyForm.subject"
+        :options="subjectSelectOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field">
+      <label for="policy-reason">Reason (optional)</label>
+      <UInput id="policy-reason" v-model="newPolicyForm.reason" placeholder="Temporary stock-taking access" />
+    </div>
+
+    <div class="field">
+      <label for="policy-conditions">Conditions JSON (optional)</label>
+      <UTextarea id="policy-conditions" v-model="newPolicyForm.conditionsJson" :rows="3" placeholder='{"id":{"$eq":"..."}}' />
+      <p v-if="newPolicyErrors.conditionsJson" class="error">{{ newPolicyErrors.conditionsJson }}</p>
+    </div>
+
+    <label class="checkbox-row">
+      <UCheckbox v-model="newPolicyForm.inverted" />
+      <span>Inverted (`cannot` rule)</span>
+    </label>
+
+    <UButton color="neutral" variant="soft" :disabled="policyCreating" @click="createPolicy">
+      {{ policyCreating ? 'Creating...' : 'Create Policy' }}
+    </UButton>
+
+    <p v-if="policyMessage">{{ policyMessage }}</p>
+
+    <div class="policy-catalog">
+      <article v-for="policy in permissionPolicies" :key="policy.id" class="policy-item">
+        <strong>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</strong>
+        <small>{{ policy.reason ?? 'No reason provided' }}</small>
+        <small>ID: {{ policy.id }}</small>
+      </article>
+    </div>
+  </section>
+
+  <section v-if="isAdmin" class="card">
+    <h2>User Permissions</h2>
+    <p>Assign role and user-specific fine-grained policy IDs.</p>
+    <p v-if="usersLoading">Loading users...</p>
+    <p v-if="usersMessage">{{ usersMessage }}</p>
+
+    <article v-for="managedUser in managedUsers" :key="managedUser.id" class="managed-user">
+      <header>
+        <strong>{{ managedUser.displayName }}</strong>
+        <small>{{ managedUser.email }}</small>
+      </header>
+
+      <div class="field">
+        <label :for="`role-${managedUser.id}`">Role</label>
+        <USelect
+          :id="`role-${managedUser.id}`"
+          v-model="roleDraftByUser[managedUser.id]"
+          :options="roleSelectOptions"
+          option-attribute="label"
+          value-attribute="value"
+        />
+      </div>
+
+      <UButton color="neutral" variant="soft" :disabled="roleSavingByUser[managedUser.id]" @click="saveUserRole(managedUser.id)">
+        {{ roleSavingByUser[managedUser.id] ? 'Saving role...' : 'Save Role' }}
+      </UButton>
+
+      <div class="policy-grid">
+        <label v-for="policy in permissionPolicies" :key="policy.id" class="policy-check-row">
+          <UCheckbox
+            :model-value="(policyDraftByUser[managedUser.id] ?? []).includes(policy.id)"
+            @update:model-value="togglePolicyForUser(managedUser.id, policy.id)"
+          />
+          <span>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</span>
+        </label>
+      </div>
+
+      <UButton color="primary" variant="solid" :disabled="policySavingByUser[managedUser.id]" @click="saveUserPolicies(managedUser.id)">
+        {{ policySavingByUser[managedUser.id] ? 'Saving policies...' : 'Save Policies' }}
+      </UButton>
+    </article>
+  </section>
+
+  <section class="card">
+    <h2>Validation Demo</h2>
+    <p>This form validates client-side before sending to DTO-validated API endpoints.</p>
+
+    <div class="field">
+      <label for="categoryId">Category UUID v4</label>
+      <UInput id="categoryId" v-model="itemForm.categoryId" placeholder="550e8400-e29b-41d4-a716-446655440001" />
+      <p v-if="itemErrors.categoryId" class="error">{{ itemErrors.categoryId }}</p>
+    </div>
+
+    <div class="field">
+      <label for="sku">SKU</label>
+      <UInput id="sku" v-model="itemForm.sku" placeholder="SPAGHETTI-SAUCE-001" />
+      <p v-if="itemErrors.sku" class="error">{{ itemErrors.sku }}</p>
+    </div>
+
+    <div class="field">
+      <label for="name">Name</label>
+      <UInput id="name" v-model="itemForm.name" placeholder="Spaghetti Sauce" />
+      <p v-if="itemErrors.name" class="error">{{ itemErrors.name }}</p>
+    </div>
+
+    <div class="field">
+      <label for="servings">Servings (optional)</label>
+      <UInput id="servings" v-model="itemForm.servings" placeholder="3" />
+      <p v-if="itemErrors.servings" class="error">{{ itemErrors.servings }}</p>
+    </div>
+
+    <UButton color="primary" variant="solid" @click="submitItem">Submit</UButton>
+  </section>
+</template>
+
+
 <script setup lang="ts">
 import type {
   CaslAction,
@@ -301,214 +511,6 @@ onMounted(async () => {
 });
 </script>
 
-<template>
-  <section class="card">
-    <h1>Settings</h1>
-    <p>Authenticated as: <strong>{{ user?.email ?? 'n/a' }}</strong> ({{ user?.role ?? 'n/a' }})</p>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>Registration Mode</h2>
-    <p>Control whether public registration is open or admin-only.</p>
-    <p><strong>Setup initialized:</strong> {{ setupInitialized ? 'yes' : 'no' }}</p>
-
-    <div class="field">
-      <label for="registrationMode">Mode</label>
-      <USelect
-        id="registrationMode"
-        v-model="registrationMode"
-        :options="registrationModeOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <UButton color="primary" variant="solid" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
-      {{ modeSaving ? 'Saving...' : 'Save Mode' }}
-    </UButton>
-    <p v-if="modeMessage">{{ modeMessage }}</p>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>Create User (Admin)</h2>
-
-    <div class="field">
-      <label for="displayName">Display Name</label>
-      <UInput id="displayName" v-model="newUserForm.displayName" placeholder="Team Member" />
-      <p v-if="newUserErrors.displayName" class="error">{{ newUserErrors.displayName }}</p>
-    </div>
-
-    <div class="field">
-      <label for="email">Email</label>
-      <UInput id="email" v-model="newUserForm.email" type="email" placeholder="team.member@example.com" />
-      <p v-if="newUserErrors.email" class="error">{{ newUserErrors.email }}</p>
-    </div>
-
-    <div class="field">
-      <label for="password">Password</label>
-      <UInput id="password" v-model="newUserForm.password" type="password" placeholder="************" />
-      <p v-if="newUserErrors.password" class="error">{{ newUserErrors.password }}</p>
-    </div>
-
-    <div class="field">
-      <label for="role">Role</label>
-      <USelect
-        id="role"
-        v-model="newUserForm.role"
-        :options="roleSelectOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="preferredLanguage">Preferred Language</label>
-      <USelect
-        id="preferredLanguage"
-        v-model="newUserForm.preferredLanguage"
-        :options="languageOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <UButton color="primary" variant="solid" :disabled="userSaving" @click="createManagedUser">
-      {{ userSaving ? 'Creating...' : 'Create User' }}
-    </UButton>
-    <p v-if="userMessage">{{ userMessage }}</p>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>Permission Policies</h2>
-    <p>Create reusable policy entries and assign them to individual users below.</p>
-
-    <div class="field">
-      <label for="policy-action">Action</label>
-      <USelect
-        id="policy-action"
-        v-model="newPolicyForm.action"
-        :options="actionSelectOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="policy-subject">Subject</label>
-      <USelect
-        id="policy-subject"
-        v-model="newPolicyForm.subject"
-        :options="subjectSelectOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="policy-reason">Reason (optional)</label>
-      <UInput id="policy-reason" v-model="newPolicyForm.reason" placeholder="Temporary stock-taking access" />
-    </div>
-
-    <div class="field">
-      <label for="policy-conditions">Conditions JSON (optional)</label>
-      <UTextarea id="policy-conditions" v-model="newPolicyForm.conditionsJson" :rows="3" placeholder='{"id":{"$eq":"..."}}' />
-      <p v-if="newPolicyErrors.conditionsJson" class="error">{{ newPolicyErrors.conditionsJson }}</p>
-    </div>
-
-    <label class="checkbox-row">
-      <UCheckbox v-model="newPolicyForm.inverted" />
-      <span>Inverted (`cannot` rule)</span>
-    </label>
-
-    <UButton color="neutral" variant="soft" :disabled="policyCreating" @click="createPolicy">
-      {{ policyCreating ? 'Creating...' : 'Create Policy' }}
-    </UButton>
-
-    <p v-if="policyMessage">{{ policyMessage }}</p>
-
-    <div class="policy-catalog">
-      <article v-for="policy in permissionPolicies" :key="policy.id" class="policy-item">
-        <strong>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</strong>
-        <small>{{ policy.reason ?? 'No reason provided' }}</small>
-        <small>ID: {{ policy.id }}</small>
-      </article>
-    </div>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>User Permissions</h2>
-    <p>Assign role and user-specific fine-grained policy IDs.</p>
-    <p v-if="usersLoading">Loading users...</p>
-    <p v-if="usersMessage">{{ usersMessage }}</p>
-
-    <article v-for="managedUser in managedUsers" :key="managedUser.id" class="managed-user">
-      <header>
-        <strong>{{ managedUser.displayName }}</strong>
-        <small>{{ managedUser.email }}</small>
-      </header>
-
-      <div class="field">
-        <label :for="`role-${managedUser.id}`">Role</label>
-        <USelect
-          :id="`role-${managedUser.id}`"
-          v-model="roleDraftByUser[managedUser.id]"
-          :options="roleSelectOptions"
-          option-attribute="label"
-          value-attribute="value"
-        />
-      </div>
-
-      <UButton color="neutral" variant="soft" :disabled="roleSavingByUser[managedUser.id]" @click="saveUserRole(managedUser.id)">
-        {{ roleSavingByUser[managedUser.id] ? 'Saving role...' : 'Save Role' }}
-      </UButton>
-
-      <div class="policy-grid">
-        <label v-for="policy in permissionPolicies" :key="policy.id" class="policy-check-row">
-          <UCheckbox
-            :model-value="(policyDraftByUser[managedUser.id] ?? []).includes(policy.id)"
-            @update:model-value="togglePolicyForUser(managedUser.id, policy.id)"
-          />
-          <span>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</span>
-        </label>
-      </div>
-
-      <UButton color="primary" variant="solid" :disabled="policySavingByUser[managedUser.id]" @click="saveUserPolicies(managedUser.id)">
-        {{ policySavingByUser[managedUser.id] ? 'Saving policies...' : 'Save Policies' }}
-      </UButton>
-    </article>
-  </section>
-
-  <section class="card">
-    <h2>Validation Demo</h2>
-    <p>This form validates client-side before sending to DTO-validated API endpoints.</p>
-
-    <div class="field">
-      <label for="categoryId">Category UUID v4</label>
-      <UInput id="categoryId" v-model="itemForm.categoryId" placeholder="550e8400-e29b-41d4-a716-446655440001" />
-      <p v-if="itemErrors.categoryId" class="error">{{ itemErrors.categoryId }}</p>
-    </div>
-
-    <div class="field">
-      <label for="sku">SKU</label>
-      <UInput id="sku" v-model="itemForm.sku" placeholder="SPAGHETTI-SAUCE-001" />
-      <p v-if="itemErrors.sku" class="error">{{ itemErrors.sku }}</p>
-    </div>
-
-    <div class="field">
-      <label for="name">Name</label>
-      <UInput id="name" v-model="itemForm.name" placeholder="Spaghetti Sauce" />
-      <p v-if="itemErrors.name" class="error">{{ itemErrors.name }}</p>
-    </div>
-
-    <div class="field">
-      <label for="servings">Servings (optional)</label>
-      <UInput id="servings" v-model="itemForm.servings" placeholder="3" />
-      <p v-if="itemErrors.servings" class="error">{{ itemErrors.servings }}</p>
-    </div>
-
-    <UButton color="primary" variant="solid" @click="submitItem">Submit</UButton>
-  </section>
-</template>
 
 <style scoped>
 .checkbox-row {

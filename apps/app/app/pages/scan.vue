@@ -1,3 +1,72 @@
+<template>
+  <section class="card">
+    <h1>Scan QR</h1>
+    <p>Use camera scanner to identify an item and trigger quick actions.</p>
+
+    <div class="scanner-wrap">
+      <video ref="videoRef" class="scanner-video" muted playsinline></video>
+    </div>
+
+    <div class="scanner-actions">
+      <UButton color="primary" variant="solid" :disabled="isScanning" @click="startScanner">
+        {{ isScanning ? 'Scanner Running' : 'Start Scanner' }}
+      </UButton>
+      <UButton color="neutral" variant="soft" :disabled="!isScanning" @click="stopScanner">Stop Scanner</UButton>
+    </div>
+
+    <UAlert
+      v-if="scanMessage"
+      :color="scannedItem ? 'green' : 'neutral'"
+      variant="soft"
+      title="Scanner Status"
+      :description="scanMessage"
+    />
+
+    <div class="field">
+      <label for="code">Scanned code</label>
+      <UInput id="code" v-model="scannedValue" placeholder="Paste scanned QR value" />
+    </div>
+
+    <UButton color="neutral" variant="soft" @click="lookupScannedCode(scannedValue)">Lookup Code</UButton>
+  </section>
+
+  <section v-if="scannedItem" class="card">
+    <h2>Scanned Item</h2>
+    <p><strong>Name:</strong> {{ scannedItem.name }}</p>
+    <p><strong>SKU:</strong> {{ scannedItem.sku }}</p>
+    <p><strong>QR Value:</strong> {{ scannedItem.qrCodeValue }}</p>
+    <p><strong>Unit:</strong> {{ scannedItem.unit }}</p>
+    <p><strong>Size:</strong> {{ formatSize(scannedItem) }}</p>
+    <p><strong>Servings:</strong> {{ scannedItem.servings ?? 'n/a' }}</p>
+
+    <div class="field">
+      <label for="action">Quick action</label>
+      <USelect
+        id="action"
+        v-model="selectedAction"
+        :options="quickActionOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field" v-if="selectedAction === 'stock-out'">
+      <label for="qty">Quantity</label>
+      <UInput id="qty" v-model.number="stockOutQuantity" type="number" min="1" step="1" />
+    </div>
+
+    <UButton color="primary" variant="solid" @click="applyQuickAction">Apply Action</UButton>
+    <UAlert
+      v-if="actionMessage"
+      :color="selectedAction === 'stock-out' ? 'green' : 'neutral'"
+      variant="soft"
+      title="Quick Action"
+      :description="actionMessage"
+    />
+  </section>
+</template>
+
+
 <script setup lang="ts">
 import type { ItemResponse } from '@ezinventory/contracts';
 
@@ -130,73 +199,6 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<template>
-  <section class="card">
-    <h1>Scan QR</h1>
-    <p>Use camera scanner to identify an item and trigger quick actions.</p>
-
-    <div class="scanner-wrap">
-      <video ref="videoRef" class="scanner-video" muted playsinline></video>
-    </div>
-
-    <div class="scanner-actions">
-      <UButton color="primary" variant="solid" :disabled="isScanning" @click="startScanner">
-        {{ isScanning ? 'Scanner Running' : 'Start Scanner' }}
-      </UButton>
-      <UButton color="neutral" variant="soft" :disabled="!isScanning" @click="stopScanner">Stop Scanner</UButton>
-    </div>
-
-    <UAlert
-      v-if="scanMessage"
-      :color="scannedItem ? 'green' : 'neutral'"
-      variant="soft"
-      title="Scanner Status"
-      :description="scanMessage"
-    />
-
-    <div class="field">
-      <label for="code">Scanned code</label>
-      <UInput id="code" v-model="scannedValue" placeholder="Paste scanned QR value" />
-    </div>
-
-    <UButton color="neutral" variant="soft" @click="lookupScannedCode(scannedValue)">Lookup Code</UButton>
-  </section>
-
-  <section v-if="scannedItem" class="card">
-    <h2>Scanned Item</h2>
-    <p><strong>Name:</strong> {{ scannedItem.name }}</p>
-    <p><strong>SKU:</strong> {{ scannedItem.sku }}</p>
-    <p><strong>QR Value:</strong> {{ scannedItem.qrCodeValue }}</p>
-    <p><strong>Unit:</strong> {{ scannedItem.unit }}</p>
-    <p><strong>Size:</strong> {{ formatSize(scannedItem) }}</p>
-    <p><strong>Servings:</strong> {{ scannedItem.servings ?? 'n/a' }}</p>
-
-    <div class="field">
-      <label for="action">Quick action</label>
-      <USelect
-        id="action"
-        v-model="selectedAction"
-        :options="quickActionOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field" v-if="selectedAction === 'stock-out'">
-      <label for="qty">Quantity</label>
-      <UInput id="qty" v-model.number="stockOutQuantity" type="number" min="1" step="1" />
-    </div>
-
-    <UButton color="primary" variant="solid" @click="applyQuickAction">Apply Action</UButton>
-    <UAlert
-      v-if="actionMessage"
-      :color="selectedAction === 'stock-out' ? 'green' : 'neutral'"
-      variant="soft"
-      title="Quick Action"
-      :description="actionMessage"
-    />
-  </section>
-</template>
 
 <style scoped>
 .scanner-wrap {

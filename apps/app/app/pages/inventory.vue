@@ -1,3 +1,120 @@
+<template>
+  <section class="card">
+    <h1>Inventory Structure</h1>
+    <p>Create locations and freely nested containers (shelf > box > bin > ...).</p>
+    <UAlert v-if="loading" color="neutral" variant="soft" title="Loading" description="Loading inventory structure..." />
+    <UAlert v-if="errorMessage" color="red" variant="soft" title="Error" :description="errorMessage" />
+    <UAlert v-if="successMessage" color="green" variant="soft" title="Success" :description="successMessage" />
+  </section>
+
+  <section class="card">
+    <h2>Create Location</h2>
+
+    <div class="field">
+      <label for="location-name">Name</label>
+      <UInput id="location-name" v-model="locationForm.name" type="text" placeholder="Garage" />
+      <p v-if="locationErrors.name" class="error">{{ locationErrors.name }}</p>
+    </div>
+
+    <div class="field">
+      <label for="location-code">Code</label>
+      <UInput id="location-code" v-model="locationForm.code" type="text" placeholder="GARAGE" />
+      <p v-if="locationErrors.code" class="error">{{ locationErrors.code }}</p>
+    </div>
+
+    <div class="field">
+      <label for="location-description">Description</label>
+      <UTextarea id="location-description" v-model="locationForm.description" :rows="2" placeholder="Optional" />
+    </div>
+
+    <div class="form-actions">
+      <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Create Container</h2>
+
+    <div class="field">
+      <label for="container-location">Location</label>
+      <USelect
+        id="container-location"
+        v-model="containerForm.locationId"
+        :options="locationOptions"
+        option-attribute="label"
+        value-attribute="value"
+        placeholder="Select location"
+      />
+      <p v-if="containerErrors.locationId" class="error">{{ containerErrors.locationId }}</p>
+    </div>
+
+    <div class="field">
+      <label for="container-parent">Parent container (optional)</label>
+      <USelect
+        id="container-parent"
+        v-model="containerForm.parentContainerId"
+        :options="parentContainerOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field">
+      <label for="container-type">Type</label>
+      <USelect
+        id="container-type"
+        v-model="containerForm.type"
+        :options="containerTypeOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field">
+      <label for="container-name">Name</label>
+      <UInput id="container-name" v-model="containerForm.name" type="text" placeholder="Freezer Drawer 1" />
+      <p v-if="containerErrors.name" class="error">{{ containerErrors.name }}</p>
+    </div>
+
+    <div class="field">
+      <label for="container-code">Code</label>
+      <UInput id="container-code" v-model="containerForm.code" type="text" placeholder="FREEZER-DRAWER-1" />
+      <p v-if="containerErrors.code" class="error">{{ containerErrors.code }}</p>
+    </div>
+
+    <div class="field">
+      <label for="container-description">Description</label>
+      <UTextarea id="container-description" v-model="containerForm.description" :rows="2" placeholder="Optional" />
+    </div>
+
+    <div class="form-actions">
+      <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Current Tree</h2>
+
+    <div v-for="location in sortedLocations" :key="location.id" class="location-block">
+      <h3>{{ location.name }} ({{ location.code }})</h3>
+
+      <ul class="container-list">
+        <li
+          v-for="row in buildTree(containersByLocation.get(location.id) ?? [])"
+          :key="row.node.id"
+          class="container-row"
+          :style="{ paddingLeft: `${row.depth * 16}px` }"
+        >
+          <strong>{{ row.node.name }}</strong>
+          <span>{{ row.node.type }}</span>
+          <small>{{ row.node.code }}</small>
+        </li>
+      </ul>
+    </div>
+  </section>
+</template>
+
+
 <script setup lang="ts">
 import type { ContainerResponse, ContainerType, LocationResponse } from '@ezinventory/contracts';
 
@@ -217,121 +334,6 @@ watch(
 );
 </script>
 
-<template>
-  <section class="card">
-    <h1>Inventory Structure</h1>
-    <p>Create locations and freely nested containers (shelf > box > bin > ...).</p>
-    <UAlert v-if="loading" color="neutral" variant="soft" title="Loading" description="Loading inventory structure..." />
-    <UAlert v-if="errorMessage" color="red" variant="soft" title="Error" :description="errorMessage" />
-    <UAlert v-if="successMessage" color="green" variant="soft" title="Success" :description="successMessage" />
-  </section>
-
-  <section class="card">
-    <h2>Create Location</h2>
-
-    <div class="field">
-      <label for="location-name">Name</label>
-      <UInput id="location-name" v-model="locationForm.name" type="text" placeholder="Garage" />
-      <p v-if="locationErrors.name" class="error">{{ locationErrors.name }}</p>
-    </div>
-
-    <div class="field">
-      <label for="location-code">Code</label>
-      <UInput id="location-code" v-model="locationForm.code" type="text" placeholder="GARAGE" />
-      <p v-if="locationErrors.code" class="error">{{ locationErrors.code }}</p>
-    </div>
-
-    <div class="field">
-      <label for="location-description">Description</label>
-      <UTextarea id="location-description" v-model="locationForm.description" :rows="2" placeholder="Optional" />
-    </div>
-
-    <div class="form-actions">
-      <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Create Container</h2>
-
-    <div class="field">
-      <label for="container-location">Location</label>
-      <USelect
-        id="container-location"
-        v-model="containerForm.locationId"
-        :options="locationOptions"
-        option-attribute="label"
-        value-attribute="value"
-        placeholder="Select location"
-      />
-      <p v-if="containerErrors.locationId" class="error">{{ containerErrors.locationId }}</p>
-    </div>
-
-    <div class="field">
-      <label for="container-parent">Parent container (optional)</label>
-      <USelect
-        id="container-parent"
-        v-model="containerForm.parentContainerId"
-        :options="parentContainerOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="container-type">Type</label>
-      <USelect
-        id="container-type"
-        v-model="containerForm.type"
-        :options="containerTypeOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="container-name">Name</label>
-      <UInput id="container-name" v-model="containerForm.name" type="text" placeholder="Freezer Drawer 1" />
-      <p v-if="containerErrors.name" class="error">{{ containerErrors.name }}</p>
-    </div>
-
-    <div class="field">
-      <label for="container-code">Code</label>
-      <UInput id="container-code" v-model="containerForm.code" type="text" placeholder="FREEZER-DRAWER-1" />
-      <p v-if="containerErrors.code" class="error">{{ containerErrors.code }}</p>
-    </div>
-
-    <div class="field">
-      <label for="container-description">Description</label>
-      <UTextarea id="container-description" v-model="containerForm.description" :rows="2" placeholder="Optional" />
-    </div>
-
-    <div class="form-actions">
-      <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Current Tree</h2>
-
-    <div v-for="location in sortedLocations" :key="location.id" class="location-block">
-      <h3>{{ location.name }} ({{ location.code }})</h3>
-
-      <ul class="container-list">
-        <li
-          v-for="row in buildTree(containersByLocation.get(location.id) ?? [])"
-          :key="row.node.id"
-          class="container-row"
-          :style="{ paddingLeft: `${row.depth * 16}px` }"
-        >
-          <strong>{{ row.node.name }}</strong>
-          <span>{{ row.node.type }}</span>
-          <small>{{ row.node.code }}</small>
-        </li>
-      </ul>
-    </div>
-  </section>
-</template>
 
 <style scoped>
 .location-block + .location-block {

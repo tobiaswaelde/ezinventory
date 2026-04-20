@@ -1,3 +1,63 @@
+<template>
+  <section class="card no-print">
+    <h1>Label Generator</h1>
+    <p>Create QR + barcode labels and print as A4 grid for desktop printers or PDF export.</p>
+    <UAlert v-if="loading" color="neutral" variant="soft" title="Loading" description="Loading items and containers..." />
+    <UAlert v-if="errorMessage" color="red" variant="soft" title="Label Generation Error" :description="errorMessage" />
+
+    <div class="field">
+      <label for="source-type">Source</label>
+      <USelect
+        id="source-type"
+        v-model="sourceType"
+        :options="sourceTypeOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
+    </div>
+
+    <div class="field">
+      <label for="copies">Copies Per Entity</label>
+      <UInput id="copies" v-model.number="copiesPerEntity" type="number" min="1" step="1" />
+    </div>
+
+    <div class="toolbar">
+      <UButton color="neutral" variant="soft" @click="selectAllVisible">Select All</UButton>
+      <UButton color="neutral" variant="soft" @click="clearSelection">Clear</UButton>
+    </div>
+
+    <div class="selector-list">
+      <label v-for="row in sourceOptions" :key="row.id" class="selector-item">
+        <UCheckbox :model-value="selectedEntityIds.includes(row.id)" @update:model-value="toggleEntity(row.id)" />
+        <span>
+          <strong>{{ row.displayName }}</strong>
+          <small>{{ row.code }}</small>
+        </span>
+      </label>
+    </div>
+
+    <div class="toolbar">
+      <UButton color="primary" variant="solid" :disabled="generating" @click="generateLabels">
+        {{ generating ? 'Generating...' : 'Generate Labels' }}
+      </UButton>
+      <UButton color="neutral" variant="soft" :disabled="labelRows.length === 0" @click="printSheet">Print / Save PDF</UButton>
+    </div>
+  </section>
+
+  <section v-if="labelRows.length > 0" class="labels-sheet">
+    <article v-for="row in labelRows" :key="row.uid" class="label-card">
+      <header>
+        <strong>{{ row.displayName }}</strong>
+        <small>{{ row.kind.toUpperCase() }}</small>
+      </header>
+      <img :src="qrByUid[row.uid]" alt="QR Code" class="qr-image" />
+      <svg :data-barcode-value="row.code" class="barcode-svg"></svg>
+      <footer>{{ row.code }}</footer>
+    </article>
+  </section>
+</template>
+
+
 <script setup lang="ts">
 import type { ContainerResponse, ItemResponse } from '@ezinventory/contracts';
 
@@ -191,64 +251,6 @@ watch(
 );
 </script>
 
-<template>
-  <section class="card no-print">
-    <h1>Label Generator</h1>
-    <p>Create QR + barcode labels and print as A4 grid for desktop printers or PDF export.</p>
-    <UAlert v-if="loading" color="neutral" variant="soft" title="Loading" description="Loading items and containers..." />
-    <UAlert v-if="errorMessage" color="red" variant="soft" title="Label Generation Error" :description="errorMessage" />
-
-    <div class="field">
-      <label for="source-type">Source</label>
-      <USelect
-        id="source-type"
-        v-model="sourceType"
-        :options="sourceTypeOptions"
-        option-attribute="label"
-        value-attribute="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="copies">Copies Per Entity</label>
-      <UInput id="copies" v-model.number="copiesPerEntity" type="number" min="1" step="1" />
-    </div>
-
-    <div class="toolbar">
-      <UButton color="neutral" variant="soft" @click="selectAllVisible">Select All</UButton>
-      <UButton color="neutral" variant="soft" @click="clearSelection">Clear</UButton>
-    </div>
-
-    <div class="selector-list">
-      <label v-for="row in sourceOptions" :key="row.id" class="selector-item">
-        <UCheckbox :model-value="selectedEntityIds.includes(row.id)" @update:model-value="toggleEntity(row.id)" />
-        <span>
-          <strong>{{ row.displayName }}</strong>
-          <small>{{ row.code }}</small>
-        </span>
-      </label>
-    </div>
-
-    <div class="toolbar">
-      <UButton color="primary" variant="solid" :disabled="generating" @click="generateLabels">
-        {{ generating ? 'Generating...' : 'Generate Labels' }}
-      </UButton>
-      <UButton color="neutral" variant="soft" :disabled="labelRows.length === 0" @click="printSheet">Print / Save PDF</UButton>
-    </div>
-  </section>
-
-  <section v-if="labelRows.length > 0" class="labels-sheet">
-    <article v-for="row in labelRows" :key="row.uid" class="label-card">
-      <header>
-        <strong>{{ row.displayName }}</strong>
-        <small>{{ row.kind.toUpperCase() }}</small>
-      </header>
-      <img :src="qrByUid[row.uid]" alt="QR Code" class="qr-image" />
-      <svg :data-barcode-value="row.code" class="barcode-svg"></svg>
-      <footer>{{ row.code }}</footer>
-    </article>
-  </section>
-</template>
 
 <style scoped>
 .toolbar {
