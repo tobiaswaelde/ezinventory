@@ -1,15 +1,12 @@
 <template>
-  <NuxtPwaManifest />
-
-  <UApp :toaster="{ position: 'top-center' }">
+  <div class="min-h-screen bg-default">
+    <NuxtPwaManifest />
     <NuxtLoadingIndicator />
 
-    <UMain class="min-h-screen bg-default" @contextmenu.prevent>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UMain>
-  </UApp>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
