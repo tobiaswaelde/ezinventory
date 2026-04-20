@@ -31,6 +31,12 @@ importers:
       class-validator:
         specifier: ^0.14.1
         version: 0.14.4
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.6.1
+      envalid:
+        specifier: ^8.0.0
+        version: 8.1.1
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -2128,6 +2134,10 @@ packages:
   entities@7.0.1:
     resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
+
+  envalid@8.1.1:
+    resolution: {integrity: sha512-vOUfHxAFFvkBjbVQbBfgnCO9d3GcNfMMTtVfgqSU2rQGMFEVqWy9GBuoSfHnwGu7EqR0/GeukQcL3KjFBaga9w==}
+    engines: {node: '>=18'}
 
   error-stack-parser-es@1.0.5:
     resolution: {integrity: sha512-5qucVt2XcuGMcEGgWI7i+yZpmpByQ8J1lHhcL7PwqCwu9FPP3VUXzT4ltHe5i2z9dePwEHcDVOAfSnHsOlCXRA==}
@@ -6151,6 +6161,10 @@ snapshots:
   entities@4.5.0: {}
 
   entities@7.0.1: {}
+
+  envalid@8.1.1:
+    dependencies:
+      tslib: 2.8.1
 
   error-stack-parser-es@1.0.5: {}
 

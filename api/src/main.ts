@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module.js';
+import { ENV } from './config/env.js';
 import { setupApiDocs } from './config/scalar.js';
 import { validationPipe } from './config/validation.js';
 
@@ -14,8 +15,7 @@ async function bootstrap(): Promise<void> {
 
   setupApiDocs(app);
 
-  const port = Number(process.env.PORT ?? 3001);
-  await app.listen(port);
+  await app.listen(ENV.PORT);
 }
 
 void bootstrap();
