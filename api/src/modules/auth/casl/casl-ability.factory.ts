@@ -18,6 +18,12 @@ export class CaslAbilityFactory {
         can('read', 'Category');
         can('create', 'Category');
         can('update', 'Category');
+        can('read', 'Location');
+        can('create', 'Location');
+        can('update', 'Location');
+        can('read', 'Container');
+        can('create', 'Container');
+        can('update', 'Container');
         can('read', 'Item');
         can('create', 'Item');
         can('update', 'Item');
@@ -26,6 +32,12 @@ export class CaslAbilityFactory {
         break;
       case UserRole.STAFF:
         can('read', 'Category');
+        can('read', 'Location');
+        can('create', 'Location');
+        can('update', 'Location');
+        can('read', 'Container');
+        can('create', 'Container');
+        can('update', 'Container');
         can('read', 'Item');
         can('create', 'Item');
         can('update', 'Item');
@@ -34,6 +46,8 @@ export class CaslAbilityFactory {
         break;
       case UserRole.VIEWER:
         can('read', 'Category');
+        can('read', 'Location');
+        can('read', 'Container');
         can('read', 'Item');
         break;
       default:

@@ -1,5 +1,11 @@
 import type { CreateItemPayload, ItemResponse } from '~/types/api/items';
 import type {
+  ContainerResponse,
+  CreateContainerPayload,
+  CreateLocationPayload,
+  LocationResponse
+} from '~/types/api/inventory';
+import type {
   AdminCreatedUser,
   CreateUserByAdminPayload,
   UpdateRegistrationModePayload
@@ -13,6 +19,33 @@ export function useApiClient() {
     return await authorizedFetch<ItemResponse>('/items', {
       method: 'POST',
       body: payload
+    });
+  };
+
+  const createLocation = async (payload: CreateLocationPayload): Promise<LocationResponse> => {
+    return await authorizedFetch<LocationResponse>('/locations', {
+      method: 'POST',
+      body: payload
+    });
+  };
+
+  const listLocations = async (): Promise<LocationResponse[]> => {
+    return await authorizedFetch<LocationResponse[]>('/locations', {
+      method: 'GET'
+    });
+  };
+
+  const createContainer = async (payload: CreateContainerPayload): Promise<ContainerResponse> => {
+    return await authorizedFetch<ContainerResponse>('/containers', {
+      method: 'POST',
+      body: payload
+    });
+  };
+
+  const listContainers = async (locationId?: string): Promise<ContainerResponse[]> => {
+    return await authorizedFetch<ContainerResponse[]>('/containers', {
+      method: 'GET',
+      query: locationId ? { locationId } : undefined
     });
   };
 
@@ -41,5 +74,15 @@ export function useApiClient() {
     });
   };
 
-  return { createItem, health, lookupItemByCode, updateRegistrationMode, createUserByAdmin };
+  return {
+    createContainer,
+    createItem,
+    createLocation,
+    createUserByAdmin,
+    health,
+    listContainers,
+    listLocations,
+    lookupItemByCode,
+    updateRegistrationMode
+  };
 }

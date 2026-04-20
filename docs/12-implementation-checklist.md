@@ -37,8 +37,8 @@ Last updated: 2026-04-20
 
 ## 4. Inventory Domain Features
 
-- [ ] Multi-location support (end-to-end)
-- [ ] Freely nested containers/locations
+- [x] Multi-location support (end-to-end baseline)
+- [x] Freely nested containers/locations (baseline)
 - [ ] Item size/portion support (e.g. freezer use case)
 - [x] Quick stock-out actions from scanned item view (baseline)
 - [x] QR scanner button in navigation
