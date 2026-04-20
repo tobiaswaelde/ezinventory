@@ -28,7 +28,7 @@ Last updated: 2026-04-20
 
 - [x] Initial app shell and page structure
 - [x] Frontend auth baseline (login, refresh, logout, persisted session)
-- [ ] Mobile-first UI pass for MVP screens
+- [x] Mobile-first UI pass for MVP screens
 - [ ] PWA installability/offline caching finalization
 - [ ] Full client-side input validation coverage
 - [x] i18n integration (`de`, `en`) (baseline)

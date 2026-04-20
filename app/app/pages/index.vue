@@ -115,7 +115,10 @@ const submitLogout = async (): Promise<void> => {
   <section class="card">
     <h1>EZ Inventory</h1>
     <p>Mobile-first inventory management bootstrap is running.</p>
-    <p><strong>Theme:</strong> {{ theme }}</p>
+    <p>
+      <strong>Theme:</strong>
+      <UBadge color="neutral" variant="subtle">{{ theme }}</UBadge>
+    </p>
     <UButton color="neutral" variant="soft" @click="setTheme(theme === 'light' ? 'dark' : 'light')">
       Toggle Theme
     </UButton>
@@ -128,7 +131,10 @@ const submitLogout = async (): Promise<void> => {
 
     <template v-else-if="isAuthenticated && user">
       <p><strong>Signed in as:</strong> {{ user.email }}</p>
-      <p><strong>Role:</strong> {{ user.role }}</p>
+      <p>
+        <strong>Role:</strong>
+        <UBadge color="primary" variant="subtle">{{ user.role }}</UBadge>
+      </p>
       <UButton color="neutral" variant="soft" @click="submitLogout">Logout</UButton>
     </template>
 
@@ -158,12 +164,26 @@ const submitLogout = async (): Promise<void> => {
         <USelect id="preferredLanguage" v-model="form.preferredLanguage" :options="['en', 'de']" />
       </div>
 
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <p v-if="passkeyMessage">{{ passkeyMessage }}</p>
+      <UAlert
+        v-if="errorMessage"
+        color="red"
+        variant="soft"
+        title="Authentication Error"
+        :description="errorMessage"
+      />
+      <UAlert
+        v-if="passkeyMessage"
+        color="green"
+        variant="soft"
+        title="Passkey"
+        :description="passkeyMessage"
+      />
 
-      <UButton color="primary" variant="solid" :disabled="submitting" @click="submitAuth">
-        {{ submitting ? 'Submitting...' : mode === 'login' ? 'Login' : 'Register' }}
-      </UButton>
+      <div class="actions-row">
+        <UButton color="primary" variant="solid" :disabled="submitting" @click="submitAuth">
+          {{ submitting ? 'Submitting...' : mode === 'login' ? 'Login' : 'Register' }}
+        </UButton>
+      </div>
 
       <hr style="margin: 1rem 0; border: 0; border-top: 1px solid #ddd" />
 
@@ -172,12 +192,14 @@ const submitLogout = async (): Promise<void> => {
         <UInput id="passkeyDeviceName" v-model="form.passkeyDeviceName" type="text" placeholder="MacBook Touch ID" />
       </div>
 
-      <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyLogin">
-        {{ passkeySubmitting ? 'Processing...' : 'Login with Passkey' }}
-      </UButton>
-      <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyRegister">
-        {{ passkeySubmitting ? 'Processing...' : 'Register Passkey' }}
-      </UButton>
+      <div class="actions-row">
+        <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyLogin">
+          {{ passkeySubmitting ? 'Processing...' : 'Login with Passkey' }}
+        </UButton>
+        <UButton color="neutral" variant="soft" :disabled="passkeySubmitting" @click="submitPasskeyRegister">
+          {{ passkeySubmitting ? 'Processing...' : 'Register Passkey' }}
+        </UButton>
+      </div>
     </template>
   </section>
 
@@ -186,3 +208,12 @@ const submitLogout = async (): Promise<void> => {
     <p>Use the center scan button in the mobile navbar for QR-first workflows.</p>
   </section>
 </template>
+
+<style scoped>
+.actions-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+</style>

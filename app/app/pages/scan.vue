@@ -146,7 +146,13 @@ onBeforeUnmount(() => {
       <UButton color="neutral" variant="soft" :disabled="!isScanning" @click="stopScanner">Stop Scanner</UButton>
     </div>
 
-    <p v-if="scanMessage">{{ scanMessage }}</p>
+    <UAlert
+      v-if="scanMessage"
+      :color="scannedItem ? 'green' : 'neutral'"
+      variant="soft"
+      title="Scanner Status"
+      :description="scanMessage"
+    />
 
     <div class="field">
       <label for="code">Scanned code</label>
@@ -182,7 +188,13 @@ onBeforeUnmount(() => {
     </div>
 
     <UButton color="primary" variant="solid" @click="applyQuickAction">Apply Action</UButton>
-    <p v-if="actionMessage">{{ actionMessage }}</p>
+    <UAlert
+      v-if="actionMessage"
+      :color="selectedAction === 'stock-out' ? 'green' : 'neutral'"
+      variant="soft"
+      title="Quick Action"
+      :description="actionMessage"
+    />
   </section>
 </template>
 

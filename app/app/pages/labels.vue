@@ -196,8 +196,8 @@ watch(
   <section class="card no-print">
     <h1>Label Generator</h1>
     <p>Create QR + barcode labels and print as A4 grid for desktop printers or PDF export.</p>
-    <p v-if="loading">Loading items and containers...</p>
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+    <UAlert v-if="loading" color="neutral" variant="soft" title="Loading" description="Loading items and containers..." />
+    <UAlert v-if="errorMessage" color="red" variant="soft" title="Label Generation Error" :description="errorMessage" />
 
     <div class="field">
       <label for="source-type">Source</label>
@@ -255,6 +255,7 @@ watch(
 .toolbar {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
   margin-top: 0.75rem;
 }
 

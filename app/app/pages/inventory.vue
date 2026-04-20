@@ -199,9 +199,9 @@ watch(
   <section class="card">
     <h1>Inventory Structure</h1>
     <p>Create locations and freely nested containers (shelf > box > bin > ...).</p>
-    <p v-if="loading">Loading inventory structure...</p>
-    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-    <p v-if="successMessage">{{ successMessage }}</p>
+    <UAlert v-if="loading" color="neutral" variant="soft" title="Loading" description="Loading inventory structure..." />
+    <UAlert v-if="errorMessage" color="red" variant="soft" title="Error" :description="errorMessage" />
+    <UAlert v-if="successMessage" color="green" variant="soft" title="Success" :description="successMessage" />
   </section>
 
   <section class="card">
@@ -222,7 +222,9 @@ watch(
       <UTextarea id="location-description" v-model="locationForm.description" :rows="2" placeholder="Optional" />
     </div>
 
-    <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
+    <div class="form-actions">
+      <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
+    </div>
   </section>
 
   <section class="card">
@@ -277,7 +279,9 @@ watch(
       <UTextarea id="container-description" v-model="containerForm.description" :rows="2" placeholder="Optional" />
     </div>
 
-    <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
+    <div class="form-actions">
+      <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
+    </div>
   </section>
 
   <section class="card">
@@ -327,11 +331,9 @@ watch(
   color: #576073;
 }
 
-textarea {
-  width: 100%;
-  border-radius: 0.6rem;
-  border: 1px solid #d3d8e0;
-  font: inherit;
-  padding: 0.65rem 0.75rem;
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 </style>
