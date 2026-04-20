@@ -19,5 +19,8 @@ export const ENV = cleanEnv(process.env, {
   NODE_ENV: str({ choices: ['development', 'production', 'test'], default: 'development' }),
   PORT: port({ default: 3001 }),
   DATABASE_URL: str({ desc: 'Database connection URL' }),
-  SHADOW_DATABASE_URL: str({ desc: 'Shadow database URL for Prisma migrations' })
+  SHADOW_DATABASE_URL: str({ desc: 'Shadow database URL for Prisma migrations' }),
+  AUTH_PASSKEY_RP_ID: str({ default: 'localhost' }),
+  AUTH_PASSKEY_RP_NAME: str({ default: 'EZ Inventory' }),
+  AUTH_PASSKEY_ORIGIN: str({ default: 'http://localhost:3000' })
 });
