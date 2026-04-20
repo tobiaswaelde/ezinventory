@@ -31,8 +31,8 @@ Last updated: 2026-04-20
 - [ ] Mobile-first UI pass for MVP screens
 - [ ] PWA installability/offline caching finalization
 - [ ] Full client-side input validation coverage
-- [ ] i18n integration (`de`, `en`)
-- [ ] Persist language per user profile
+- [x] i18n integration (`de`, `en`) (baseline)
+- [x] Persist language per user profile (baseline)
 - [ ] Persist theme in local storage or cookies
 
 ## 4. Inventory Domain Features

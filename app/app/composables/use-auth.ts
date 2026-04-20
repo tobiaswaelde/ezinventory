@@ -231,6 +231,21 @@ export function useAuth() {
     clearSession();
   };
 
+  const updatePreferredLanguage = async (preferredLanguage: 'de' | 'en'): Promise<void> => {
+    const result = await authorizedFetch<{ id: string; preferredLanguage: 'de' | 'en' }>('/auth/me/language', {
+      method: 'PATCH',
+      body: { preferredLanguage }
+    });
+
+    if (user.value && user.value.id === result.id) {
+      user.value = {
+        ...user.value,
+        preferredLanguage: result.preferredLanguage
+      };
+      persist();
+    }
+  };
+
   const initAuth = async (): Promise<void> => {
     if (initialized.value) {
       return;
@@ -294,6 +309,7 @@ export function useAuth() {
     initAuth,
     fetchMe,
     refreshSession,
-    authorizedFetch
+    authorizedFetch,
+    updatePreferredLanguage
   };
 }

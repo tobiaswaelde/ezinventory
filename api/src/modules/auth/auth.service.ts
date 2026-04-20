@@ -61,7 +61,7 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthTokens> {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
-      select: { id: true, email: true, passwordHash: true, role: true }
+      select: { id: true, email: true, passwordHash: true, role: true, preferredLanguage: true }
     });
 
     if (!user) {
@@ -73,7 +73,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials.');
     }
 
-    return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
+    return await this.issueTokens({ id: user.id, email: user.email, role: user.role, preferredLanguage: user.preferredLanguage });
   }
 
   async me(userId: string): Promise<AuthenticatedUser> {
@@ -82,7 +82,8 @@ export class AuthService {
       select: {
         id: true,
         email: true,
-        role: true
+        role: true,
+        preferredLanguage: true
       }
     });
 
@@ -137,11 +138,12 @@ export class AuthService {
       select: {
         id: true,
         email: true,
-        role: true
+        role: true,
+        preferredLanguage: true
       }
     });
 
-    return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
+    return await this.issueTokens({ id: user.id, email: user.email, role: user.role, preferredLanguage: user.preferredLanguage });
   }
 
   async passkeyRegisterOptions(dto: PasskeyRegisterOptionsDto): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {
@@ -298,6 +300,7 @@ export class AuthService {
         id: true,
         email: true,
         role: true,
+        preferredLanguage: true,
         passkeyCredentials: {
           select: {
             id: true,
@@ -350,7 +353,7 @@ export class AuthService {
       }
     });
 
-    return await this.issueTokens({ id: user.id, email: user.email, role: user.role });
+    return await this.issueTokens({ id: user.id, email: user.email, role: user.role, preferredLanguage: user.preferredLanguage });
   }
 
   async refresh(dto: RefreshTokenDto): Promise<AuthTokens> {
@@ -368,7 +371,8 @@ export class AuthService {
           select: {
             id: true,
             email: true,
-            role: true
+            role: true,
+            preferredLanguage: true
           }
         }
       }
@@ -407,8 +411,28 @@ export class AuthService {
     return await this.issueTokens({
       id: session.user.id,
       email: session.user.email,
-      role: session.user.role
+      role: session.user.role,
+      preferredLanguage: session.user.preferredLanguage
     });
+  }
+
+  async updatePreferredLanguage(
+    userId: string,
+    preferredLanguage: 'de' | 'en'
+  ): Promise<{ id: string; preferredLanguage: 'de' | 'en' }> {
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { preferredLanguage },
+      select: {
+        id: true,
+        preferredLanguage: true
+      }
+    });
+
+    return {
+      id: updated.id,
+      preferredLanguage: updated.preferredLanguage as 'de' | 'en'
+    };
   }
 
   async logout(dto: RefreshTokenDto): Promise<{ loggedOut: true }> {
@@ -431,7 +455,7 @@ export class AuthService {
     return { loggedOut: true };
   }
 
-  private async issueTokens(user: { id: string; email: string; role: UserRole }): Promise<AuthTokens> {
+  private async issueTokens(user: { id: string; email: string; role: UserRole; preferredLanguage: string }): Promise<AuthTokens> {
     const sessionId = crypto.randomUUID();
 
     const accessToken = await this.jwtService.signAsync(
@@ -439,6 +463,7 @@ export class AuthService {
         sub: user.id,
         email: user.email,
         role: user.role,
+        preferredLanguage: user.preferredLanguage,
         type: 'access'
       },
       {

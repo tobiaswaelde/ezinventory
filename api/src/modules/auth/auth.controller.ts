@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js';
@@ -10,6 +10,7 @@ import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-o
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
 import { RegisterDto } from '~/modules/auth/dto/register.dto.js';
+import { UpdatePreferredLanguageDto } from '~/modules/auth/dto/update-preferred-language.dto.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 
@@ -27,12 +28,32 @@ export class AuthController {
       properties: {
         id: { type: 'string', format: 'uuid' },
         email: { type: 'string', example: 'admin@example.com' },
-        role: { type: 'string', example: 'ADMIN' }
+        role: { type: 'string', example: 'ADMIN' },
+        preferredLanguage: { type: 'string', enum: ['de', 'en'], example: 'en' }
       }
     }
   })
   async me(@CurrentUser() user: AuthenticatedUser): Promise<AuthenticatedUser> {
     return await this.authService.me(user.id);
+  }
+
+  @Patch('me/language')
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth('bearer')
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        preferredLanguage: { type: 'string', enum: ['de', 'en'], example: 'de' }
+      }
+    }
+  })
+  async updatePreferredLanguage(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: UpdatePreferredLanguageDto
+  ): Promise<{ id: string; preferredLanguage: 'de' | 'en' }> {
+    return await this.authService.updatePreferredLanguage(user.id, dto.preferredLanguage);
   }
 
   @Post('register')

@@ -55,7 +55,8 @@ export class AccessTokenGuard implements CanActivate {
     request.user = {
       id: payload.sub,
       email: payload.email,
-      role: payload.role
+      role: payload.role,
+      preferredLanguage: payload.preferredLanguage ?? 'en'
     };
 
     return true;

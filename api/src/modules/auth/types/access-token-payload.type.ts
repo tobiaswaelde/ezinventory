@@ -4,6 +4,7 @@ export type AccessTokenPayload = {
   sub: string;
   email: string;
   role: UserRole;
+  preferredLanguage: 'de' | 'en';
   type: 'access';
   iat: number;
   exp: number;
