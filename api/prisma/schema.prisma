@@ -1,0 +1,301 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  STAFF
+  VIEWER
+}
+
+enum ContainerType {
+  SHELF
+  BOX
+  FRIDGE
+  BIN
+  CUSTOM
+}
+
+enum MovementType {
+  IN
+  OUT
+  TRANSFER
+  ADJUSTMENT
+}
+
+enum AttachmentOwnerType {
+  LOCATION
+  CONTAINER
+  ITEM
+  MOVEMENT
+}
+
+enum BarcodeEntityType {
+  CONTAINER
+  ITEM
+}
+
+enum LabelTemplate {
+  A4_GRID
+}
+
+enum IconSet {
+  TABLER
+  LUCIDE
+}
+
+enum RegistrationMode {
+  OPEN
+  ADMIN_ONLY
+}
+
+model User {
+  id                String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email             String                 @unique
+  passwordHash      String
+  displayName       String
+  role              UserRole
+  preferredLanguage String                 @default("en")
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  passkeyCredentials PasskeyCredential[]
+  userPolicies       UserPermissionPolicy[]
+  uploadedImages     ImageAttachment[]      @relation("uploaded-images")
+  createdMediaAssets MediaAsset[]           @relation("created-media-assets")
+  movements          StockMovement[]        @relation("performed-movements")
+  generatedLabels    BarcodeLabel[]         @relation("generated-labels")
+  auditLogs          AuditLog[]             @relation("audit-actor")
+}
+
+model PermissionPolicy {
+  id         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  subject    String
+  action     String
+  conditions Json?
+  inverted   Boolean              @default(false)
+  reason     String?
+  createdAt  DateTime             @default(now())
+
+  rolePolicies RolePermissionPolicy[]
+  userPolicies UserPermissionPolicy[]
+}
+
+model RolePermissionPolicy {
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role               UserRole
+  permissionPolicyId String           @db.Uuid
+  createdAt          DateTime         @default(now())
+
+  permissionPolicy PermissionPolicy @relation(fields: [permissionPolicyId], references: [id], onDelete: Cascade)
+
+  @@unique([role, permissionPolicyId])
+}
+
+model UserPermissionPolicy {
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String           @db.Uuid
+  permissionPolicyId String           @db.Uuid
+  createdAt          DateTime         @default(now())
+
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissionPolicy PermissionPolicy @relation(fields: [permissionPolicyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionPolicyId])
+}
+
+model PasskeyCredential {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @db.Uuid
+  credentialId String   @unique
+  publicKey    String
+  counter      Int
+  transports   Json
+  deviceName   String?
+  createdAt    DateTime @default(now())
+  lastUsedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SystemSetting {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model Location {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique
+  code        String   @unique
+  description String?
+  iconSet     IconSet?
+  iconName    String?
+  isActive    Boolean  @default(true)
+
+  containers  Container[]
+}
+
+model Container {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  locationId        String         @db.Uuid
+  parentContainerId String?        @db.Uuid
+  type              ContainerType
+  name              String
+  code              String         @unique
+  qrCodeValue       String         @unique
+  description       String?
+  iconSet           IconSet?
+  iconName          String?
+  isActive          Boolean        @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  location          Location       @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  parentContainer   Container?     @relation("container-tree", fields: [parentContainerId], references: [id], onDelete: SetNull)
+  childContainers   Container[]    @relation("container-tree")
+  stock             Stock[]
+  fromMovements     StockMovement[] @relation("from-container")
+  toMovements       StockMovement[] @relation("to-container")
+}
+
+model Category {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique
+  description String?
+  iconSet     IconSet?
+  iconName    String?
+
+  items Item[]
+}
+
+model Item {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku         String   @unique
+  qrCodeValue String   @unique
+  name        String
+  description String?
+  iconSet     IconSet?
+  iconName    String?
+  categoryId  String   @db.Uuid
+  unit        String
+  sizeLabel   String?
+  sizeValue   Decimal?
+  sizeUnit    String?
+  servings    Int?
+  minStock    Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category  Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  stock     Stock[]
+  movements StockMovement[]
+}
+
+model Stock {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  itemId      String   @db.Uuid
+  containerId String   @db.Uuid
+  quantity    Int
+  updatedAt   DateTime @updatedAt
+
+  item      Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  container Container @relation(fields: [containerId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, containerId])
+}
+
+model StockMovement {
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type              MovementType
+  itemId            String       @db.Uuid
+  fromContainerId   String?      @db.Uuid
+  toContainerId     String?      @db.Uuid
+  quantity          Int
+  reason            String?
+  performedByUserId String       @db.Uuid
+  createdAt         DateTime     @default(now())
+
+  item            Item            @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  fromContainer   Container?      @relation("from-container", fields: [fromContainerId], references: [id], onDelete: SetNull)
+  toContainer     Container?      @relation("to-container", fields: [toContainerId], references: [id], onDelete: SetNull)
+  performedByUser User            @relation("performed-movements", fields: [performedByUserId], references: [id], onDelete: Restrict)
+  mediaLinks      MovementMediaLink[]
+}
+
+model ImageAttachment {
+  id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerType        AttachmentOwnerType
+  ownerId          String              @db.Uuid
+  fileName         String
+  mimeType         String
+  sizeBytes        Int
+  width            Int?
+  height           Int?
+  storageKey       String
+  uploadedByUserId String              @db.Uuid
+  createdAt        DateTime            @default(now())
+
+  uploadedByUser User      @relation("uploaded-images", fields: [uploadedByUserId], references: [id], onDelete: Restrict)
+  mediaAsset     MediaAsset?
+}
+
+model MediaAsset {
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  attachmentId    String      @unique @db.Uuid
+  title           String
+  tags            Json
+  isArchived      Boolean     @default(false)
+  createdByUserId String      @db.Uuid
+  createdAt       DateTime    @default(now())
+
+  attachment      ImageAttachment     @relation(fields: [attachmentId], references: [id], onDelete: Cascade)
+  createdByUser   User                @relation("created-media-assets", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  movementLinks   MovementMediaLink[]
+}
+
+model MovementMediaLink {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  movementId   String   @db.Uuid
+  mediaAssetId String   @db.Uuid
+  createdAt    DateTime @default(now())
+
+  movement   StockMovement @relation(fields: [movementId], references: [id], onDelete: Cascade)
+  mediaAsset MediaAsset    @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@unique([movementId, mediaAssetId])
+}
+
+model BarcodeLabel {
+  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entityType        BarcodeEntityType
+  entityId          String            @db.Uuid
+  qrCodeValue       String
+  template          LabelTemplate
+  generatedByUserId String            @db.Uuid
+  generatedAt       DateTime          @default(now())
+
+  generatedByUser User @relation("generated-labels", fields: [generatedByUserId], references: [id], onDelete: Restrict)
+}
+
+model AuditLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorUserId String?  @db.Uuid
+  action      String
+  entityType  String
+  entityId    String   @db.Uuid
+  before      Json?
+  after       Json?
+  requestId   String?
+  createdAt   DateTime @default(now())
+
+  actorUser User? @relation("audit-actor", fields: [actorUserId], references: [id], onDelete: SetNull)
+}
