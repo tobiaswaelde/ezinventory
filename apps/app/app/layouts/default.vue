@@ -1,6 +1,10 @@
 <template>
-  <div class="container">
-    <slot />
+  <div class="dashboard-shell">
+    <AppSidebar />
+    <main class="dashboard-content">
+      <div class="container">
+        <slot />
+      </div>
+    </main>
   </div>
-  <MobileNav />
 </template>
