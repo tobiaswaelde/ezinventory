@@ -49,6 +49,11 @@ const sourceOptions = computed(() => {
   }));
 });
 
+const sourceTypeOptions = [
+  { label: 'Items', value: 'items' },
+  { label: 'Containers', value: 'containers' }
+] as const;
+
 const refreshData = async (): Promise<void> => {
   if (!isAuthenticated.value) {
     return;
@@ -196,10 +201,13 @@ watch(
 
     <div class="field">
       <label for="source-type">Source</label>
-      <select id="source-type" v-model="sourceType">
-        <option value="items">Items</option>
-        <option value="containers">Containers</option>
-      </select>
+      <USelect
+        id="source-type"
+        v-model="sourceType"
+        :options="sourceTypeOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field">
@@ -214,7 +222,7 @@ watch(
 
     <div class="selector-list">
       <label v-for="row in sourceOptions" :key="row.id" class="selector-item">
-        <input :checked="selectedEntityIds.includes(row.id)" type="checkbox" @change="toggleEntity(row.id)" />
+        <UCheckbox :model-value="selectedEntityIds.includes(row.id)" @update:model-value="toggleEntity(row.id)" />
         <span>
           <strong>{{ row.displayName }}</strong>
           <small>{{ row.code }}</small>

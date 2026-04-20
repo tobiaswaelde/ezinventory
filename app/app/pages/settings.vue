@@ -24,6 +24,17 @@ const {
 const roleOptions: UserRole[] = ['VIEWER', 'STAFF', 'MANAGER', 'ADMIN'];
 const actionOptions: CaslAction[] = ['read', 'create', 'update', 'delete', 'scan', 'stock-out'];
 const subjectOptions: CaslSubject[] = ['Category', 'Item', 'Location', 'Container', 'Stock', 'User', 'Auth', 'all'];
+const registrationModeOptions = [
+  { label: 'ADMIN_ONLY', value: 'ADMIN_ONLY' },
+  { label: 'OPEN', value: 'OPEN' }
+] as const;
+const roleSelectOptions = roleOptions.map((role) => ({ label: role, value: role }));
+const languageOptions = [
+  { label: 'English', value: 'en' },
+  { label: 'Deutsch', value: 'de' }
+] as const;
+const actionSelectOptions = actionOptions.map((action) => ({ label: action, value: action }));
+const subjectSelectOptions = subjectOptions.map((subject) => ({ label: subject, value: subject }));
 
 const isAdmin = computed(() => user.value?.role === 'ADMIN');
 const setupInitialized = ref(false);
@@ -285,10 +296,13 @@ onMounted(async () => {
 
     <div class="field">
       <label for="registrationMode">Mode</label>
-      <select id="registrationMode" v-model="registrationMode">
-        <option value="ADMIN_ONLY">ADMIN_ONLY</option>
-        <option value="OPEN">OPEN</option>
-      </select>
+      <USelect
+        id="registrationMode"
+        v-model="registrationMode"
+        :options="registrationModeOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <UButton color="primary" variant="solid" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
@@ -317,17 +331,24 @@ onMounted(async () => {
 
     <div class="field">
       <label for="role">Role</label>
-      <select id="role" v-model="newUserForm.role">
-        <option v-for="role in roleOptions" :key="role" :value="role">{{ role }}</option>
-      </select>
+      <USelect
+        id="role"
+        v-model="newUserForm.role"
+        :options="roleSelectOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field">
       <label for="preferredLanguage">Preferred Language</label>
-      <select id="preferredLanguage" v-model="newUserForm.preferredLanguage">
-        <option value="en">English</option>
-        <option value="de">Deutsch</option>
-      </select>
+      <USelect
+        id="preferredLanguage"
+        v-model="newUserForm.preferredLanguage"
+        :options="languageOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <UButton color="primary" variant="solid" :disabled="userSaving" @click="createManagedUser">
@@ -342,16 +363,24 @@ onMounted(async () => {
 
     <div class="field">
       <label for="policy-action">Action</label>
-      <select id="policy-action" v-model="newPolicyForm.action">
-        <option v-for="action in actionOptions" :key="action" :value="action">{{ action }}</option>
-      </select>
+      <USelect
+        id="policy-action"
+        v-model="newPolicyForm.action"
+        :options="actionSelectOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field">
       <label for="policy-subject">Subject</label>
-      <select id="policy-subject" v-model="newPolicyForm.subject">
-        <option v-for="subject in subjectOptions" :key="subject" :value="subject">{{ subject }}</option>
-      </select>
+      <USelect
+        id="policy-subject"
+        v-model="newPolicyForm.subject"
+        :options="subjectSelectOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field">
@@ -365,7 +394,7 @@ onMounted(async () => {
     </div>
 
     <label class="checkbox-row">
-      <input v-model="newPolicyForm.inverted" type="checkbox" />
+      <UCheckbox v-model="newPolicyForm.inverted" />
       <span>Inverted (`cannot` rule)</span>
     </label>
 
@@ -398,9 +427,13 @@ onMounted(async () => {
 
       <div class="field">
         <label :for="`role-${managedUser.id}`">Role</label>
-        <select :id="`role-${managedUser.id}`" v-model="roleDraftByUser[managedUser.id]">
-          <option v-for="role in roleOptions" :key="role" :value="role">{{ role }}</option>
-        </select>
+        <USelect
+          :id="`role-${managedUser.id}`"
+          v-model="roleDraftByUser[managedUser.id]"
+          :options="roleSelectOptions"
+          option-attribute="label"
+          value-attribute="value"
+        />
       </div>
 
       <UButton color="neutral" variant="soft" :disabled="roleSavingByUser[managedUser.id]" @click="saveUserRole(managedUser.id)">
@@ -409,10 +442,9 @@ onMounted(async () => {
 
       <div class="policy-grid">
         <label v-for="policy in permissionPolicies" :key="policy.id" class="policy-check-row">
-          <input
-            :checked="(policyDraftByUser[managedUser.id] ?? []).includes(policy.id)"
-            type="checkbox"
-            @change="togglePolicyForUser(managedUser.id, policy.id)"
+          <UCheckbox
+            :model-value="(policyDraftByUser[managedUser.id] ?? []).includes(policy.id)"
+            @update:model-value="togglePolicyForUser(managedUser.id, policy.id)"
           />
           <span>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</span>
         </label>

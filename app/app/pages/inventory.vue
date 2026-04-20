@@ -30,6 +30,13 @@ const sortedLocations = computed(() => {
   return [...locations.value].sort((a, b) => a.name.localeCompare(b.name));
 });
 
+const locationOptions = computed(() => {
+  return sortedLocations.value.map((location) => ({
+    label: `${location.name} (${location.code})`,
+    value: location.id
+  }));
+});
+
 const availableParents = computed(() => {
   if (!containerForm.locationId) {
     return [] as ContainerResponse[];
@@ -37,6 +44,24 @@ const availableParents = computed(() => {
 
   return containers.value.filter((container) => container.locationId === containerForm.locationId);
 });
+
+const parentContainerOptions = computed(() => {
+  return [
+    { label: 'No parent (root)', value: '' },
+    ...availableParents.value.map((container) => ({
+      label: `${container.name} (${container.code})`,
+      value: container.id
+    }))
+  ];
+});
+
+const containerTypeOptions = [
+  { label: 'Shelf', value: 'SHELF' },
+  { label: 'Box', value: 'BOX' },
+  { label: 'Fridge', value: 'FRIDGE' },
+  { label: 'Bin', value: 'BIN' },
+  { label: 'Custom', value: 'CUSTOM' }
+] as const;
 
 const containersByLocation = computed(() => {
   const map = new Map<string, ContainerResponse[]>();
@@ -205,33 +230,36 @@ watch(
 
     <div class="field">
       <label for="container-location">Location</label>
-      <select id="container-location" v-model="containerForm.locationId">
-        <option value="" disabled>Select location</option>
-        <option v-for="location in sortedLocations" :key="location.id" :value="location.id">
-          {{ location.name }} ({{ location.code }})
-        </option>
-      </select>
+      <USelect
+        id="container-location"
+        v-model="containerForm.locationId"
+        :options="locationOptions"
+        option-attribute="label"
+        value-attribute="value"
+        placeholder="Select location"
+      />
     </div>
 
     <div class="field">
       <label for="container-parent">Parent container (optional)</label>
-      <select id="container-parent" v-model="containerForm.parentContainerId">
-        <option value="">No parent (root)</option>
-        <option v-for="container in availableParents" :key="container.id" :value="container.id">
-          {{ container.name }} ({{ container.code }})
-        </option>
-      </select>
+      <USelect
+        id="container-parent"
+        v-model="containerForm.parentContainerId"
+        :options="parentContainerOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field">
       <label for="container-type">Type</label>
-      <select id="container-type" v-model="containerForm.type">
-        <option value="SHELF">Shelf</option>
-        <option value="BOX">Box</option>
-        <option value="FRIDGE">Fridge</option>
-        <option value="BIN">Bin</option>
-        <option value="CUSTOM">Custom</option>
-      </select>
+      <USelect
+        id="container-type"
+        v-model="containerForm.type"
+        :options="containerTypeOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field">

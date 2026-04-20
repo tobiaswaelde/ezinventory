@@ -11,6 +11,11 @@ const scanMessage = ref('');
 const actionMessage = ref('');
 const stockOutQuantity = ref(1);
 const isScanning = ref(false);
+const quickActionOptions = [
+  { label: 'Stock Out', value: 'stock-out' },
+  { label: 'Stock In', value: 'stock-in' },
+  { label: 'Transfer', value: 'transfer' }
+] as const;
 
 let reader: { decodeFromVideoDevice: Function; reset: () => void } | null = null;
 let controls: { stop: () => void } | null = null;
@@ -162,11 +167,13 @@ onBeforeUnmount(() => {
 
     <div class="field">
       <label for="action">Quick action</label>
-      <select id="action" v-model="selectedAction">
-        <option value="stock-out">Stock Out</option>
-        <option value="stock-in">Stock In</option>
-        <option value="transfer">Transfer</option>
-      </select>
+      <USelect
+        id="action"
+        v-model="selectedAction"
+        :options="quickActionOptions"
+        option-attribute="label"
+        value-attribute="value"
+      />
     </div>
 
     <div class="field" v-if="selectedAction === 'stock-out'">
