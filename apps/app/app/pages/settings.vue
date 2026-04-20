@@ -14,9 +14,9 @@
       <USelect
         id="registrationMode"
         v-model="registrationMode"
-        :options="registrationModeOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="registrationModeOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 
@@ -52,9 +52,9 @@
       <USelect
         id="role"
         v-model="newUserForm.role"
-        :options="roleSelectOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="roleSelectOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 
@@ -63,9 +63,9 @@
       <USelect
         id="preferredLanguage"
         v-model="newUserForm.preferredLanguage"
-        :options="languageOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="languageOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 
@@ -84,9 +84,9 @@
       <USelect
         id="policy-action"
         v-model="newPolicyForm.action"
-        :options="actionSelectOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="actionSelectOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 
@@ -95,9 +95,9 @@
       <USelect
         id="policy-subject"
         v-model="newPolicyForm.subject"
-        :options="subjectSelectOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="subjectSelectOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 
@@ -149,9 +149,9 @@
         <USelect
           :id="`role-${managedUser.id}`"
           v-model="roleDraftByUser[managedUser.id]"
-          :options="roleSelectOptions"
-          option-attribute="label"
-          value-attribute="value"
+          :items="roleSelectOptions"
+          label-key="label"
+          value-key="value"
         />
       </div>
 

@@ -35,7 +35,7 @@
 
     <div class="field">
       <label for="preferredLanguage">Preferred language</label>
-      <USelect id="preferredLanguage" v-model="form.preferredLanguage" :options="['en', 'de']" />
+      <USelect id="preferredLanguage" v-model="form.preferredLanguage" :items="['en', 'de']" />
     </div>
 
     <div class="auth-actions">

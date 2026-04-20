@@ -40,9 +40,9 @@
       <USelect
         id="container-location"
         v-model="containerForm.locationId"
-        :options="locationOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="locationOptions"
+        label-key="label"
+        value-key="value"
         placeholder="Select location"
       />
       <p v-if="containerErrors.locationId" class="error">{{ containerErrors.locationId }}</p>
@@ -53,9 +53,9 @@
       <USelect
         id="container-parent"
         v-model="containerForm.parentContainerId"
-        :options="parentContainerOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="parentContainerOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 
@@ -64,9 +64,9 @@
       <USelect
         id="container-type"
         v-model="containerForm.type"
-        :options="containerTypeOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="containerTypeOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 

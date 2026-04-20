@@ -44,9 +44,9 @@
       <USelect
         id="action"
         v-model="selectedAction"
-        :options="quickActionOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="quickActionOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 

@@ -3,13 +3,15 @@
     <LayoutSidebar />
 
     <UDashboardPanel>
-      <LayoutNavbar :title="title" />
+      <template #header>
+        <LayoutNavbar :title="title" />
+      </template>
 
-      <UDashboardPanelContent>
+      <template #body>
         <div class="container">
           <slot />
         </div>
-      </UDashboardPanelContent>
+      </template>
     </UDashboardPanel>
   </UDashboardGroup>
 </template>

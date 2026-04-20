@@ -10,9 +10,9 @@
       <USelect
         id="source-type"
         v-model="sourceType"
-        :options="sourceTypeOptions"
-        option-attribute="label"
-        value-attribute="value"
+        :items="sourceTypeOptions"
+        label-key="label"
+        value-key="value"
       />
     </div>
 

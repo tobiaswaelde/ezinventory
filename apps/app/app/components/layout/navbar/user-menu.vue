@@ -2,9 +2,9 @@
   <div class="flex items-center gap-2">
     <USelect
       :model-value="locale"
-      :options="localeOptions"
-      option-attribute="label"
-      value-attribute="value"
+      :items="localeOptions"
+      label-key="label"
+      value-key="value"
       class="w-28"
       @update:model-value="(value) => setLocale(value as 'en' | 'de')"
     />
