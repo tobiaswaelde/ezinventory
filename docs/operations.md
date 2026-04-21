@@ -20,3 +20,7 @@ Images are built and pushed via:
 See runbook:
 
 - `.ai/14-deployment-runbook.md`
+
+## Releases
+
+- Release and versioning process: `/release-strategy`

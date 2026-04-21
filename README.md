@@ -41,6 +41,7 @@ docker compose up --build
 - Local docs dev server: `pnpm docs:dev`
 - Build docs: `pnpm docs:build`
 - Published docs (GitHub Pages): `https://tobiaswaelde.github.io/ezinventory/`
+- Release strategy: `docs/release-strategy.md`
 
 ## Deployment Images (GHCR)
 - API image: `ghcr.io/tobiaswaelde/ezinventory-api`
