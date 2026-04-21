@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContainerType, IconSet } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { ContainerType as ContainerTypeType, IconSet as IconSetType } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+
+const { ContainerType, IconSet } = prismaClient as typeof import('@prisma/client');
 
 export class CreateContainerDto {
   @ApiProperty({ format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440123' })
@@ -14,7 +17,7 @@ export class CreateContainerDto {
 
   @ApiProperty({ enum: ContainerType, example: ContainerType.BOX })
   @IsEnum(ContainerType)
-  type!: ContainerType;
+  type!: ContainerTypeType;
 
   @ApiProperty({ example: 'Freezer Drawer 1' })
   @IsString()
@@ -37,7 +40,7 @@ export class CreateContainerDto {
   @ApiProperty({ required: false, enum: IconSet, example: IconSet.LUCIDE })
   @IsOptional()
   @IsEnum(IconSet)
-  iconSet?: IconSet;
+  iconSet?: IconSetType;
 
   @ApiProperty({ required: false, example: 'refrigerator' })
   @IsOptional()

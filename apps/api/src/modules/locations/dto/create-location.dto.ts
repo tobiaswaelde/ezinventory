@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IconSet } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { IconSet as IconSetType } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUppercase, MaxLength } from 'class-validator';
+
+const { IconSet } = prismaClient as typeof import('@prisma/client');
 
 export class CreateLocationDto {
   @ApiProperty({ example: 'Garage' })
@@ -25,7 +28,7 @@ export class CreateLocationDto {
   @ApiProperty({ required: false, enum: IconSet, example: IconSet.TABLER })
   @IsOptional()
   @IsEnum(IconSet)
-  iconSet?: IconSet;
+  iconSet?: IconSetType;
 
   @ApiProperty({ required: false, example: 'building-warehouse' })
   @IsOptional()

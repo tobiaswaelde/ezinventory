@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { UserRole as UserRoleType } from '@prisma/client';
 import { IsEmail, IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+
+const { UserRole } = prismaClient as typeof import('@prisma/client');
 
 export class CreateUserByAdminDto {
   @ApiProperty({ example: 'team.member@example.com' })
@@ -24,7 +27,7 @@ export class CreateUserByAdminDto {
 
   @ApiProperty({ enum: UserRole, example: UserRole.STAFF })
   @IsEnum(UserRole)
-  role!: UserRole;
+  role!: UserRoleType;
 
   @ApiProperty({ required: false, enum: ['de', 'en'], example: 'en' })
   @IsOptional()

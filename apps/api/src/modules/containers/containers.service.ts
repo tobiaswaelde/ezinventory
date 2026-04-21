@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 import { CreateContainerDto } from '~/modules/containers/dto/create-container.dto.js';
 import { PrismaService } from '~/prisma/prisma.service.js';

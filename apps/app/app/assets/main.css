@@ -35,6 +35,23 @@ body {
   margin-bottom: 0.8rem;
 }
 
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.card h1,
+.card h2,
+.card h3 {
+  margin: 0 0 0.5rem;
+}
+
+.card p {
+  margin: 0.25rem 0 0.75rem;
+}
+
 .error {
   color: rgb(220, 38, 38);
   font-size: 0.85rem;

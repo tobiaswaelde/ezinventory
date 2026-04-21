@@ -19,16 +19,11 @@ COPY packages/eslint-config packages/eslint-config
 WORKDIR /repo/apps/api
 RUN pnpm build
 
-WORKDIR /repo
-RUN pnpm deploy --filter @ezinventory/api --prod --legacy /out
-
-FROM node:22-alpine AS runtime
+FROM build AS runtime
 
 ENV NODE_ENV=production
 
-WORKDIR /app
-
-COPY --from=build /out /app
+WORKDIR /repo/apps/api
 
 EXPOSE 3001
 

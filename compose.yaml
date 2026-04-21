@@ -7,15 +7,13 @@ services:
       POSTGRES_USER: ezinventory
       POSTGRES_PASSWORD: ezinventory
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   rustfs:
     image: rustfs/rustfs:latest
     container_name: ezinventory-rustfs
-    ports:
-      - "9000:9000"
     volumes:
       - rustfs_data:/data
 
@@ -27,6 +25,9 @@ services:
     environment:
       PORT: 3001
       DATABASE_URL: postgresql://ezinventory:ezinventory@postgres:5432/ezinventory
+      SHADOW_DATABASE_URL: postgresql://ezinventory:ezinventory@postgres:5432/ezinventory_shadow
+      RUSTFS_ENDPOINT: http://rustfs:9000
+      RUSTFS_PUBLIC_BASE_URL: http://rustfs:9000
     ports:
       - "3001:3001"
     depends_on:
@@ -34,8 +35,8 @@ services:
 
   app:
     build:
-      context: ./apps/app
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/app/Dockerfile
     container_name: ezinventory-app
     environment:
       NUXT_PUBLIC_API_BASE_URL: http://localhost:3001/api/v1

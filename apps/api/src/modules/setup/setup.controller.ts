@@ -8,7 +8,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
-import { UserRole } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { UserRole as UserRoleType } from '@prisma/client';
 
 import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.types.js';
 import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
@@ -21,6 +22,8 @@ import { ReplaceUserPoliciesDto } from '~/modules/setup/dto/replace-user-policie
 import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
 import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
 import { SetupService } from '~/modules/setup/setup.service.js';
+
+const { UserRole } = prismaClient as typeof import('@prisma/client');
 
 @ApiTags('setup')
 @Controller('setup')
@@ -100,7 +103,7 @@ export class SetupController {
   @ApiBadRequestResponse({ description: 'Validation failed for create-user payload.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to create users.' })
-  async createUserByAdmin(@Body() dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRole }> {
+  async createUserByAdmin(@Body() dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRoleType }> {
     return await this.setupService.createUserByAdmin(dto);
   }
 
@@ -134,7 +137,7 @@ export class SetupController {
       id: string;
       email: string;
       displayName: string;
-      role: UserRole;
+      role: UserRoleType;
       preferredLanguage: string;
       createdAt: Date;
       updatedAt: Date;
@@ -164,7 +167,7 @@ export class SetupController {
   async updateUserRole(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() dto: UpdateUserRoleDto
-  ): Promise<{ id: string; role: UserRole }> {
+  ): Promise<{ id: string; role: UserRoleType }> {
     return await this.setupService.updateUserRole(userId, dto);
   }
 

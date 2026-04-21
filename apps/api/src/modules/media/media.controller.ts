@@ -1,12 +1,14 @@
 import { Controller, FileTypeValidator, Get, Inject, MaxFileSizeValidator, Param, ParseFilePipe, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { AttachmentOwnerType } from '@prisma/client';
+import prismaClient from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import { MediaService, type StorageHealthResult, type UploadedImageFile, type UploadedImageResult } from '~/modules/media/media.service.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
+
+const { AttachmentOwnerType } = prismaClient as typeof import('@prisma/client');
 
 @ApiTags('media')
 @Controller('media')

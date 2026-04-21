@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, UserRole } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { Prisma as PrismaType, UserRole as UserRoleType } from '@prisma/client';
 import argon2 from 'argon2';
 
 import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.types.js';
@@ -12,11 +13,13 @@ import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
 import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/setup.constants.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
 
+const { Prisma, UserRole } = prismaClient as typeof import('@prisma/client');
+
 type UserWithPolicies = {
   id: string;
   email: string;
   displayName: string;
-  role: UserRole;
+  role: UserRoleType;
   preferredLanguage: string;
   createdAt: Date;
   updatedAt: Date;
@@ -131,7 +134,7 @@ export class SetupService {
     return { mode: dto.mode };
   }
 
-  async createUserByAdmin(dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRole }> {
+  async createUserByAdmin(dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRoleType }> {
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email.toLowerCase() },
       select: { id: true }
@@ -192,7 +195,7 @@ export class SetupService {
     }));
   }
 
-  async updateUserRole(userId: string, dto: UpdateUserRoleDto): Promise<{ id: string; role: UserRole }> {
+  async updateUserRole(userId: string, dto: UpdateUserRoleDto): Promise<{ id: string; role: UserRoleType }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true }
@@ -244,7 +247,7 @@ export class SetupService {
       data: {
         action: dto.action,
         subject: dto.subject,
-        conditions: dto.conditions ? (dto.conditions as Prisma.InputJsonValue) : Prisma.JsonNull,
+        conditions: dto.conditions ? (dto.conditions as PrismaType.InputJsonValue) : Prisma.JsonNull,
         inverted: dto.inverted ?? false,
         reason: dto.reason ?? null
       },

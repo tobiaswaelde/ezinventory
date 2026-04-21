@@ -9,7 +9,8 @@ import {
   UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PasskeyChallengePurpose, UserRole } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { PasskeyChallengePurpose as PasskeyChallengePurposeType, UserRole as UserRoleType } from '@prisma/client';
 import argon2 from 'argon2';
 import {
   generateAuthenticationOptions,
@@ -34,6 +35,8 @@ import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.
 import { PrismaService } from '~/prisma/prisma.service.js';
 import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/setup.constants.js';
 import { RegistrationMode } from '~/modules/setup/dto/update-registration-mode.dto.js';
+
+const { PasskeyChallengePurpose, UserRole } = prismaClient as typeof import('@prisma/client');
 
 type AuthTokens = {
   accessToken: string;
@@ -455,7 +458,7 @@ export class AuthService {
     return { loggedOut: true };
   }
 
-  private async issueTokens(user: { id: string; email: string; role: UserRole; preferredLanguage: string }): Promise<AuthTokens> {
+  private async issueTokens(user: { id: string; email: string; role: UserRoleType; preferredLanguage: string }): Promise<AuthTokens> {
     const sessionId = crypto.randomUUID();
 
     const accessToken = await this.jwtService.signAsync(
@@ -548,7 +551,7 @@ export class AuthService {
     return value * unitMs[unit];
   }
 
-  private async storeChallenge(userId: string, purpose: PasskeyChallengePurpose, challenge: string): Promise<void> {
+  private async storeChallenge(userId: string, purpose: PasskeyChallengePurposeType, challenge: string): Promise<void> {
     await this.prisma.passkeyChallenge.upsert({
       where: { userId_purpose: { userId, purpose } },
       update: {
@@ -564,7 +567,7 @@ export class AuthService {
     });
   }
 
-  private async consumeChallenge(userId: string, purpose: PasskeyChallengePurpose): Promise<string> {
+  private async consumeChallenge(userId: string, purpose: PasskeyChallengePurposeType): Promise<string> {
     const challenge = await this.prisma.passkeyChallenge.findUnique({
       where: { userId_purpose: { userId, purpose } }
     });

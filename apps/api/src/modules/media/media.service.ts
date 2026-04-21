@@ -1,8 +1,11 @@
 import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
-import { AttachmentOwnerType } from '@prisma/client';
+import prismaClient from '@prisma/client';
+import type { AttachmentOwnerType as AttachmentOwnerTypeType } from '@prisma/client';
 
 import { ENV } from '~/config/env.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
+
+const { AttachmentOwnerType } = prismaClient as typeof import('@prisma/client');
 
 export type UploadedImageFile = {
   originalname: string;
@@ -21,7 +24,7 @@ export type StorageHealthResult = {
 
 export type UploadedImageResult = {
   id: string;
-  ownerType: AttachmentOwnerType;
+  ownerType: AttachmentOwnerTypeType;
   ownerId: string;
   fileName: string;
   mimeType: string;

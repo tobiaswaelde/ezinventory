@@ -1,11 +1,13 @@
 import { AbilityBuilder, createMongoAbility } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
+import prismaClient from '@prisma/client';
 
 import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.types.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 import type { AppAbility } from '~/modules/auth/casl/casl-ability.types.js';
 import { PrismaService } from '~/prisma/prisma.service.js';
+
+const { UserRole } = prismaClient as typeof import('@prisma/client');
 
 @Injectable()
 export class CaslAbilityFactory {
