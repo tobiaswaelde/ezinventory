@@ -28,6 +28,12 @@ Run E2E tests:
 pnpm --filter @ezinventory/app test
 ```
 
+Run focused happy-path E2E:
+
+```bash
+pnpm --filter @ezinventory/app exec playwright test e2e/happy-path.spec.ts
+```
+
 Run E2E tests in headed mode:
 
 ```bash
