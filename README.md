@@ -47,6 +47,8 @@ docker compose up --build
 - API image: `ghcr.io/tobiaswaelde/ezinventory-api`
 - App image: `ghcr.io/tobiaswaelde/ezinventory-app`
 - Build & push workflow: `.github/workflows/deploy-ghcr.yml`
+- GHCR deployment manifest: `compose.ghcr.yaml`
+- Deployment env template: `.env.deploy.example`
 - Deployment runbook: `.ai/14-deployment-runbook.md`
 
 ## Notes

@@ -9,6 +9,9 @@ This runbook documents image build/push and rollout basics for:
 
 Workflow: `.github/workflows/deploy-ghcr.yml`
 
+Deployment manifest (GHCR images): `compose.ghcr.yaml`
+Environment template: `.env.deploy.example`
+
 ## Image Tagging Strategy
 
 - `main`: latest build from `main`
@@ -38,6 +41,18 @@ Workflow: `.github/workflows/deploy-ghcr.yml`
 
 - `NUXT_PUBLIC_API_BASE_URL`
 
+## Compose Deployment (GHCR)
+
+1. Copy env template:
+   - `cp .env.deploy.example .env.deploy`
+2. Set production secrets and endpoints in `.env.deploy`.
+3. Deploy pinned image tag:
+   - `EZINV_IMAGE_TAG=sha-<shortsha> docker compose --env-file .env.deploy -f compose.ghcr.yaml pull`
+   - `EZINV_IMAGE_TAG=sha-<shortsha> docker compose --env-file .env.deploy -f compose.ghcr.yaml up -d`
+4. Verify health:
+   - `docker compose -f compose.ghcr.yaml ps`
+   - `curl http://<host>:3001/api/v1/health`
+
 ## Rollout Strategy
 
 1. Select immutable image tag (`sha-*` or release tag).
@@ -56,6 +71,8 @@ Workflow: `.github/workflows/deploy-ghcr.yml`
    - `/api/v1/health`
    - sign-in flow
    - create/read inventory entities
+4. Rollback command (example):
+   - `EZINV_IMAGE_TAG=sha-<previous> docker compose --env-file .env.deploy -f compose.ghcr.yaml up -d`
 
 ## Notes
 
