@@ -1,4 +1,5 @@
 import type {
+  ApiResponse,
   AdminCreatedUser,
   ContainerResponse,
   CreateContainerPayload,
@@ -13,6 +14,7 @@ import type {
   ReplaceUserPoliciesResponse,
   RoleBasedUser,
   SetupStatus,
+  UpdateRegistrationModeResponse,
   UpdateRegistrationModePayload
 } from '@ezinventory/contracts';
 
@@ -67,12 +69,12 @@ export function useApiClient() {
     });
   };
 
-  const health = async (): Promise<{ status: 'ok' }> => {
-    return await $fetch<{ status: 'ok' }>('/health', { baseURL });
+  const health = async (): Promise<ApiResponse<'/health', 'get', 200>> => {
+    return await $fetch<ApiResponse<'/health', 'get', 200>>('/health', { baseURL });
   };
 
-  const updateRegistrationMode = async (payload: UpdateRegistrationModePayload): Promise<{ mode: 'OPEN' | 'ADMIN_ONLY' }> => {
-    return await authorizedFetch<{ mode: 'OPEN' | 'ADMIN_ONLY' }>('/setup/registration-mode', {
+  const updateRegistrationMode = async (payload: UpdateRegistrationModePayload): Promise<UpdateRegistrationModeResponse> => {
+    return await authorizedFetch<UpdateRegistrationModeResponse>('/setup/registration-mode', {
       method: 'PATCH',
       body: payload
     });

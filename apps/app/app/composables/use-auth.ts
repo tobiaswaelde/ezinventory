@@ -2,10 +2,14 @@ import type {
   AuthTokens,
   AuthUser,
   LoginPayload,
+  LogoutPayload,
+  LogoutResponse,
   PasskeyLoginOptionsResponse,
   PasskeyRegisterOptionsResponse,
   PasskeyRegisterVerifyResponse,
-  RegisterPayload
+  RefreshTokenPayload,
+  RegisterPayload,
+  UpdatePreferredLanguageResponse
 } from '@ezinventory/contracts';
 
 const ACCESS_TOKEN_KEY = 'ezinventory.access_token';
@@ -202,7 +206,7 @@ export function useAuth() {
       const tokens = await $fetch<AuthTokens>('/auth/refresh', {
         method: 'POST',
         baseURL,
-        body: { refreshToken: refreshToken.value }
+        body: { refreshToken: refreshToken.value } satisfies RefreshTokenPayload
       });
 
       setTokens(tokens);
@@ -219,10 +223,10 @@ export function useAuth() {
   const logout = async (): Promise<void> => {
     if (refreshToken.value) {
       try {
-        await $fetch('/auth/logout', {
+        await $fetch<LogoutResponse>('/auth/logout', {
           method: 'POST',
           baseURL,
-          body: { refreshToken: refreshToken.value }
+          body: { refreshToken: refreshToken.value } satisfies LogoutPayload
         });
       } catch {
         // No-op: we always clear local auth state afterwards.
@@ -233,7 +237,7 @@ export function useAuth() {
   };
 
   const updatePreferredLanguage = async (preferredLanguage: 'de' | 'en'): Promise<void> => {
-    const result = await authorizedFetch<{ id: string; preferredLanguage: 'de' | 'en' }>('/auth/me/language', {
+    const result = await authorizedFetch<UpdatePreferredLanguageResponse>('/auth/me/language', {
       method: 'PATCH',
       body: { preferredLanguage }
     });
