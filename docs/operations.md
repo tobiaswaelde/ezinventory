@@ -5,6 +5,7 @@
 - API lint/test workflows
 - App lint/test workflows
 - Coverage upload to Codecov
+- App test runbook: `/testing-app`
 
 ## Container Images
 

@@ -8,6 +8,7 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/' },
       { text: 'Architecture', link: '/architecture' },
+      { text: 'Testing (App)', link: '/testing-app' },
       { text: 'Operations', link: '/operations' },
       { text: 'Release', link: '/release-strategy' }
     ],
@@ -17,6 +18,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/' },
           { text: 'Architecture', link: '/architecture' },
+          { text: 'Testing (App)', link: '/testing-app' },
           { text: 'Operations', link: '/operations' },
           { text: 'Release Strategy', link: '/release-strategy' }
         ]
