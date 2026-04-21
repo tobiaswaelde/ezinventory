@@ -57,6 +57,12 @@
 
 <script setup lang="ts">
 import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui';
+import {
+  validateSignupInput,
+  validatePasskeyRegistrationInput,
+  normalizeEmail,
+  normalizeText
+} from '~/utils/auth-validation';
 
 definePageMeta({
   layout: 'auth'
@@ -150,18 +156,18 @@ const submit = async (
   passkeyError.value = '';
   passkeyMessage.value = '';
 
-  const email = event.data.email?.trim() ?? '';
+  const normalizedEmail = normalizeEmail(event.data.email);
   const password = event.data.password ?? '';
-  const displayName = event.data.displayName?.trim() ?? '';
+  const displayName = normalizeText(event.data.displayName);
   const preferredLanguage = event.data.preferredLanguage === 'de' ? 'de' : 'en';
 
-  if (!email || !password.trim()) {
-    signupError.value = 'Please provide email and password.';
-    return;
-  }
-
-  if (displayName.length < 2) {
-    signupError.value = 'Display name must have at least 2 characters.';
+  const validationError = validateSignupInput({
+    email: normalizedEmail,
+    password,
+    displayName
+  });
+  if (validationError) {
+    signupError.value = validationError;
     return;
   }
 
@@ -169,7 +175,7 @@ const submit = async (
 
   try {
     await register({
-      email,
+      email: normalizedEmail,
       password,
       displayName,
       preferredLanguage
@@ -188,12 +194,13 @@ const submitPasskeyRegister = async (
   passkeyError.value = '';
   passkeyMessage.value = '';
 
-  const email = event.data.email?.trim() ?? '';
+  const email = normalizeEmail(event.data.email);
   const password = event.data.password ?? '';
-  const passkeyDeviceName = event.data.passkeyDeviceName?.trim() ?? '';
+  const passkeyDeviceName = normalizeText(event.data.passkeyDeviceName);
 
-  if (!email || !password.trim()) {
-    passkeyError.value = 'Email and password are required for passkey registration.';
+  const validationError = validatePasskeyRegistrationInput({ email, password });
+  if (validationError) {
+    passkeyError.value = validationError;
     return;
   }
 

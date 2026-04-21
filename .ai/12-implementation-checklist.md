@@ -32,6 +32,7 @@ Last updated: 2026-04-21
 - [x] Mobile-first UI pass for MVP screens
 - [x] PWA installability/offline caching finalization
 - [ ] Full client-side input validation coverage
+- [x] Auth form validation extracted into shared client validation utilities + unit tests
 - [x] i18n integration (`de`, `en`) (baseline)
 - [x] Persist language per user profile (baseline)
 - [x] Persist theme in local storage or cookies
