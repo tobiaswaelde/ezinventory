@@ -1,29 +1,67 @@
-# Operations
+# Operations (Admin)
 
-## CI
+This page is the practical runbook for admins operating EZ Inventory with Docker.
 
-- API lint/test workflows
-- App lint/test workflows
-- Coverage upload to Codecov
-- App test runbook: `/testing-app`
+## Service Health
 
-## Container Images
+Check if services are up:
 
-- `ghcr.io/tobiaswaelde/ezinventory-api`
-- `ghcr.io/tobiaswaelde/ezinventory-app`
+```bash
+docker compose ps
+```
 
-Images are built and pushed via:
+Check API health endpoint:
 
-- `.github/workflows/deploy-ghcr.yml`
-- GHCR deployment manifest: `compose.ghcr.yaml`
-- Deployment env template: `.env.deploy.example`
+```bash
+curl -s http://localhost:3001/api/v1/health
+```
 
-## Rollout / Rollback
+## Logs
 
-See runbook:
+Follow app/API logs:
 
-- `.ai/14-deployment-runbook.md`
+```bash
+docker compose logs -f app
+docker compose logs -f api
+```
 
-## Releases
+## Updates and Rollouts
 
-- Release and versioning process: `/release-strategy`
+Pull latest changes and redeploy:
+
+```bash
+git pull
+docker compose up -d --build
+```
+
+## Rollback
+
+Use your previous Git commit/tag and redeploy:
+
+```bash
+git checkout <tag-or-commit>
+docker compose up -d --build
+```
+
+## Environment Management
+
+Review these files before deployment:
+- `.env.deploy.example`
+- `compose.ghcr.yaml`
+
+Common sensitive values to set securely:
+- `AUTH_ACCESS_TOKEN_SECRET`
+- `AUTH_REFRESH_TOKEN_SECRET`
+- database credentials
+
+## Backups
+
+At minimum, back up:
+- PostgreSQL data volume
+- RustFS storage data
+- `.env` files and deployment manifests
+
+## References
+
+- Release strategy: [/release-strategy](/release-strategy)
+- Architecture reference: [/architecture](/architecture)
