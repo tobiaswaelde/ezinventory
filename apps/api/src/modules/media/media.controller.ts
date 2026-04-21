@@ -34,13 +34,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
+import { DeleteImageResponseDto } from '~/modules/media/dto/delete-image-response.dto.js';
 import { ListMediaLibraryQueryDto } from '~/modules/media/dto/list-media-library-query.dto.js';
-import {
-  DeleteImageResponseDto,
-  MediaLibraryItemResponseDto,
-  StorageHealthResponseDto,
-  UploadedImageResponseDto
-} from '~/modules/media/dto/media-response.dto.js';
+import { MediaLibraryItemResponseDto } from '~/modules/media/dto/media-library-item-response.dto.js';
+import { StorageHealthResponseDto } from '~/modules/media/dto/storage-health-response.dto.js';
+import { UploadedImageResponseDto } from '~/modules/media/dto/uploaded-image-response.dto.js';
 import { MediaService, type UploadedImageFile } from '~/modules/media/media.service.js';
 
 const { AttachmentOwnerType } = prismaClient as typeof import('@prisma/client');

@@ -27,21 +27,19 @@ import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js
 import { LoginDto } from '~/modules/auth/dto/login.dto.js';
 import { PasskeyLoginOptionsDto } from '~/modules/auth/dto/passkey-login-options.dto.js';
 import { PasskeyLoginVerifyDto } from '~/modules/auth/dto/passkey-login-verify.dto.js';
+import { PasskeyListItemResponseDto } from '~/modules/auth/dto/passkey-list-item-response.dto.js';
+import { PasskeyOptionsResponseDto } from '~/modules/auth/dto/passkey-options-response.dto.js';
 import { PasskeyRegisterOptionsDto } from '~/modules/auth/dto/passkey-register-options.dto.js';
+import { PasskeyRegisterVerifyResponseDto } from '~/modules/auth/dto/passkey-register-verify-response.dto.js';
 import { PasskeyRegisterVerifyDto } from '~/modules/auth/dto/passkey-register-verify.dto.js';
 import { RefreshTokenDto } from '~/modules/auth/dto/refresh-token.dto.js';
 import { RegisterDto } from '~/modules/auth/dto/register.dto.js';
-import {
-  AuthenticatedUserDto,
-  AuthTokensResponseDto,
-  DeletePasskeyResponseDto,
-  LogoutResponseDto,
-  PasskeyListItemResponseDto,
-  PasskeyOptionsResponseDto,
-  PasskeyRegisterVerifyResponseDto,
-  UpdatePreferredLanguageResponseDto
-} from '~/modules/auth/dto/auth-response.dto.js';
+import { AuthenticatedUserDto } from '~/modules/auth/dto/authenticated-user-response.dto.js';
+import { AuthTokensResponseDto } from '~/modules/auth/dto/auth-tokens-response.dto.js';
+import { DeletePasskeyResponseDto } from '~/modules/auth/dto/delete-passkey-response.dto.js';
+import { LogoutResponseDto } from '~/modules/auth/dto/logout-response.dto.js';
 import { UpdatePreferredLanguageDto } from '~/modules/auth/dto/update-preferred-language.dto.js';
+import { UpdatePreferredLanguageResponseDto } from '~/modules/auth/dto/update-preferred-language-response.dto.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
 

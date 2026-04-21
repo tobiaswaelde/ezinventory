@@ -31,17 +31,15 @@ import { CreatePermissionPolicyDto } from '~/modules/setup/dto/create-permission
 import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
 import { ListUsersQueryDto } from '~/modules/setup/dto/list-users-query.dto.js';
 import { ReplaceUserPoliciesDto } from '~/modules/setup/dto/replace-user-policies.dto.js';
-import {
-  AdminUserResponseDto,
-  BootstrapAdminResponseDto,
-  PermissionPolicyResponseDto,
-  RegistrationModeResponseDto,
-  ReplaceUserPoliciesResponseDto,
-  SetupStatusResponseDto,
-  SetupUserListItemResponseDto,
-  UpdateUserRoleResponseDto
-} from '~/modules/setup/dto/setup-response.dto.js';
+import { AdminUserResponseDto } from '~/modules/setup/dto/admin-user-response.dto.js';
+import { BootstrapAdminResponseDto } from '~/modules/setup/dto/bootstrap-admin-response.dto.js';
+import { PermissionPolicyResponseDto } from '~/modules/setup/dto/permission-policy-response.dto.js';
+import { RegistrationModeResponseDto } from '~/modules/setup/dto/registration-mode-response.dto.js';
+import { ReplaceUserPoliciesResponseDto } from '~/modules/setup/dto/replace-user-policies-response.dto.js';
+import { SetupStatusResponseDto } from '~/modules/setup/dto/setup-status-response.dto.js';
+import { SetupUserListItemResponseDto } from '~/modules/setup/dto/setup-user-list-item-response.dto.js';
 import { UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
+import { UpdateUserRoleResponseDto } from '~/modules/setup/dto/update-user-role-response.dto.js';
 import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
 import { SetupService } from '~/modules/setup/setup.service.js';
 
