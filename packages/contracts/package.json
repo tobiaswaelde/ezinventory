@@ -19,6 +19,6 @@
     "generate:types": "openapi-typescript ./openapi/ezinventory.openapi.json -o ./src/generated/openapi.ts"
   },
   "devDependencies": {
-    "openapi-typescript": "^7.10.1"
+    "openapi-typescript": "^7.13.0"
   }
 }
