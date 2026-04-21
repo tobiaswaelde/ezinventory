@@ -6,10 +6,23 @@ on:
     branches: [main]
     tags:
       - 'v*'
+    paths:
+      - '.github/workflows/deploy-ghcr.yml'
+      - '.dockerignore'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'apps/api/**'
+      - 'apps/app/**'
+      - 'packages/**'
 
 permissions:
   contents: read
   packages: write
+
+concurrency:
+  group: deploy-ghcr-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-api:
