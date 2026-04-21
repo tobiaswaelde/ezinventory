@@ -1,3 +1,5 @@
+import { useLocalStorage } from '@vueuse/core';
+
 export type SortDirection = 'asc' | 'desc';
 
 export function useTableQueryOptions<TSortBy extends string, TRoleFilter extends string>(options: {
@@ -6,10 +8,10 @@ export function useTableQueryOptions<TSortBy extends string, TRoleFilter extends
   defaultSortDir?: SortDirection;
   defaultRoleFilter: TRoleFilter;
 }) {
-  const search = useState<string>(`table:${options.tableName}:search`, () => '');
-  const roleFilter = useState<TRoleFilter>(`table:${options.tableName}:role-filter`, () => options.defaultRoleFilter);
-  const sortBy = useState<TSortBy>(`table:${options.tableName}:sort-by`, () => options.defaultSortBy);
-  const sortDir = useState<SortDirection>(`table:${options.tableName}:sort-dir`, () => options.defaultSortDir ?? 'asc');
+  const search = useLocalStorage<string>(`table:${options.tableName}:search`, '');
+  const roleFilter = useLocalStorage<TRoleFilter>(`table:${options.tableName}:role-filter`, options.defaultRoleFilter);
+  const sortBy = useLocalStorage<TSortBy>(`table:${options.tableName}:sort-by`, options.defaultSortBy);
+  const sortDir = useLocalStorage<SortDirection>(`table:${options.tableName}:sort-dir`, options.defaultSortDir ?? 'asc');
 
   return {
     search,
