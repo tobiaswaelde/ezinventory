@@ -9,6 +9,7 @@ test-results
 .env
 .env.*
 !.env.example
+!.env.deploy.example
 .DS_Store
 .nx/cache
 .nx/workspace-data

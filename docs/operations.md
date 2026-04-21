@@ -14,6 +14,8 @@
 Images are built and pushed via:
 
 - `.github/workflows/deploy-ghcr.yml`
+- GHCR deployment manifest: `compose.ghcr.yaml`
+- Deployment env template: `.env.deploy.example`
 
 ## Rollout / Rollback
 
