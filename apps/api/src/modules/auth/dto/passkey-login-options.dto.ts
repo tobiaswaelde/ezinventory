@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class PasskeyLoginOptionsDto {
   @ApiProperty({ example: 'user@example.com' })
   @IsEmail()
+  @IsNotEmpty()
   email!: string;
 }

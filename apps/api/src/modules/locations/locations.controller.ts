@@ -1,5 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 
 import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
@@ -17,6 +26,7 @@ export class LocationsController {
   @Post()
   @CheckPolicies({ action: 'create', subject: 'Location' })
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new top-level location' })
   @ApiCreatedResponse({
     schema: {
       type: 'object',
@@ -31,12 +41,16 @@ export class LocationsController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for location payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to create locations.' })
   async createLocation(@Body() dto: CreateLocationDto): Promise<LocationResponse> {
     return await this.locationsService.createLocation(dto);
   }
 
   @Get()
   @CheckPolicies({ action: 'read', subject: 'Location' })
+  @ApiOperation({ summary: 'List all locations' })
   @ApiOkResponse({
     schema: {
       type: 'array',
@@ -54,6 +68,8 @@ export class LocationsController {
       }
     }
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read locations.' })
   async listLocations(): Promise<LocationResponse[]> {
     return await this.locationsService.listLocations();
   }

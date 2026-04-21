@@ -1,5 +1,15 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, NotFoundException, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 
 import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
@@ -18,6 +28,7 @@ export class ItemsController {
   @Post()
   @CheckPolicies({ action: 'create', subject: 'Item' })
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new inventory item' })
   @ApiCreatedResponse({
     schema: {
       type: 'object',
@@ -35,12 +46,16 @@ export class ItemsController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for item payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to create items.' })
   async createItem(@Body() dto: CreateItemDto): Promise<ItemResponse> {
     return await this.itemsService.createItem(dto);
   }
 
   @Get()
   @CheckPolicies({ action: 'read', subject: 'Item' })
+  @ApiOperation({ summary: 'List all inventory items' })
   @ApiOkResponse({
     schema: {
       type: 'array',
@@ -61,12 +76,15 @@ export class ItemsController {
       }
     }
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read items.' })
   async listItems(): Promise<ItemResponse[]> {
     return await this.itemsService.listItems();
   }
 
   @Get('lookup')
   @CheckPolicies({ action: 'read', subject: 'Item' })
+  @ApiOperation({ summary: 'Lookup a single item by scanned code' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -84,6 +102,10 @@ export class ItemsController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Invalid or missing lookup code.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read items.' })
+  @ApiNotFoundResponse({ description: 'No item found for scanned code.' })
   async lookupItem(@Query() query: LookupItemQueryDto): Promise<ItemResponse> {
     const item = await this.itemsService.lookupByCode(query.code.trim());
 
