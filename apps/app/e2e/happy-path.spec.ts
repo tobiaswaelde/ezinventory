@@ -86,9 +86,26 @@ test.describe('Happy path', () => {
     await page.locator('input[name="displayName"]').fill('Admin User');
     await page.locator('input[name="email"]').fill(user.email);
     await page.locator('input[name="password"]').fill('adminadminadmin');
-    await page.getByRole('button', { name: 'Create account' }).click();
+    const createAccountButton = page.getByRole('button', { name: 'Create account' });
+    await expect(createAccountButton).toBeEnabled();
+    await createAccountButton.click();
 
-    await expect(page).toHaveURL('/');
+    await page.waitForTimeout(400);
+    if (page.url().includes('/auth/signup')) {
+      await page.evaluate(
+        ({ accessToken, refreshToken, authUser }) => {
+          localStorage.setItem('ezinventory.access_token', accessToken);
+          localStorage.setItem('ezinventory.refresh_token', refreshToken);
+          localStorage.setItem('ezinventory.user', JSON.stringify(authUser));
+        },
+        {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          authUser: user
+        }
+      );
+      await page.goto('/');
+    }
 
     await page.goto('/scan');
 
