@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import type { ContainerResponse, ItemResponse } from '@ezinventory/contracts';
+import { validateLabelGenerationInput } from '~/utils/labels-validation';
 
 type LabelSourceType = 'items' | 'containers';
 
@@ -74,6 +75,7 @@ type LabelRow = {
 
 const { isAuthenticated } = useAuth();
 const { listContainers, listItems } = useApiClient();
+const { t } = useI18n();
 
 const loading = ref(false);
 const generating = ref(false);
@@ -126,7 +128,7 @@ const refreshData = async (): Promise<void> => {
     items.value = nextItems;
     containers.value = nextContainers;
   } catch {
-    errorMessage.value = 'Could not load entities for labels.';
+    errorMessage.value = t('labels_error_load_entities');
   } finally {
     loading.value = false;
   }
@@ -175,13 +177,12 @@ const renderBarcodes = async (): Promise<void> => {
 const generateLabels = async (): Promise<void> => {
   errorMessage.value = '';
 
-  if (selectedEntityIds.value.length === 0) {
-    errorMessage.value = 'Select at least one entity.';
-    return;
-  }
-
-  if (!Number.isInteger(copiesPerEntity.value) || copiesPerEntity.value < 1) {
-    errorMessage.value = 'Copies per entity must be an integer >= 1.';
+  const validationError = validateLabelGenerationInput({
+    selectedEntityIds: selectedEntityIds.value,
+    copiesPerEntity: copiesPerEntity.value
+  });
+  if (validationError) {
+    errorMessage.value = t(validationError as never);
     return;
   }
 
@@ -223,7 +224,7 @@ const generateLabels = async (): Promise<void> => {
     await nextTick();
     await renderBarcodes();
   } catch {
-    errorMessage.value = 'Could not generate labels.';
+    errorMessage.value = t('labels_error_generate');
   } finally {
     generating.value = false;
   }

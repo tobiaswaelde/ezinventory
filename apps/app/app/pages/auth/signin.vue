@@ -127,7 +127,7 @@ const submit = async (event: FormSubmitEvent<{ email?: string; password?: string
   try {
     await login({ email, password });
   } catch {
-    signinError.value = 'Login failed. Please verify your credentials.';
+    signinError.value = t('auth_error_login_failed');
   } finally {
     submitting.value = false;
   }
@@ -150,7 +150,7 @@ const submitPasskey = async (event: FormSubmitEvent<{ email?: string }>): Promis
   try {
     await loginWithPasskey(email);
   } catch {
-    passkeyError.value = 'Passkey login failed.';
+    passkeyError.value = t('auth_error_passkey_login_failed');
   } finally {
     passkeySubmitting.value = false;
   }
