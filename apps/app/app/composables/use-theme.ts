@@ -1,10 +1,10 @@
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark' | 'system';
 
 export function useTheme() {
   const colorMode = useColorMode();
 
   const theme = computed<Theme>(() => {
-    if (colorMode.preference === 'dark' || colorMode.preference === 'light') {
+    if (colorMode.preference === 'dark' || colorMode.preference === 'light' || colorMode.preference === 'system') {
       return colorMode.preference;
     }
 
@@ -12,8 +12,8 @@ export function useTheme() {
   });
 
   const loadTheme = () => {
-    if (colorMode.preference !== 'dark' && colorMode.preference !== 'light') {
-      colorMode.preference = colorMode.value === 'dark' ? 'dark' : 'light';
+    if (colorMode.preference !== 'dark' && colorMode.preference !== 'light' && colorMode.preference !== 'system') {
+      colorMode.preference = 'system';
     }
   };
 

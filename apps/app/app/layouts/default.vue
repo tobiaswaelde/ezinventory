@@ -24,6 +24,7 @@ const title = computed(() => {
   if (route.path === '/inventory') return t('nav_inventory');
   if (route.path === '/labels') return t('nav_labels');
   if (route.path === '/scan') return t('nav_scan');
+  if (route.path === '/users') return t('nav_users');
   if (route.path === '/settings') return t('nav_settings');
   return t('nav_home');
 });

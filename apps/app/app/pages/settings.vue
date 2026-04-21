@@ -281,6 +281,9 @@ import type {
   RegistrationMode,
   UserRole
 } from '@ezinventory/contracts';
+import { useTableColumnsOptions } from '~/composables/table/use-table-columns-options';
+import { useTableFieldsQuery } from '~/composables/table/use-table-fields-query';
+import { useTableQueryOptions } from '~/composables/table/use-table-query-options';
 import {
   validateItemInput,
   validateManagedUserInput,

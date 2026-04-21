@@ -23,7 +23,7 @@ describe('useTheme', () => {
     const { useTheme } = await import('../../app/composables/use-theme');
     const { theme, loadTheme, setTheme } = useTheme();
 
-    expect(theme.value).toBe('light');
+    expect(theme.value).toBe('system');
 
     setTheme('dark');
     expect(colorMode.preference).toBe('dark');
@@ -31,7 +31,7 @@ describe('useTheme', () => {
     colorMode.preference = 'system';
     colorMode.value = 'dark';
     loadTheme();
-    expect(colorMode.preference).toBe('dark');
+    expect(colorMode.preference).toBe('system');
   });
 
   it('keeps explicit preference in loadTheme and resolves fallback dark/light', async () => {
@@ -41,7 +41,7 @@ describe('useTheme', () => {
     const { useTheme } = await import('../../app/composables/use-theme');
     const { theme, loadTheme } = useTheme();
 
-    expect(theme.value).toBe('dark');
+    expect(theme.value).toBe('system');
 
     colorMode.preference = 'light';
     loadTheme();
@@ -50,6 +50,17 @@ describe('useTheme', () => {
     colorMode.preference = 'system';
     colorMode.value = 'light';
     loadTheme();
-    expect(colorMode.preference).toBe('light');
+    expect(colorMode.preference).toBe('system');
+  });
+
+  it('normalizes unknown preference to system', async () => {
+    const colorMode: { preference: string; value: 'light' | 'dark' } = { preference: 'auto', value: 'dark' };
+    vi.stubGlobal('useColorMode', () => colorMode);
+
+    const { useTheme } = await import('../../app/composables/use-theme');
+    const { loadTheme } = useTheme();
+
+    loadTheme();
+    expect(colorMode.preference).toBe('system');
   });
 });

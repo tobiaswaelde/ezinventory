@@ -43,6 +43,16 @@ const localeItems = computed<DropdownMenuItem[]>(() => [
 const themeItems = computed<DropdownMenuItem[]>(() => [
   {
     type: 'checkbox',
+    label: 'System',
+    icon: 'i-tabler-device-desktop',
+    checked: theme.value === 'system',
+    onSelect: (event) => {
+      event.preventDefault();
+      setTheme('system');
+    }
+  },
+  {
+    type: 'checkbox',
     label: 'Light',
     icon: 'i-tabler-sun',
     checked: theme.value === 'light',

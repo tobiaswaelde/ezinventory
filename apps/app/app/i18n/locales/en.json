@@ -4,6 +4,7 @@
     "inventory": "Inventory",
     "labels": "Labels",
     "scan": "Scan QR",
+    "users": "Users",
     "settings": "Settings"
   },
   "common": {

@@ -45,6 +45,12 @@ export function useNavigationItems() {
         label: 'System'
       },
       {
+        label: t('nav_users'),
+        icon: 'i-tabler-users',
+        to: '/users',
+        active: isSubrouteOf('/users')
+      },
+      {
         label: t('nav_settings'),
         icon: 'i-tabler-settings',
         to: '/settings',

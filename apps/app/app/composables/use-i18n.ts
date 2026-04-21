@@ -16,6 +16,7 @@ const LEGACY_KEY_MAP: Record<string, string> = {
   nav_inventory: 'nav.inventory',
   nav_labels: 'nav.labels',
   nav_scan: 'nav.scan',
+  nav_users: 'nav.users',
   nav_settings: 'nav.settings',
   language: 'common.language',
   inventory_error_load: 'inventory.error.load',
