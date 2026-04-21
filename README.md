@@ -37,6 +37,11 @@ API endpoints during local dev:
 docker compose up --build
 ```
 
+## Docs (VitePress)
+- Local docs dev server: `pnpm docs:dev`
+- Build docs: `pnpm docs:build`
+- Published docs (GitHub Pages): `https://tobiaswaelde.github.io/ezinventory/`
+
 ## Deployment Images (GHCR)
 - API image: `ghcr.io/tobiaswaelde/ezinventory-api`
 - App image: `ghcr.io/tobiaswaelde/ezinventory-app`
@@ -51,3 +56,4 @@ docker compose up --build
 ## Community
 - Contributing guide: `CONTRIBUTING.md`
 - Security policy: `SECURITY.md`
+- License: `LICENSE`
