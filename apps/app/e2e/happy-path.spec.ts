@@ -88,18 +88,7 @@ test.describe('Happy path', () => {
     await page.locator('input[name="password"]').fill('adminadminadmin');
     await page.getByRole('button', { name: 'Create account' }).click();
 
-    await page.evaluate(
-      ({ accessToken, refreshToken, authUser }) => {
-        localStorage.setItem('ezinventory.access_token', accessToken);
-        localStorage.setItem('ezinventory.refresh_token', refreshToken);
-        localStorage.setItem('ezinventory.user', JSON.stringify(authUser));
-      },
-      {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        authUser: user
-      }
-    );
+    await expect(page).toHaveURL('/');
 
     await page.goto('/scan');
 
