@@ -41,3 +41,7 @@ docker compose up --build
 - IDs are UUID v4 only.
 - Input validation is required both client-side and server-side.
 - Scalar docs must include all endpoints and DTOs.
+
+## Community
+- Contributing guide: `CONTRIBUTING.md`
+- Security policy: `SECURITY.md`
