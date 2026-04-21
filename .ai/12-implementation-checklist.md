@@ -70,7 +70,7 @@ Last updated: 2026-04-21
 ## 7. Documentation & Open Source Readiness
 
 - [x] Core planning docs in English
-- [ ] Root README badges finalized (version, coverage, workflow status)
+- [x] Root README badges finalized (version, coverage, workflow status)
 - [x] VitePress docs site setup and publishing via GitHub Pages
 - [x] Contributor guide (`CONTRIBUTING.md`)
 - [x] Security policy and issue templates

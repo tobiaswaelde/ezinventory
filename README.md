@@ -6,73 +6,116 @@
 [![API Coverage](https://codecov.io/gh/tobiaswaelde/ezinventory/graph/badge.svg?flag=api)](https://codecov.io/gh/tobiaswaelde/ezinventory?flag=api)
 [![App Coverage](https://codecov.io/gh/tobiaswaelde/ezinventory/graph/badge.svg?flag=app)](https://codecov.io/gh/tobiaswaelde/ezinventory?flag=app)
 
-Mobile-first, open-source inventory management with QR-first workflows.
+EZ Inventory is a mobile-first, open-source inventory system with QR workflows.
 
-## Stack
-- Backend: NestJS + Prisma + PostgreSQL
-- Frontend: Nuxt 3 (PWA)
-- Media: RustFS
-- API docs: Scalar
+This README is written for admins who want to run EZ Inventory with Docker.
 
-## Monorepo Layout
-- `apps/api` - NestJS API
-- `apps/app` - Nuxt frontend
-- `packages` - shared workspace packages
-- `.ai` - planning and architecture docs (internal project docs)
+## 1) Quickstart (Docker)
 
-## Quick Start
+Requirements:
+- Docker Engine + Docker Compose plugin
+
+Start locally:
+
+```bash
+git clone https://github.com/tobiaswaelde/ezinventory.git
+cd ezinventory
+cp .env.example .env
+docker compose up -d --build
+```
+
+Open the app:
+- App: `http://localhost:3000`
+- API health: `http://localhost:3001/api/v1/health`
+- API docs (Scalar): `http://localhost:3001/api/docs`
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+## 2) First Admin Login and Setup
+
+1. Open `http://localhost:3000`.
+2. Create your first account at `/auth/signup`.
+3. Go to `Settings` and switch `Registration Mode` to `ADMIN_ONLY` for production.
+4. Create additional users in `Settings` > `Create User (Admin)`.
+5. Register your passkey in `Settings` > `Profile Security`.
+
+## 3) What You Can Do in the App
+
+- `Dashboard`: quick links to scanning, inventory structure, and label printing
+- `Inventory`: create locations and nested containers
+- `Scan`: scan/lookup item codes and run quick stock actions
+- `Labels`: generate QR + barcode labels and print A4 sheets
+- `Settings`: admin controls (registration mode, users, permissions, passkeys)
+
+Full feature docs with screenshots:
+- https://tobiaswaelde.github.io/ezinventory/admin-feature-tour
+
+## 4) Environment Variables (Admin Essentials)
+
+Main variables used in Docker setup:
+- `DATABASE_URL`: PostgreSQL connection string
+- `CORS_ORIGIN`: CORS allowed origin(s), `*` for local dev
+- `NUXT_PUBLIC_API_BASE_URL`: app -> API URL
+- `AUTH_ACCESS_TOKEN_SECRET`: JWT access secret
+- `AUTH_REFRESH_TOKEN_SECRET`: JWT refresh secret
+- `AUTH_PASSKEY_RP_ID`: passkey relying party id
+- `AUTH_PASSKEY_ORIGIN`: passkey origin URL
+
+Templates:
+- Root: `.env.example`
+- API: `apps/api/.env.example`
+- Deployment: `.env.deploy.example`
+
+## 5) Documentation for Admins
+
+- Docs landing page: `docs/index.md`
+- Admin quickstart: `docs/admin-quickstart.md`
+- Feature tour with screenshots: `docs/admin-feature-tour.md`
+- Operations runbook: `docs/operations.md`
+- Architecture reference: `docs/architecture.md`
+
+Run docs locally:
+
 ```bash
 pnpm install
-pnpm contracts:generate
-pnpm dev
+pnpm docs:dev
 ```
 
-API endpoints during local dev:
-- API base: `http://localhost:3001/api/v1`
-- Scalar docs: `http://localhost:3001/api/docs`
-- OpenAPI JSON: `http://localhost:3001/api/openapi.json`
+## 6) Useful Admin Commands
 
-## Docker
+Rebuild and restart after updates:
+
 ```bash
-docker compose up --build
+git pull
+docker compose up -d --build
 ```
 
-## Devcontainer
-- Open the repo in VS Code and run: `Dev Containers: Reopen in Container`
-- Config path: `.devcontainer/devcontainer.json`
-- Included services in devcontainer: `workspace`, `postgres`, `rustfs`
-- Forwarded ports: `3000` (app), `3001` (api), `5433` (postgres), `9000` (rustfs)
+View logs:
 
-## Testing (App)
 ```bash
-pnpm --filter @ezinventory/app test:unit
-pnpm --filter @ezinventory/app test:coverage
-pnpm --filter @ezinventory/app test
+docker compose logs -f api
+docker compose logs -f app
 ```
 
-Details for local + CI test execution:
-- `docs/testing-app.md`
+Run screenshot generator for docs:
 
-## Docs (VitePress)
-- Local docs dev server: `pnpm docs:dev`
-- Build docs: `pnpm docs:build`
-- Published docs (GitHub Pages): `https://tobiaswaelde.github.io/ezinventory/`
-- Release strategy: `docs/release-strategy.md`
+```bash
+pnpm docs:screenshots
+```
 
-## Deployment Images (GHCR)
-- API image: `ghcr.io/tobiaswaelde/ezinventory-api`
-- App image: `ghcr.io/tobiaswaelde/ezinventory-app`
-- Build & push workflow: `.github/workflows/deploy-ghcr.yml`
-- GHCR deployment manifest: `compose.ghcr.yaml`
-- Deployment env template: `.env.deploy.example`
-- Deployment runbook: `.ai/14-deployment-runbook.md`
+## 7) Project Structure
 
-## Notes
-- IDs are UUID v4 only.
-- Input validation is required both client-side and server-side.
-- Scalar docs must include all endpoints and DTOs.
+- `apps/api` - NestJS API
+- `apps/app` - Nuxt app (PWA)
+- `packages/contracts` - generated OpenAPI contracts
+- `docs` - VitePress documentation
 
 ## Community
-- Contributing guide: `CONTRIBUTING.md`
+
+- Contributing: `CONTRIBUTING.md`
 - Security policy: `SECURITY.md`
 - License: `LICENSE`

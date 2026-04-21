@@ -1,27 +1,27 @@
 ---
 layout: home
 hero:
-  name: EZ Inventory
-  text: Mobile-First Inventory Management
-  tagline: Open-source inventory platform with QR-first workflows, passkeys, and role-based access control.
+  name: EZ Inventory Docs
+  text: Admin Guide for Docker Deployments
+  tagline: Set up EZ Inventory, onboard users, and run daily warehouse workflows with confidence.
   actions:
     - theme: brand
-      text: Get Started
-      link: /architecture
+      text: Admin Quickstart
+      link: /admin-quickstart
     - theme: alt
-      text: App Testing Guide
-      link: /testing-app
+      text: Feature Tour
+      link: /admin-feature-tour
 features:
-  - icon: 📱
-    title: Mobile & Scan First
-    details: Built as a PWA with a persistent scan flow for quick stock movements directly on mobile devices.
+  - icon: 🐳
+    title: Docker-First Setup
+    details: Step-by-step instructions for admins running EZ Inventory with Docker Compose.
+  - icon: 🧭
+    title: Task-Oriented Docs
+    details: Practical guidance for setup, onboarding, scanning, labels, and permission management.
+  - icon: 🖼️
+    title: Screenshot-Based Guidance
+    details: Real UI screenshots for every core function so admins can follow along quickly.
   - icon: 🔐
-    title: Modern Authentication
-    details: Supports email/password login and passkey workflows, with fine-grained authorization via CASL.
-  - icon: 🧱
-    title: Reliable Backend Stack
-    details: NestJS + Prisma + PostgreSQL with validation and documented API contracts via Scalar/OpenAPI.
-  - icon: 🚀
-    title: Dev-Friendly Setup
-    details: Monorepo structure, Docker/DevContainer support, and clear operations/testing docs for fast onboarding.
+    title: Security and Access Control
+    details: Registration mode, role management, passkeys, and policy-based permissions.
 ---
