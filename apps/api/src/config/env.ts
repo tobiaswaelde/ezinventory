@@ -28,5 +28,6 @@ export const ENV = cleanEnv(process.env, {
   AUTH_PASSKEY_RP_NAME: str({ default: 'EZ Inventory' }),
   AUTH_PASSKEY_ORIGIN: str({ default: 'http://localhost:3000' }),
   RUSTFS_ENDPOINT: str({ default: 'http://localhost:9000' }),
-  RUSTFS_BUCKET: str({ default: 'ezinventory-media' })
+  RUSTFS_BUCKET: str({ default: 'ezinventory-media' }),
+  RUSTFS_PUBLIC_BASE_URL: str({ default: 'http://localhost:9000' })
 });
