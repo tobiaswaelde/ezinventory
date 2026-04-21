@@ -8,7 +8,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: ['app/composables/use-i18n.ts', 'app/composables/use-theme.ts'],
+      include: [
+        'app/composables/use-i18n.ts',
+        'app/composables/use-theme.ts',
+        'app/utils/auth-validation.ts',
+        'app/utils/settings-validation.ts'
+      ],
       thresholds: {
         statements: 100,
         branches: 100,
