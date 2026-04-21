@@ -37,6 +37,11 @@ API endpoints during local dev:
 docker compose up --build
 ```
 
+## Deployment Images (GHCR)
+- API image: `ghcr.io/tobiaswaelde/ezinventory-api`
+- App image: `ghcr.io/tobiaswaelde/ezinventory-app`
+- Build & push workflow: `.github/workflows/deploy-ghcr.yml`
+
 ## Notes
 - IDs are UUID v4 only.
 - Input validation is required both client-side and server-side.
