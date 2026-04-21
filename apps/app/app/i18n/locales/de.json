@@ -37,7 +37,11 @@
     "error": {
       "loginFailed": "Login fehlgeschlagen. Bitte Zugangsdaten prüfen.",
       "passkeyLoginFailed": "Passkey-Login fehlgeschlagen.",
+      "passkeyNotSupported": "Dieser Browser unterstützt keine Passkeys. Nutze stattdessen Passwort-Login.",
       "registrationFailed": "Registrierung fehlgeschlagen. Sie ist evtl. deaktiviert oder Nutzer existiert bereits.",
+      "registrationDisabled": "Öffentliche Registrierung ist deaktiviert. Bitte Admin kontaktieren.",
+      "setupNotInitialized": "Setup ist noch nicht initialisiert. Bitte zuerst Setup abschließen.",
+      "userAlreadyExists": "Ein Konto mit dieser E-Mail existiert bereits. Bitte anmelden.",
       "passkeyRegistrationFailed": "Passkey-Registrierung fehlgeschlagen."
     }
   },

@@ -4,6 +4,73 @@
     <p>Authenticated as: <strong>{{ user?.email ?? 'n/a' }}</strong> ({{ user?.role ?? 'n/a' }})</p>
   </section>
 
+  <section class="card">
+    <h2>Profile Security</h2>
+    <p>Register a passkey for passwordless sign-in.</p>
+
+    <UAlert
+      v-if="!passkeySupported"
+      color="warning"
+      variant="soft"
+      title="Passkeys unavailable"
+      :description="t('auth_error_passkey_not_supported')"
+    />
+
+    <div class="field">
+      <label for="profile-passkey-email">Email</label>
+      <UInput id="profile-passkey-email" :model-value="passkeyEmail" type="email" readonly />
+    </div>
+
+    <div class="field">
+      <label for="profile-passkey-password">Current Password</label>
+      <UInput
+        id="profile-passkey-password"
+        v-model="passkeyForm.password"
+        type="password"
+        placeholder="************"
+        autocomplete="current-password"
+      />
+    </div>
+
+    <div class="field">
+      <label for="profile-passkey-device-name">Passkey device name (optional)</label>
+      <UInput
+        id="profile-passkey-device-name"
+        v-model="passkeyForm.deviceName"
+        type="text"
+        placeholder="MacBook Touch ID"
+      />
+    </div>
+
+    <UButton
+      color="neutral"
+      variant="soft"
+      :disabled="passkeySubmitting || !passkeySupported || !passkeyEmail"
+      @click="registerProfilePasskey"
+    >
+      {{ passkeySubmitting ? 'Registering...' : 'Register passkey' }}
+    </UButton>
+
+    <p v-if="passkeyError" class="error">{{ passkeyError }}</p>
+    <p v-if="passkeyMessage">{{ passkeyMessage }}</p>
+
+    <div class="policy-catalog">
+      <article v-for="passkey in passkeys" :key="passkey.id" class="policy-item">
+        <strong>{{ passkey.deviceName || 'Unnamed passkey' }}</strong>
+        <small>Created: {{ formatDate(passkey.createdAt) }}</small>
+        <small>Last used: {{ passkey.lastUsedAt ? formatDate(passkey.lastUsedAt) : 'Never' }}</small>
+        <UButton
+          color="error"
+          variant="soft"
+          :disabled="passkeyDeletingById[passkey.id]"
+          @click="deleteProfilePasskey(passkey.id)"
+        >
+          {{ passkeyDeletingById[passkey.id] ? 'Deleting...' : 'Delete passkey' }}
+        </UButton>
+      </article>
+    </div>
+  </section>
+
   <section v-if="isAdmin" class="card">
     <h2>Registration Mode</h2>
     <p>Control whether public registration is open or admin-only.</p>
@@ -222,8 +289,13 @@ import {
   validateManagedUserInput,
   validatePolicyConditionsJson
 } from '~/utils/settings-validation';
+import {
+  normalizeEmail,
+  normalizeText,
+  validatePasskeyRegistrationInput
+} from '~/utils/auth-validation';
 
-const { user } = useAuth();
+const { user, registerPasskey, listPasskeys, deletePasskey } = useAuth();
 const { t } = useI18n();
 const {
   createItem,
@@ -254,6 +326,17 @@ const subjectSelectOptions = subjectOptions.map((subject) => ({ label: subject, 
 
 const isAdmin = computed(() => user.value?.role === 'ADMIN');
 const setupInitialized = ref(false);
+const passkeySupported = ref(true);
+const passkeySubmitting = ref(false);
+const passkeyError = ref('');
+const passkeyMessage = ref('');
+const passkeyForm = reactive({
+  password: '',
+  deviceName: ''
+});
+const passkeyEmail = computed(() => normalizeEmail(user.value?.email));
+const passkeys = ref<Array<{ id: string; deviceName: string | null; createdAt: string; lastUsedAt: string | null }>>([]);
+const passkeyDeletingById = ref<Record<string, boolean>>({});
 
 const itemForm = reactive({
   categoryId: '',
@@ -514,7 +597,85 @@ const createPolicy = async (): Promise<void> => {
   }
 };
 
+const registerProfilePasskey = async (): Promise<void> => {
+  passkeyError.value = '';
+  passkeyMessage.value = '';
+
+  if (!passkeySupported.value) {
+    passkeyError.value = t('auth_error_passkey_not_supported');
+    return;
+  }
+
+  const email = passkeyEmail.value;
+  const password = passkeyForm.password;
+  const deviceName = normalizeText(passkeyForm.deviceName);
+  const validationError = validatePasskeyRegistrationInput({ email, password });
+
+  if (validationError) {
+    passkeyError.value = t(validationError as never);
+    return;
+  }
+
+  passkeySubmitting.value = true;
+
+  try {
+    const result = await registerPasskey({
+      email,
+      password,
+      deviceName: deviceName || undefined
+    });
+
+    passkeyForm.password = '';
+    passkeyForm.deviceName = '';
+    passkeyMessage.value = `Passkey registered (${result.credentialId.slice(0, 10)}...).`;
+    await loadProfilePasskeys();
+  } catch {
+    passkeyError.value = t('auth_error_passkey_registration_failed');
+  } finally {
+    passkeySubmitting.value = false;
+  }
+};
+
+const loadProfilePasskeys = async (): Promise<void> => {
+  if (!user.value) {
+    passkeys.value = [];
+    return;
+  }
+
+  try {
+    passkeys.value = await listPasskeys();
+  } catch {
+    passkeys.value = [];
+  }
+};
+
+const deleteProfilePasskey = async (id: string): Promise<void> => {
+  passkeyError.value = '';
+  passkeyMessage.value = '';
+  passkeyDeletingById.value[id] = true;
+
+  try {
+    await deletePasskey(id);
+    passkeyMessage.value = 'Passkey deleted.';
+    await loadProfilePasskeys();
+  } catch {
+    passkeyError.value = 'Could not delete passkey.';
+  } finally {
+    passkeyDeletingById.value[id] = false;
+  }
+};
+
+const formatDate = (value: string): string => {
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
+};
+
 onMounted(async () => {
+  passkeySupported.value = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
+  await loadProfilePasskeys();
   await loadSetupStatus();
   await loadAdminData();
 });

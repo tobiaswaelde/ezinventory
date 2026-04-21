@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -180,6 +180,52 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Validation failed for passkey login verification payload.' })
   async passkeyLoginVerify(@Body() dto: PasskeyLoginVerifyDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
     return await this.authService.passkeyLoginVerify(dto);
+  }
+
+  @Get('passkeys')
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'List passkeys for current authenticated user' })
+  @ApiOkResponse({
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          deviceName: { type: 'string', nullable: true, example: 'MacBook Touch ID' },
+          createdAt: { type: 'string', format: 'date-time' },
+          lastUsedAt: { type: 'string', format: 'date-time', nullable: true }
+        }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  async listPasskeys(
+    @CurrentUser() user: AuthenticatedUser
+  ): Promise<Array<{ id: string; deviceName: string | null; createdAt: Date; lastUsedAt: Date | null }>> {
+    return await this.authService.listPasskeys(user.id);
+  }
+
+  @Delete('passkeys/:id')
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Delete a passkey for current authenticated user' })
+  @ApiOkResponse({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        deleted: { type: 'boolean', example: true }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  async deletePasskey(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id', new ParseUUIDPipe()) id: string
+  ): Promise<{ id: string; deleted: true }> {
+    return await this.authService.deletePasskey(user.id, id);
   }
 
   @Post('refresh')

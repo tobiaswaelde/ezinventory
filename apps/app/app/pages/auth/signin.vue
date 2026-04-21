@@ -4,7 +4,7 @@
       title="Sign in"
       description="Sign in with your password."
       :fields="passwordFields"
-      :submit="{ label: 'Sign in', color: 'primary', block: true }"
+      :submit="passwordSubmit"
       :loading="submitting"
       @submit="submit"
     >
@@ -28,12 +28,25 @@
 
     <UAuthForm
       title="Passkey"
-      description="Sign in with your registered passkey."
       :fields="passkeyFields"
-      :submit="{ label: 'Sign in with passkey', color: 'neutral', variant: 'soft', block: true }"
+      :submit="passkeySubmit"
       :loading="passkeySubmitting"
       @submit="submitPasskey"
     >
+      <template #description>
+        <p class="text-sm text-muted">
+          Sign in with your registered passkey.
+        </p>
+        <UAlert
+          v-if="!passkeySupported"
+          class="mt-3"
+          color="warning"
+          variant="soft"
+          title="Passkeys unavailable"
+          :description="t('auth_error_passkey_not_supported')"
+        />
+      </template>
+
       <template #validation>
         <UAlert
           v-if="passkeyError"
@@ -62,11 +75,13 @@ definePageMeta({
 
 const { login, loginWithPasskey, isAuthenticated } = useAuth();
 const { t } = useI18n();
+const route = useRoute();
 
 const submitting = ref(false);
 const passkeySubmitting = ref(false);
 const signinError = ref('');
 const passkeyError = ref('');
+const passkeySupported = ref(true);
 
 const passwordFields: AuthFormField[] = [
   {
@@ -98,11 +113,30 @@ const passkeyFields: AuthFormField[] = [
   }
 ];
 
+const passwordSubmit = computed(() => ({
+  label: 'Sign in',
+  color: 'primary' as const,
+  block: true,
+  disabled: passkeySubmitting.value
+}));
+
+const passkeySubmit = computed(() => ({
+  label: 'Sign in with passkey',
+  color: 'neutral' as const,
+  variant: 'soft' as const,
+  block: true,
+  disabled: submitting.value || !passkeySupported.value
+}));
+
+onMounted(() => {
+  passkeySupported.value = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
+});
+
 watch(
   () => isAuthenticated.value,
   async (next) => {
     if (next) {
-      const redirect = useRoute().query.redirect;
+      const redirect = route.query.redirect;
       await navigateTo(typeof redirect === 'string' ? redirect : '/');
     }
   },
@@ -136,6 +170,11 @@ const submit = async (event: FormSubmitEvent<{ email?: string; password?: string
 const submitPasskey = async (event: FormSubmitEvent<{ email?: string }>): Promise<void> => {
   signinError.value = '';
   passkeyError.value = '';
+
+  if (!passkeySupported.value) {
+    passkeyError.value = t('auth_error_passkey_not_supported');
+    return;
+  }
 
   const email = normalizeEmail(event.data.email);
 

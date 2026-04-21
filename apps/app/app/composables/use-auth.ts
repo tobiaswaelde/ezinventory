@@ -16,6 +16,13 @@ const ACCESS_TOKEN_KEY = 'ezinventory.access_token';
 const REFRESH_TOKEN_KEY = 'ezinventory.refresh_token';
 const USER_KEY = 'ezinventory.user';
 
+type UserPasskey = {
+  id: string;
+  deviceName: string | null;
+  createdAt: string;
+  lastUsedAt: string | null;
+};
+
 export function useAuth() {
   const baseURL = useRuntimeConfig().public.apiBaseUrl;
 
@@ -191,6 +198,18 @@ export function useAuth() {
     return me;
   };
 
+  const listPasskeys = async (): Promise<UserPasskey[]> => {
+    return await authorizedFetch<UserPasskey[]>('/auth/passkeys', {
+      method: 'GET'
+    });
+  };
+
+  const deletePasskey = async (id: string): Promise<{ id: string; deleted: true }> => {
+    return await authorizedFetch<{ id: string; deleted: true }>(`/auth/passkeys/${id}`, {
+      method: 'DELETE'
+    });
+  };
+
   const refreshSession = async (): Promise<void> => {
     if (refreshing.value) {
       return;
@@ -310,6 +329,8 @@ export function useAuth() {
     register,
     registerPasskey,
     loginWithPasskey,
+    listPasskeys,
+    deletePasskey,
     logout,
     initAuth,
     fetchMe,

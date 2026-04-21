@@ -458,6 +458,34 @@ export class AuthService {
     return { loggedOut: true };
   }
 
+  async listPasskeys(userId: string): Promise<Array<{ id: string; deviceName: string | null; createdAt: Date; lastUsedAt: Date | null }>> {
+    return await this.prisma.passkeyCredential.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        deviceName: true,
+        createdAt: true,
+        lastUsedAt: true
+      }
+    });
+  }
+
+  async deletePasskey(userId: string, passkeyId: string): Promise<{ id: string; deleted: true }> {
+    const passkey = await this.prisma.passkeyCredential.findUnique({
+      where: { id: passkeyId },
+      select: { id: true, userId: true }
+    });
+
+    if (!passkey || passkey.userId !== userId) {
+      throw new NotFoundException('Passkey not found.');
+    }
+
+    await this.prisma.passkeyCredential.delete({ where: { id: passkeyId } });
+
+    return { id: passkeyId, deleted: true };
+  }
+
   private async issueTokens(user: { id: string; email: string; role: UserRoleType; preferredLanguage: string }): Promise<AuthTokens> {
     const sessionId = crypto.randomUUID();
 

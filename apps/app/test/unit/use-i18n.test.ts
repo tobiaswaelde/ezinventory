@@ -41,12 +41,24 @@ describe('useI18n', () => {
     expect(locale.value).toBe('en');
     expect(t('nav_home')).toBe('Home');
     expect(t('nav.home')).toBe('Home');
+    expect(t('auth_error_passkey_not_supported')).toBe(
+      'This browser does not support passkeys. Use password sign-in instead.'
+    );
+    expect(t('auth_error_registration_disabled')).toBe(
+      'Public registration is disabled. Ask an admin to open registration.'
+    );
 
     await setLocale('de');
 
     expect(locale.value).toBe('de');
     expect(t('nav_settings')).toBe('Einstellungen');
     expect(t('nav.settings')).toBe('Einstellungen');
+    expect(t('auth_error_passkey_not_supported')).toBe(
+      'Dieser Browser unterstützt keine Passkeys. Nutze stattdessen Passwort-Login.'
+    );
+    expect(t('auth_error_registration_disabled')).toBe(
+      'Öffentliche Registrierung ist deaktiviert. Bitte Admin kontaktieren.'
+    );
     expect(storage.get('ezinventory.locale')).toBe('de');
     expect(updatePreferredLanguage).toHaveBeenCalledWith('de');
   });

@@ -37,7 +37,11 @@
     "error": {
       "loginFailed": "Login failed. Please verify your credentials.",
       "passkeyLoginFailed": "Passkey login failed.",
+      "passkeyNotSupported": "This browser does not support passkeys. Use password sign-in instead.",
       "registrationFailed": "Registration failed. It may be disabled or user already exists.",
+      "registrationDisabled": "Public registration is disabled. Ask an admin to open registration.",
+      "setupNotInitialized": "Setup is not initialized yet. Complete setup first.",
+      "userAlreadyExists": "An account with this email already exists. Please sign in.",
       "passkeyRegistrationFailed": "Passkey registration failed."
     }
   },

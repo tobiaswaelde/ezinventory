@@ -4,10 +4,24 @@
       title="Sign up"
       description="Create an account."
       :fields="signupFields"
-      :submit="{ label: 'Create account', color: 'primary', block: true }"
+      :submit="signupSubmit"
       :loading="submitting"
       @submit="submit"
     >
+      <template #description>
+        <p class="text-sm text-muted">
+          Create an account.
+        </p>
+        <UAlert
+          v-if="signupBlockedReason"
+          class="mt-3"
+          color="warning"
+          variant="soft"
+          title="Registration unavailable"
+          :description="signupBlockedReason"
+        />
+      </template>
+
       <template #validation>
         <UAlert
           v-if="signupError"
@@ -25,32 +39,6 @@
         </p>
       </template>
     </UAuthForm>
-
-    <UAuthForm
-      title="Register Passkey"
-      description="Optionally register a passkey for passwordless login."
-      :fields="passkeyFields"
-      :submit="{ label: 'Register passkey', color: 'neutral', variant: 'soft', block: true }"
-      :loading="passkeySubmitting"
-      @submit="submitPasskeyRegister"
-    >
-      <template #validation>
-        <UAlert
-          v-if="passkeyError"
-          color="error"
-          variant="soft"
-          title="Passkey Error"
-          :description="passkeyError"
-        />
-        <UAlert
-          v-if="passkeyMessage"
-          color="success"
-          variant="soft"
-          title="Passkey"
-          :description="passkeyMessage"
-        />
-      </template>
-    </UAuthForm>
   </div>
 </template>
 
@@ -59,7 +47,6 @@
 import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui';
 import {
   validateSignupInput,
-  validatePasskeyRegistrationInput,
   normalizeEmail,
   normalizeText
 } from '~/utils/auth-validation';
@@ -68,14 +55,14 @@ definePageMeta({
   layout: 'auth'
 });
 
-const { register, registerPasskey, isAuthenticated } = useAuth();
+const { register, isAuthenticated } = useAuth();
 const { t } = useI18n();
+const { getSetupStatus } = useApiClient();
 
 const submitting = ref(false);
-const passkeySubmitting = ref(false);
 const signupError = ref('');
-const passkeyError = ref('');
-const passkeyMessage = ref('');
+const signupBlockedReason = ref('');
+const signupStatusLoading = ref(true);
 
 const languageOptions = [
   { label: 'English', value: 'en' },
@@ -115,30 +102,36 @@ const signupFields: AuthFormField[] = [
   }
 ];
 
-const passkeyFields: AuthFormField[] = [
-  {
-    name: 'email',
-    type: 'email',
-    label: 'Email',
-    placeholder: 'admin@example.com',
-    autocomplete: 'email',
-    required: true
-  },
-  {
-    name: 'password',
-    type: 'password',
-    label: 'Password',
-    placeholder: '************',
-    autocomplete: 'current-password',
-    required: true
-  },
-  {
-    name: 'passkeyDeviceName',
-    type: 'text',
-    label: 'Passkey device name (optional)',
-    placeholder: 'MacBook Touch ID'
+const signupSubmit = computed(() => ({
+  label: signupStatusLoading.value ? 'Checking setup...' : 'Create account',
+  color: 'primary' as const,
+  block: true,
+  disabled: signupStatusLoading.value || submitting.value || Boolean(signupBlockedReason.value)
+}));
+
+onMounted(async () => {
+  signupStatusLoading.value = true;
+
+  try {
+    const status = await getSetupStatus();
+
+    if (!status.setupInitialized) {
+      signupBlockedReason.value = t('auth_error_setup_not_initialized');
+      return;
+    }
+
+    if (status.registrationMode !== 'OPEN') {
+      signupBlockedReason.value = t('auth_error_registration_disabled');
+      return;
+    }
+
+    signupBlockedReason.value = '';
+  } catch {
+    signupBlockedReason.value = '';
+  } finally {
+    signupStatusLoading.value = false;
   }
-];
+});
 
 watch(
   () => isAuthenticated.value,
@@ -154,8 +147,6 @@ const submit = async (
   event: FormSubmitEvent<{ email?: string; password?: string; displayName?: string; preferredLanguage?: string }>
 ): Promise<void> => {
   signupError.value = '';
-  passkeyError.value = '';
-  passkeyMessage.value = '';
 
   const normalizedEmail = normalizeEmail(event.data.email);
   const password = event.data.password ?? '';
@@ -172,6 +163,11 @@ const submit = async (
     return;
   }
 
+  if (signupBlockedReason.value) {
+    signupError.value = signupBlockedReason.value;
+    return;
+  }
+
   submitting.value = true;
 
   try {
@@ -181,44 +177,20 @@ const submit = async (
       displayName,
       preferredLanguage
     });
-  } catch {
-    signupError.value = t('auth_error_registration_failed');
+  } catch (error: unknown) {
+    const statusCode = (error as { statusCode?: number } | undefined)?.statusCode;
+
+    if (statusCode === 403) {
+      signupError.value = t('auth_error_registration_disabled');
+    } else if (statusCode === 404) {
+      signupError.value = t('auth_error_setup_not_initialized');
+    } else if (statusCode === 409) {
+      signupError.value = t('auth_error_user_already_exists');
+    } else {
+      signupError.value = t('auth_error_registration_failed');
+    }
   } finally {
     submitting.value = false;
-  }
-};
-
-const submitPasskeyRegister = async (
-  event: FormSubmitEvent<{ email?: string; password?: string; passkeyDeviceName?: string }>
-): Promise<void> => {
-  signupError.value = '';
-  passkeyError.value = '';
-  passkeyMessage.value = '';
-
-  const email = normalizeEmail(event.data.email);
-  const password = event.data.password ?? '';
-  const passkeyDeviceName = normalizeText(event.data.passkeyDeviceName);
-
-  const validationError = validatePasskeyRegistrationInput({ email, password });
-  if (validationError) {
-    passkeyError.value = t(validationError as never);
-    return;
-  }
-
-  passkeySubmitting.value = true;
-
-  try {
-    const result = await registerPasskey({
-      email,
-      password,
-      deviceName: passkeyDeviceName || undefined
-    });
-
-    passkeyMessage.value = `Passkey registered (${result.credentialId.slice(0, 10)}...).`;
-  } catch {
-    passkeyError.value = t('auth_error_passkey_registration_failed');
-  } finally {
-    passkeySubmitting.value = false;
   }
 };
 </script>

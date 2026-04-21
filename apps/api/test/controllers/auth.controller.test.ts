@@ -13,6 +13,8 @@ describe('AuthController', () => {
       passkeyRegisterVerify: vi.fn().mockResolvedValue({ verified: true, credentialId: 'cred', email: 'a@b.c' }),
       passkeyLoginOptions: vi.fn().mockResolvedValue({ challenge: 'c', options: {}, email: 'a@b.c' }),
       passkeyLoginVerify: vi.fn().mockResolvedValue({ accessToken: 'a', refreshToken: 'r', email: 'a@b.c' }),
+      listPasskeys: vi.fn().mockResolvedValue([{ id: 'p1', deviceName: 'Laptop', createdAt: new Date(), lastUsedAt: null }]),
+      deletePasskey: vi.fn().mockResolvedValue({ id: 'p1', deleted: true }),
       refresh: vi.fn().mockResolvedValue({ accessToken: 'a2', refreshToken: 'r2', email: 'a@b.c' }),
       logout: vi.fn().mockResolvedValue({ loggedOut: true })
     };
@@ -74,6 +76,17 @@ describe('AuthController', () => {
 
     await expect(controller.passkeyLoginVerify(verifyDto as never)).resolves.toEqual({ accessToken: 'a', refreshToken: 'r', email: 'a@b.c' });
     expect(service.passkeyLoginVerify).toHaveBeenCalledWith(verifyDto);
+  });
+
+  it('delegates passkey listing and deletion', async () => {
+    const { controller, service } = buildController();
+    const user = { id: 'u1' };
+
+    await expect(controller.listPasskeys(user as never)).resolves.toHaveLength(1);
+    expect(service.listPasskeys).toHaveBeenCalledWith('u1');
+
+    await expect(controller.deletePasskey(user as never, 'p1')).resolves.toEqual({ id: 'p1', deleted: true });
+    expect(service.deletePasskey).toHaveBeenCalledWith('u1', 'p1');
   });
 
   it('delegates refresh() and logout()', async () => {
