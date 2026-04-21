@@ -61,6 +61,7 @@ definePageMeta({
 });
 
 const { login, loginWithPasskey, isAuthenticated } = useAuth();
+const { t } = useI18n();
 
 const submitting = ref(false);
 const passkeySubmitting = ref(false);
@@ -117,7 +118,7 @@ const submit = async (event: FormSubmitEvent<{ email?: string; password?: string
 
   const validationError = validateSigninInput({ email, password });
   if (validationError) {
-    signinError.value = validationError;
+    signinError.value = t(validationError as never);
     return;
   }
 
@@ -140,7 +141,7 @@ const submitPasskey = async (event: FormSubmitEvent<{ email?: string }>): Promis
 
   const validationError = validatePasskeySigninInput({ email });
   if (validationError) {
-    passkeyError.value = validationError;
+    passkeyError.value = t(validationError as never);
     return;
   }
 
