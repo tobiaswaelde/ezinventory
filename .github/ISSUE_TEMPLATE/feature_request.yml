@@ -1,0 +1,76 @@
+name: Feature Request
+description: Propose a new feature or improvement.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where should this feature live?
+      options:
+        - app
+        - api
+        - contracts
+        - testing/ci
+        - docs
+        - ops/deployment
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What user/dev problem are we solving?
+      placeholder: As a user/developer, I want ..., because ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe the desired behavior and scope.
+      placeholder: What should be built?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Mention alternatives and why they are less suitable.
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Clear checklist for done-definition.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - high
+        - medium
+        - low
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-Checks
+      options:
+        - label: I searched for existing issues.
+          required: true
+        - label: I am willing to help validate the implementation.
+          required: false
