@@ -1,4 +1,4 @@
-name: App CI
+name: App Test
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
       - '.github/workflows/app-ci.yml'
 
 jobs:
-  app-lint-test:
+  app-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -32,9 +32,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Lint app
-        run: pnpm --filter @ezinventory/app lint
 
       - name: Run app unit tests with coverage
         run: pnpm --filter @ezinventory/app test:coverage

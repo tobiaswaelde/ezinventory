@@ -1,18 +1,18 @@
-name: API Test
+name: App Lint
 
 on:
   push:
     branches: [main]
     paths:
-      - 'apps/api/**'
-      - '.github/workflows/api-ci.yml'
+      - 'apps/app/**'
+      - '.github/workflows/app-lint.yml'
   pull_request:
     paths:
-      - 'apps/api/**'
-      - '.github/workflows/api-ci.yml'
+      - 'apps/app/**'
+      - '.github/workflows/app-lint.yml'
 
 jobs:
-  api-test:
+  app-lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -33,12 +33,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Test API with coverage
-        run: pnpm --filter @ezinventory/api test
-
-      - name: Upload API coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: apps/api/coverage/lcov.info
-          flags: api
-          fail_ci_if_error: false
+      - name: Lint app
+        run: pnpm --filter @ezinventory/app lint
