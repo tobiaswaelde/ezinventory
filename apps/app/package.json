@@ -13,6 +13,7 @@
     "build": "nuxt build",
     "preview": "nuxt preview --port 3000",
     "lint": "eslint .",
+    "docs:screenshots": "node ./scripts/capture-doc-screenshots.mjs",
     "test:unit": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test": "playwright test",

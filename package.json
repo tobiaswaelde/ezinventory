@@ -24,7 +24,8 @@
     "graph": "nx graph",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "docs:screenshots": "pnpm --filter @ezinventory/app docs:screenshots"
   },
   "devDependencies": {
     "@nx/docker": "22.6.5",
