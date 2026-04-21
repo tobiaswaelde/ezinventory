@@ -33,4 +33,23 @@ describe('useTheme', () => {
     loadTheme();
     expect(colorMode.preference).toBe('dark');
   });
+
+  it('keeps explicit preference in loadTheme and resolves fallback dark/light', async () => {
+    const colorMode: { preference: string; value: 'light' | 'dark' } = { preference: 'system', value: 'dark' };
+    vi.stubGlobal('useColorMode', () => colorMode);
+
+    const { useTheme } = await import('../../app/composables/use-theme');
+    const { theme, loadTheme } = useTheme();
+
+    expect(theme.value).toBe('dark');
+
+    colorMode.preference = 'light';
+    loadTheme();
+    expect(colorMode.preference).toBe('light');
+
+    colorMode.preference = 'system';
+    colorMode.value = 'light';
+    loadTheme();
+    expect(colorMode.preference).toBe('light');
+  });
 });
