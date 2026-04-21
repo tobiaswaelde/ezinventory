@@ -1,58 +1,112 @@
 <template>
-  <div class="flex items-center gap-2">
-    <USelect
-      :model-value="locale"
-      :items="localeOptions"
-      label-key="label"
-      value-key="value"
-      class="w-28"
-      @update:model-value="setLocaleSelectValue"
+  <UDropdownMenu v-if="isAuthenticated" :items="items" :ui="{ content: 'w-56' }">
+    <UUser
+      class="cursor-pointer"
+      :ui="{ name: 'truncate' }"
+      :name="userName"
+      :description="user?.email"
+      :avatar="{ text: initials }"
     />
-
-    <UDropdownMenu :items="themeItems">
-      <UButton color="neutral" variant="ghost" icon="i-tabler-palette" />
-    </UDropdownMenu>
-
-    <UButton
-      v-if="isAuthenticated"
-      color="neutral"
-      variant="ghost"
-      icon="i-tabler-logout"
-      @click="onLogout"
-    >
-      <span class="hidden md:inline">{{ user?.displayName || t('nav_settings') }}</span>
-    </UButton>
-  </div>
+  </UDropdownMenu>
 </template>
 
 <script setup lang="ts">
-const { locale, setLocale, t } = useI18n();
+import type { DropdownMenuItem } from '#ui/types';
+
+const { t, locale, setLocale } = useI18n();
 const { theme, setTheme } = useTheme();
 const { user, logout, isAuthenticated } = useAuth();
 
-const localeOptions = [
-  { label: 'English', value: 'en' },
-  { label: 'Deutsch', value: 'de' }
-] as const;
-
-type LocaleOptionValue = (typeof localeOptions)[number]['value'];
-
-const setLocaleSelectValue = (value: string | undefined): void => {
-  if (value === 'en' || value === 'de') {
-    setLocale(value as LocaleOptionValue);
-  }
-};
-
-const themeItems = computed(() => [
+const localeItems = computed<DropdownMenuItem[]>(() => [
   {
-    label: theme.value === 'light' ? 'Switch to dark' : 'Switch to light',
-    icon: theme.value === 'light' ? 'i-tabler-moon' : 'i-tabler-sun',
-    onSelect: () => setTheme(theme.value === 'light' ? 'dark' : 'light')
+    type: 'checkbox',
+    label: 'English',
+    icon: 'i-tabler-language',
+    checked: locale.value === 'en',
+    onSelect: async (event) => {
+      event.preventDefault();
+      await setLocale('en');
+    }
+  },
+  {
+    type: 'checkbox',
+    label: 'Deutsch',
+    icon: 'i-tabler-language',
+    checked: locale.value === 'de',
+    onSelect: async (event) => {
+      event.preventDefault();
+      await setLocale('de');
+    }
   }
 ]);
 
-const onLogout = async (): Promise<void> => {
-  await logout();
-  await navigateTo('/');
-};
+const themeItems = computed<DropdownMenuItem[]>(() => [
+  {
+    type: 'checkbox',
+    label: 'Light',
+    icon: 'i-tabler-sun',
+    checked: theme.value === 'light',
+    onSelect: (event) => {
+      event.preventDefault();
+      setTheme('light');
+    }
+  },
+  {
+    type: 'checkbox',
+    label: 'Dark',
+    icon: 'i-tabler-moon',
+    checked: theme.value === 'dark',
+    onSelect: (event) => {
+      event.preventDefault();
+      setTheme('dark');
+    }
+  }
+]);
+
+const items = computed<DropdownMenuItem[]>(() => [
+  {
+    label: 'Language',
+    icon: 'i-tabler-language',
+    children: localeItems.value
+  },
+  {
+    label: 'Theme',
+    icon: 'i-tabler-palette',
+    children: themeItems.value
+  },
+  {
+    label: t('nav_settings'),
+    icon: 'i-tabler-settings',
+    to: '/settings'
+  },
+  { type: 'separator' },
+  {
+    label: 'Sign out',
+    icon: 'i-tabler-logout',
+    color: 'error',
+    onSelect: async () => {
+      await logout();
+      await navigateTo('/auth/signin');
+    }
+  }
+]);
+
+const userName = computed(() => user.value?.displayName || user.value?.email || 'User');
+
+const initials = computed(() => {
+  const name = userName.value;
+  if (!name) return 'U';
+
+  const parts = name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((token) => token[0]?.toUpperCase() ?? '');
+
+  if (parts.length === 0) {
+    return name.charAt(0).toUpperCase();
+  }
+
+  return parts.join('');
+});
 </script>
