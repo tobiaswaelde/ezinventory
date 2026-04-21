@@ -117,6 +117,10 @@
 
 <script setup lang="ts">
 import type { ContainerResponse, ContainerType, LocationResponse } from '@ezinventory/contracts';
+import {
+  validateContainerInput,
+  validateLocationInput
+} from '~/utils/inventory-validation';
 
 const { isAuthenticated } = useAuth();
 const { t } = useI18n();
@@ -152,8 +156,6 @@ const containerErrors = reactive({
   name: '',
   code: ''
 });
-
-const codePattern = /^[A-Z0-9-]{2,40}$/;
 
 const sortedLocations = computed(() => {
   return [...locations.value].sort((a, b) => a.name.localeCompare(b.name));
@@ -259,10 +261,9 @@ const refreshData = async (): Promise<void> => {
 };
 
 const submitLocation = async (): Promise<void> => {
-  locationErrors.name = locationForm.name.trim() ? '' : t('inventory_error_location_name_required');
-  locationErrors.code = codePattern.test(locationForm.code.trim().toUpperCase())
-    ? ''
-    : t('inventory_error_code_pattern');
+  const validationErrors = validateLocationInput(locationForm);
+  locationErrors.name = validationErrors.name ? t(validationErrors.name as never) : '';
+  locationErrors.code = validationErrors.code ? t(validationErrors.code as never) : '';
 
   if (locationErrors.name || locationErrors.code) {
     errorMessage.value = t('inventory_error_fix_location_form');
@@ -290,11 +291,10 @@ const submitLocation = async (): Promise<void> => {
 };
 
 const submitContainer = async (): Promise<void> => {
-  containerErrors.locationId = containerForm.locationId ? '' : t('inventory_error_location_required');
-  containerErrors.name = containerForm.name.trim() ? '' : t('inventory_error_location_name_required');
-  containerErrors.code = codePattern.test(containerForm.code.trim().toUpperCase())
-    ? ''
-    : t('inventory_error_code_pattern');
+  const validationErrors = validateContainerInput(containerForm);
+  containerErrors.locationId = validationErrors.locationId ? t(validationErrors.locationId as never) : '';
+  containerErrors.name = validationErrors.name ? t(validationErrors.name as never) : '';
+  containerErrors.code = validationErrors.code ? t(validationErrors.code as never) : '';
 
   if (containerErrors.locationId || containerErrors.name || containerErrors.code) {
     errorMessage.value = t('inventory_error_fix_container_form');
