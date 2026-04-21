@@ -1,8 +1,10 @@
 # EZ Inventory
 
 ![Version](https://img.shields.io/github/v/release/tobiaswaelde/ezinventory)
-![Coverage](https://img.shields.io/codecov/c/github/tobiaswaelde/ezinventory)
-[![Lint](https://github.com/tobiaswaelde/ezinventory/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/lint.yml)
+[![API CI](https://github.com/tobiaswaelde/ezinventory/actions/workflows/api-ci.yml/badge.svg?branch=main)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/api-ci.yml)
+[![App CI](https://github.com/tobiaswaelde/ezinventory/actions/workflows/app-ci.yml/badge.svg?branch=main)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/app-ci.yml)
+[![API Coverage](https://codecov.io/gh/tobiaswaelde/ezinventory/graph/badge.svg?flag=api)](https://codecov.io/gh/tobiaswaelde/ezinventory?flag=api)
+[![App Coverage](https://codecov.io/gh/tobiaswaelde/ezinventory/graph/badge.svg?flag=app)](https://codecov.io/gh/tobiaswaelde/ezinventory?flag=app)
 
 Mobile-first, open-source inventory management with QR-first workflows.
 
