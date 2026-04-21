@@ -69,10 +69,10 @@ Last updated: 2026-04-21
 
 - [x] Core planning docs in English
 - [ ] Root README badges finalized (version, coverage, workflow status)
-- [ ] VitePress docs site setup and publishing via GitHub Pages
+- [x] VitePress docs site setup and publishing via GitHub Pages
 - [x] Contributor guide (`CONTRIBUTING.md`)
 - [x] Security policy and issue templates
-- [ ] License and release/versioning strategy
+- [x] License and release/versioning strategy
 
 ## 8. Testing & Quality
 

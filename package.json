@@ -21,13 +21,17 @@
     "affected:build": "nx affected -t build",
     "affected:lint": "nx affected -t lint",
     "affected:test": "nx affected -t test",
-    "graph": "nx graph"
+    "graph": "nx graph",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@nx/docker": "22.6.5",
     "@nx/eslint": "22.6.5",
     "@nx/nuxt": "22.6.5",
     "@nx/vite": "22.6.5",
-    "nx": "22.6.5"
+    "nx": "22.6.5",
+    "vitepress": "1.6.4"
   }
 }
