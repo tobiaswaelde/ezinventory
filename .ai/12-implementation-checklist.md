@@ -79,7 +79,7 @@ Last updated: 2026-04-21
 ## 8. Testing & Quality
 
 - [x] API unit tests
-- [ ] API integration tests
+- [x] API integration tests
 - [x] App component/unit tests
 - [x] End-to-end happy path tests (setup, login, scan, stock-out)
 - [x] Coverage reporting in CI
