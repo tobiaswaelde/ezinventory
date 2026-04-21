@@ -1,33 +1,74 @@
 name: Deploy Images (GHCR)
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
     tags:
       - 'v*'
-    paths:
-      - '.github/workflows/deploy-ghcr.yml'
-      - '.dockerignore'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - 'package.json'
-      - 'apps/api/**'
-      - 'apps/app/**'
-      - 'packages/**'
 
 permissions:
   contents: read
   packages: write
 
 concurrency:
-  group: deploy-ghcr-${{ github.ref }}
+  group: deploy-ghcr-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Detect Changed Targets
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      app: ${{ steps.filter.outputs.app }}
+      base: ${{ steps.base.outputs.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve base reference
+        id: base
+        shell: bash
+        run: |
+          set -euo pipefail
+          PREV_TAG="$(git describe --tags --abbrev=0 "${GITHUB_SHA}^" 2>/dev/null || true)"
+          if [ -n "${PREV_TAG}" ]; then
+            BASE_SHA="$(git rev-list -n 1 "${PREV_TAG}")"
+          else
+            BASE_SHA="$(git rev-list --max-parents=0 HEAD)"
+          fi
+          echo "sha=${BASE_SHA}" >> "${GITHUB_OUTPUT}"
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          base: ${{ steps.base.outputs.sha }}
+          ref: ${{ github.sha }}
+          filters: |
+            api:
+              - '.github/workflows/deploy-ghcr.yml'
+              - '.dockerignore'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'package.json'
+              - 'apps/api/**'
+              - 'packages/**'
+            app:
+              - '.github/workflows/deploy-ghcr.yml'
+              - '.dockerignore'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'package.json'
+              - 'apps/app/**'
+              - 'packages/**'
+
   build-api:
     name: Build & Push API Image
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,7 +89,6 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/ezinventory-api
           tags: |
-            type=raw,value=main,enable={{is_default_branch}}
             type=sha,prefix=sha-
             type=ref,event=tag
 
@@ -66,6 +106,8 @@ jobs:
   build-app:
     name: Build & Push App Image
     runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,7 +128,6 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/ezinventory-app
           tags: |
-            type=raw,value=main,enable={{is_default_branch}}
             type=sha,prefix=sha-
             type=ref,event=tag
 

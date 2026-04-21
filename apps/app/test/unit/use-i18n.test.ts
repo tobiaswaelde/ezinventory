@@ -40,11 +40,13 @@ describe('useI18n', () => {
 
     expect(locale.value).toBe('en');
     expect(t('nav_home')).toBe('Home');
+    expect(t('nav.home')).toBe('Home');
 
     await setLocale('de');
 
     expect(locale.value).toBe('de');
     expect(t('nav_settings')).toBe('Einstellungen');
+    expect(t('nav.settings')).toBe('Einstellungen');
     expect(storage.get('ezinventory.locale')).toBe('de');
     expect(updatePreferredLanguage).toHaveBeenCalledWith('de');
   });
@@ -153,6 +155,7 @@ describe('useI18n', () => {
     const i18n = useI18n();
 
     expect(i18n.t('missing_key' as never)).toBe('missing_key');
+    expect(i18n.t('nav' as never)).toBe('nav');
 
     i18n.locale.value = 'de';
     i18n.initLocale();

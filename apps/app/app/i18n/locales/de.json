@@ -1,0 +1,104 @@
+{
+  "nav": {
+    "home": "Start",
+    "inventory": "Inventar",
+    "labels": "Etiketten",
+    "scan": "QR scannen",
+    "settings": "Einstellungen"
+  },
+  "common": {
+    "language": "Sprache"
+  },
+  "inventory": {
+    "error": {
+      "load": "Inventarstruktur konnte nicht geladen werden.",
+      "locationNameRequired": "Name ist erforderlich.",
+      "codePattern": "Code muss 2-40 Zeichen haben und nur Großbuchstaben/Ziffern/Bindestriche enthalten.",
+      "fixLocationForm": "Bitte korrigiere die Fehler im Standort-Formular.",
+      "locationRequired": "Standort ist erforderlich.",
+      "fixContainerForm": "Bitte korrigiere die Fehler im Container-Formular.",
+      "createLocation": "Standort konnte nicht erstellt werden.",
+      "createContainer": "Container konnte nicht erstellt werden."
+    },
+    "success": {
+      "locationCreated": "Standort erstellt.",
+      "containerCreated": "Container erstellt."
+    }
+  },
+  "auth": {
+    "validation": {
+      "requiredEmailPassword": "Bitte E-Mail und Passwort angeben.",
+      "invalidEmail": "Bitte eine gültige E-Mail-Adresse angeben.",
+      "weakPassword": "Passwort muss mindestens 8 Zeichen lang sein.",
+      "displayNameTooShort": "Anzeigename muss mindestens 2 Zeichen lang sein.",
+      "passkeyEmailRequired": "E-Mail ist für Passkey-Login erforderlich.",
+      "passkeyCredentialsRequired": "E-Mail und Passwort sind für Passkey-Registrierung erforderlich."
+    },
+    "error": {
+      "loginFailed": "Login fehlgeschlagen. Bitte Zugangsdaten prüfen.",
+      "passkeyLoginFailed": "Passkey-Login fehlgeschlagen.",
+      "registrationFailed": "Registrierung fehlgeschlagen. Sie ist evtl. deaktiviert oder Nutzer existiert bereits.",
+      "passkeyRegistrationFailed": "Passkey-Registrierung fehlgeschlagen."
+    }
+  },
+  "settings": {
+    "validation": {
+      "itemCategoryIdInvalid": "Category-ID muss eine gültige UUID v4 sein.",
+      "itemSkuRequired": "SKU ist erforderlich.",
+      "itemNameRequired": "Name ist erforderlich.",
+      "itemServingsInvalid": "Portionen müssen eine ganze Zahl >= 1 sein.",
+      "userDisplayNameTooShort": "Anzeigename muss mindestens 2 Zeichen lang sein.",
+      "userEmailInvalid": "Gültige E-Mail ist erforderlich.",
+      "userPasswordTooShort": "Passwort muss mindestens 8 Zeichen lang sein.",
+      "policyConditionsInvalid": "Conditions müssen ein gültiges JSON-Objekt sein (oder leer bleiben)."
+    },
+    "error": {
+      "fixUserForm": "Bitte korrigiere die Fehler im Benutzerformular.",
+      "updateRegistrationMode": "Registrierungsmodus konnte nicht aktualisiert werden.",
+      "loadSetupStatus": "Aktueller Setup-Status konnte nicht geladen werden.",
+      "loadUserManagementData": "Benutzerverwaltungsdaten konnten nicht geladen werden.",
+      "createUser": "Benutzer konnte nicht erstellt werden. Berechtigungen oder doppelte E-Mail prüfen.",
+      "noRoleSelected": "Keine Rolle für diesen Benutzer ausgewählt.",
+      "updateUserRole": "Benutzerrolle konnte nicht aktualisiert werden.",
+      "updateUserPolicies": "Benutzer-Policies konnten nicht aktualisiert werden.",
+      "createPolicy": "Permission-Policy konnte nicht erstellt werden. JSON in Conditions prüfen."
+    },
+    "message": {
+      "registrationModeSavedPrefix": "Registrierungsmodus gespeichert:",
+      "userCreatedPrefix": "Benutzer erstellt:",
+      "userRoleUpdated": "Benutzerrolle aktualisiert.",
+      "userPoliciesUpdated": "Benutzer-Policies aktualisiert.",
+      "policyCreated": "Permission-Policy erstellt.",
+      "validPayloadSent": "Gültige Nutzlast an API gesendet."
+    }
+  },
+  "labels": {
+    "error": {
+      "loadEntities": "Einträge für Labels konnten nicht geladen werden.",
+      "generate": "Labels konnten nicht generiert werden."
+    },
+    "validation": {
+      "noEntitySelected": "Bitte mindestens einen Eintrag auswählen.",
+      "invalidCopies": "Kopien pro Eintrag müssen eine ganze Zahl >= 1 sein."
+    }
+  },
+  "scan": {
+    "validation": {
+      "codeRequired": "Bitte einen gescannten Code angeben.",
+      "quantityInvalid": "Menge muss eine ganze Zahl >= 1 sein.",
+      "noScannedItem": "Kein gescannter Artikel verfügbar."
+    },
+    "error": {
+      "itemNotFound": "Kein Artikel für diesen Code gefunden.",
+      "secureContextRequired": "Kamera-Scan erfordert HTTPS oder localhost.",
+      "scanning": "Beim Scannen ist ein Fehler aufgetreten.",
+      "scannerStart": "Kamera-Scanner konnte nicht gestartet werden."
+    },
+    "message": {
+      "scannerActive": "Scanner aktiv. Kamera auf einen QR-Code richten.",
+      "matchedItemPrefix": "Gefundener Artikel:",
+      "quickActionPlanned": "Diese Schnellaktion folgt als Nächstes. Aktuell ist zuerst Stock-out umgesetzt.",
+      "preparedStockOutPrefix": "Stock-out vorbereitet für"
+    }
+  }
+}
