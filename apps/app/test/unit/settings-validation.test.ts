@@ -28,7 +28,21 @@ describe('settings validation utilities', () => {
         categoryId: '550e8400-e29b-41d4-a716-446655440001',
         sku: 'SKU-1',
         name: 'Item',
-        servings: '2'
+        servings: undefined
+      })
+    ).toEqual({
+      categoryId: '',
+      sku: '',
+      name: '',
+      servings: ''
+    });
+
+    expect(
+      validateItemInput({
+        categoryId: '550e8400-e29b-41d4-a716-446655440001',
+        sku: 'SKU-1',
+        name: 'Item',
+        servings: '  '
       })
     ).toEqual({
       categoryId: '',

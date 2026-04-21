@@ -15,14 +15,17 @@ import {
 describe('auth validation utilities', () => {
   it('normalizes input strings', () => {
     expect(normalizeEmail('  USER@Example.COM  ')).toBe('user@example.com');
+    expect(normalizeEmail(undefined)).toBe('');
     expect(normalizeText('  Device Name  ')).toBe('Device Name');
     expect(normalizeText(undefined)).toBe('');
   });
 
   it('validates email and password rules', () => {
+    expect(validateEmail('')).toBe(AUTH_VALIDATION_MESSAGE_KEYS.invalidEmail);
     expect(validateEmail('invalid')).toBe(AUTH_VALIDATION_MESSAGE_KEYS.invalidEmail);
     expect(validateEmail('valid@example.com')).toBeNull();
 
+    expect(validatePassword(undefined)).toBe(AUTH_VALIDATION_MESSAGE_KEYS.requiredEmailPassword);
     expect(validatePassword('')).toBe(AUTH_VALIDATION_MESSAGE_KEYS.requiredEmailPassword);
     expect(validatePassword('1234567')).toBe(AUTH_VALIDATION_MESSAGE_KEYS.weakPassword);
     expect(validatePassword('12345678')).toBeNull();
@@ -40,6 +43,12 @@ describe('auth validation utilities', () => {
   });
 
   it('validates sign-up payload', () => {
+    expect(validateSignupInput({ email: 'invalid', password: '12345678', displayName: 'Alex' })).toBe(
+      AUTH_VALIDATION_MESSAGE_KEYS.invalidEmail
+    );
+    expect(validateSignupInput({ email: 'valid@example.com', password: '1234567', displayName: 'Alex' })).toBe(
+      AUTH_VALIDATION_MESSAGE_KEYS.weakPassword
+    );
     expect(validateSignupInput({ email: 'valid@example.com', password: '12345678', displayName: 'A' })).toBe(
       AUTH_VALIDATION_MESSAGE_KEYS.displayNameTooShort
     );
@@ -54,6 +63,9 @@ describe('auth validation utilities', () => {
       AUTH_VALIDATION_MESSAGE_KEYS.passkeyCredentialsRequired
     );
     expect(validatePasskeyRegistrationInput({ email: 'valid@example.com', password: '' })).toBe(
+      AUTH_VALIDATION_MESSAGE_KEYS.passkeyCredentialsRequired
+    );
+    expect(validatePasskeyRegistrationInput({ email: 'valid@example.com', password: undefined })).toBe(
       AUTH_VALIDATION_MESSAGE_KEYS.passkeyCredentialsRequired
     );
     expect(validatePasskeyRegistrationInput({ email: 'valid@example.com', password: '1234567' })).toBe(
