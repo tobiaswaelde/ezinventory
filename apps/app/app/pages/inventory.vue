@@ -119,6 +119,7 @@
 import type { ContainerResponse, ContainerType, LocationResponse } from '@ezinventory/contracts';
 
 const { isAuthenticated } = useAuth();
+const { t } = useI18n();
 const { createContainer, createLocation, listContainers, listLocations } = useApiClient();
 
 const loading = ref(false);
@@ -251,20 +252,20 @@ const refreshData = async (): Promise<void> => {
       containerForm.locationId = firstLocation.id;
     }
   } catch {
-    errorMessage.value = 'Could not load inventory structure.';
+    errorMessage.value = t('inventory_error_load');
   } finally {
     loading.value = false;
   }
 };
 
 const submitLocation = async (): Promise<void> => {
-  locationErrors.name = locationForm.name.trim() ? '' : 'Name is required.';
+  locationErrors.name = locationForm.name.trim() ? '' : t('inventory_error_location_name_required');
   locationErrors.code = codePattern.test(locationForm.code.trim().toUpperCase())
     ? ''
-    : 'Code must be 2-40 chars, uppercase letters/numbers/hyphen only.';
+    : t('inventory_error_code_pattern');
 
   if (locationErrors.name || locationErrors.code) {
-    errorMessage.value = 'Please fix the location form errors.';
+    errorMessage.value = t('inventory_error_fix_location_form');
     return;
   }
 
@@ -281,22 +282,22 @@ const submitLocation = async (): Promise<void> => {
     locationForm.name = '';
     locationForm.code = '';
     locationForm.description = '';
-    successMessage.value = 'Location created.';
+    successMessage.value = t('inventory_success_location_created');
     await refreshData();
   } catch {
-    errorMessage.value = 'Could not create location.';
+    errorMessage.value = t('inventory_error_create_location');
   }
 };
 
 const submitContainer = async (): Promise<void> => {
-  containerErrors.locationId = containerForm.locationId ? '' : 'Location is required.';
-  containerErrors.name = containerForm.name.trim() ? '' : 'Name is required.';
+  containerErrors.locationId = containerForm.locationId ? '' : t('inventory_error_location_required');
+  containerErrors.name = containerForm.name.trim() ? '' : t('inventory_error_location_name_required');
   containerErrors.code = codePattern.test(containerForm.code.trim().toUpperCase())
     ? ''
-    : 'Code must be 2-40 chars, uppercase letters/numbers/hyphen only.';
+    : t('inventory_error_code_pattern');
 
   if (containerErrors.locationId || containerErrors.name || containerErrors.code) {
-    errorMessage.value = 'Please fix the container form errors.';
+    errorMessage.value = t('inventory_error_fix_container_form');
     return;
   }
 
@@ -317,10 +318,10 @@ const submitContainer = async (): Promise<void> => {
     containerForm.name = '';
     containerForm.code = '';
     containerForm.description = '';
-    successMessage.value = 'Container created.';
+    successMessage.value = t('inventory_success_container_created');
     await refreshData();
   } catch {
-    errorMessage.value = 'Could not create container.';
+    errorMessage.value = t('inventory_error_create_container');
   }
 };
 

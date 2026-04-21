@@ -7,7 +7,17 @@ const MESSAGES = {
     nav_labels: 'Labels',
     nav_scan: 'Scan QR',
     nav_settings: 'Settings',
-    language: 'Language'
+    language: 'Language',
+    inventory_error_load: 'Could not load inventory structure.',
+    inventory_error_location_name_required: 'Name is required.',
+    inventory_error_code_pattern: 'Code must be 2-40 chars, uppercase letters/numbers/hyphen only.',
+    inventory_error_fix_location_form: 'Please fix the location form errors.',
+    inventory_error_location_required: 'Location is required.',
+    inventory_error_fix_container_form: 'Please fix the container form errors.',
+    inventory_error_create_location: 'Could not create location.',
+    inventory_error_create_container: 'Could not create container.',
+    inventory_success_location_created: 'Location created.',
+    inventory_success_container_created: 'Container created.'
   },
   de: {
     nav_home: 'Start',
@@ -15,7 +25,17 @@ const MESSAGES = {
     nav_labels: 'Etiketten',
     nav_scan: 'QR scannen',
     nav_settings: 'Einstellungen',
-    language: 'Sprache'
+    language: 'Sprache',
+    inventory_error_load: 'Inventarstruktur konnte nicht geladen werden.',
+    inventory_error_location_name_required: 'Name ist erforderlich.',
+    inventory_error_code_pattern: 'Code muss 2-40 Zeichen haben und nur Großbuchstaben/Ziffern/Bindestriche enthalten.',
+    inventory_error_fix_location_form: 'Bitte korrigiere die Fehler im Standort-Formular.',
+    inventory_error_location_required: 'Standort ist erforderlich.',
+    inventory_error_fix_container_form: 'Bitte korrigiere die Fehler im Container-Formular.',
+    inventory_error_create_location: 'Standort konnte nicht erstellt werden.',
+    inventory_error_create_container: 'Container konnte nicht erstellt werden.',
+    inventory_success_location_created: 'Standort erstellt.',
+    inventory_success_container_created: 'Container erstellt.'
   }
 } as const;
 
