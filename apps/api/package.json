@@ -9,6 +9,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "pnpm prisma:generate",
     "dev": "tsx watch src/main.ts",
     "build": "pnpm prisma:generate && tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "node dist/main.js",
