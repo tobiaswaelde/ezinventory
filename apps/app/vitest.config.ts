@@ -12,7 +12,9 @@ export default defineConfig({
         'app/composables/use-i18n.ts',
         'app/composables/use-theme.ts',
         'app/utils/auth-validation.ts',
-        'app/utils/settings-validation.ts'
+        'app/utils/settings-validation.ts',
+        'app/utils/labels-validation.ts',
+        'app/utils/scan-validation.ts'
       ],
       thresholds: {
         statements: 100,

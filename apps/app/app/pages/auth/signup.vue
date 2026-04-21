@@ -182,7 +182,7 @@ const submit = async (
       preferredLanguage
     });
   } catch {
-    signupError.value = 'Registration failed. It may be disabled or user already exists.';
+    signupError.value = t('auth_error_registration_failed');
   } finally {
     submitting.value = false;
   }
@@ -216,7 +216,7 @@ const submitPasskeyRegister = async (
 
     passkeyMessage.value = `Passkey registered (${result.credentialId.slice(0, 10)}...).`;
   } catch {
-    passkeyError.value = 'Passkey registration failed.';
+    passkeyError.value = t('auth_error_passkey_registration_failed');
   } finally {
     passkeySubmitting.value = false;
   }

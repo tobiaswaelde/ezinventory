@@ -70,8 +70,14 @@
 <script setup lang="ts">
 import type { ItemResponse } from '@ezinventory/contracts';
 import type { BrowserMultiFormatReader } from '@zxing/browser';
+import {
+  validateScannedCodeInput,
+  validateStockOutQuantityInput,
+  SCAN_VALIDATION_MESSAGE_KEYS
+} from '~/utils/scan-validation';
 
 const { lookupItemByCode } = useApiClient();
+const { t } = useI18n();
 
 const videoRef = ref<HTMLVideoElement | null>(null);
 const scannedValue = ref('');
@@ -81,7 +87,7 @@ const scanMessage = ref('');
 const actionMessage = ref('');
 const stockOutQuantity = ref(1);
 const isScanning = ref(false);
-const quickActionOptions = [
+  const quickActionOptions = [
   { label: 'Stock Out', value: 'stock-out' },
   { label: 'Stock In', value: 'stock-in' },
   { label: 'Transfer', value: 'transfer' }
@@ -94,17 +100,18 @@ const lookupScannedCode = async (code: string): Promise<void> => {
   scannedItem.value = null;
   actionMessage.value = '';
 
-  if (!code.trim()) {
-    scanMessage.value = 'Please provide a scanned code.';
+  const codeValidationError = validateScannedCodeInput(code);
+  if (codeValidationError) {
+    scanMessage.value = t(codeValidationError as never);
     return;
   }
 
   try {
     const item = await lookupItemByCode(code.trim());
     scannedItem.value = item;
-    scanMessage.value = `Matched item: ${item.name}`;
+    scanMessage.value = `${t('scan_message_matched_item_prefix')} ${item.name}`;
   } catch {
-    scanMessage.value = 'No item found for this code.';
+    scanMessage.value = t('scan_error_item_not_found');
   }
 };
 
@@ -122,7 +129,7 @@ const startScanner = async (): Promise<void> => {
   }
 
   if (!window.isSecureContext) {
-    scanMessage.value = 'Camera scanning requires HTTPS or localhost.';
+    scanMessage.value = t('scan_error_secure_context_required');
     return;
   }
 
@@ -144,14 +151,14 @@ const startScanner = async (): Promise<void> => {
       }
 
       if (error && !(error instanceof NotFoundException)) {
-        scanMessage.value = 'Scanning error occurred.';
+        scanMessage.value = t('scan_error_scanning');
       }
     });
 
-    scanMessage.value = 'Scanner active. Point camera at a QR code.';
+    scanMessage.value = t('scan_message_scanner_active');
   } catch {
     isScanning.value = false;
-    scanMessage.value = 'Could not start camera scanner.';
+    scanMessage.value = t('scan_error_scanner_start');
   }
 };
 
@@ -178,21 +185,22 @@ const formatSize = (item: ItemResponse): string => {
 
 const applyQuickAction = async (): Promise<void> => {
   if (!scannedItem.value) {
-    actionMessage.value = 'No scanned item available.';
+    actionMessage.value = t(SCAN_VALIDATION_MESSAGE_KEYS.noScannedItem as never);
     return;
   }
 
   if (selectedAction.value !== 'stock-out') {
-    actionMessage.value = `${selectedAction.value} flow is planned next. Stock-out is the first quick action.`;
+    actionMessage.value = t('scan_message_quick_action_planned');
     return;
   }
 
-  if (!Number.isInteger(stockOutQuantity.value) || stockOutQuantity.value < 1) {
-    actionMessage.value = 'Quantity must be an integer >= 1.';
+  const quantityValidationError = validateStockOutQuantityInput(stockOutQuantity.value);
+  if (quantityValidationError) {
+    actionMessage.value = t(quantityValidationError as never);
     return;
   }
 
-  actionMessage.value = `Prepared stock-out for ${scannedItem.value.name} (qty: ${stockOutQuantity.value}).`;
+  actionMessage.value = `${t('scan_message_prepared_stock_out_prefix')} ${scannedItem.value.name} (qty: ${stockOutQuantity.value}).`;
 };
 
 onBeforeUnmount(() => {
