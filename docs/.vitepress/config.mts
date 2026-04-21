@@ -8,7 +8,8 @@ export default defineConfig({
     nav: [
       { text: 'Guide', link: '/' },
       { text: 'Architecture', link: '/architecture' },
-      { text: 'Operations', link: '/operations' }
+      { text: 'Operations', link: '/operations' },
+      { text: 'Release', link: '/release-strategy' }
     ],
     sidebar: [
       {
@@ -16,7 +17,8 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/' },
           { text: 'Architecture', link: '/architecture' },
-          { text: 'Operations', link: '/operations' }
+          { text: 'Operations', link: '/operations' },
+          { text: 'Release Strategy', link: '/release-strategy' }
         ]
       }
     ],
