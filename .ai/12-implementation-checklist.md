@@ -52,7 +52,7 @@ Last updated: 2026-04-21
 
 ## 5. Media & Assets
 
-- [ ] RustFS integration for image storage
+- [x] RustFS integration baseline (API storage health + config wiring)
 - [ ] Image uploads for items
 - [ ] Image uploads for storage places/containers
 - [ ] Personal image library for quick selection during storage

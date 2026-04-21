@@ -20,6 +20,7 @@ export default defineConfig({
         'src/modules/containers/containers.controller.ts',
         'src/modules/items/items.controller.ts',
         'src/modules/locations/locations.controller.ts',
+        'src/modules/media/media.controller.ts',
         'src/modules/auth/auth.controller.ts',
         'src/modules/setup/setup.controller.ts'
       ],

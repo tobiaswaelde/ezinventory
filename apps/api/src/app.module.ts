@@ -6,10 +6,11 @@ import { ContainersModule } from '~/modules/containers/containers.module.js';
 import { HealthModule } from '~/modules/health/health.module.js';
 import { ItemsModule } from '~/modules/items/items.module.js';
 import { LocationsModule } from '~/modules/locations/locations.module.js';
+import { MediaModule } from '~/modules/media/media.module.js';
 import { SetupModule } from '~/modules/setup/setup.module.js';
 import { PrismaModule } from '~/prisma/prisma.module.js';
 
 @Module({
-  imports: [PrismaModule, HealthModule, CategoriesModule, ItemsModule, LocationsModule, ContainersModule, SetupModule, AuthModule]
+  imports: [PrismaModule, HealthModule, CategoriesModule, ItemsModule, LocationsModule, ContainersModule, MediaModule, SetupModule, AuthModule]
 })
 export class AppModule {}

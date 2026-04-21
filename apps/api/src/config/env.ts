@@ -26,5 +26,7 @@ export const ENV = cleanEnv(process.env, {
   AUTH_REFRESH_TOKEN_TTL: str({ default: '30d' }),
   AUTH_PASSKEY_RP_ID: str({ default: 'localhost' }),
   AUTH_PASSKEY_RP_NAME: str({ default: 'EZ Inventory' }),
-  AUTH_PASSKEY_ORIGIN: str({ default: 'http://localhost:3000' })
+  AUTH_PASSKEY_ORIGIN: str({ default: 'http://localhost:3000' }),
+  RUSTFS_ENDPOINT: str({ default: 'http://localhost:9000' }),
+  RUSTFS_BUCKET: str({ default: 'ezinventory-media' })
 });
