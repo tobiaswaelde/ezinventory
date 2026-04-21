@@ -27,6 +27,11 @@
       <UTextarea id="location-description" v-model="locationForm.description" :rows="2" placeholder="Optional" />
     </div>
 
+    <div class="field">
+      <label for="location-icon">Icon (optional)</label>
+      <CommonInputsSelectIcon id="location-icon" v-model="locationForm.icon" placeholder="Select location icon" />
+    </div>
+
     <div class="form-actions">
       <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
     </div>
@@ -87,6 +92,11 @@
       <UTextarea id="container-description" v-model="containerForm.description" :rows="2" placeholder="Optional" />
     </div>
 
+    <div class="field">
+      <label for="container-icon">Icon (optional)</label>
+      <CommonInputsSelectIcon id="container-icon" v-model="containerForm.icon" placeholder="Select container icon" />
+    </div>
+
     <div class="form-actions">
       <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
     </div>
@@ -96,7 +106,10 @@
     <h2>Current Tree</h2>
 
     <div v-for="location in sortedLocations" :key="location.id" class="location-block">
-      <h3>{{ location.name }} ({{ location.code }})</h3>
+      <h3 class="location-title">
+        <UIcon v-if="toUiIconName(location.iconSet, location.iconName)" :name="toUiIconName(location.iconSet, location.iconName) as string" />
+        {{ location.name }} ({{ location.code }})
+      </h3>
 
       <ul class="container-list">
         <li
@@ -105,7 +118,10 @@
           class="container-row"
           :style="{ paddingLeft: `${row.depth * 16}px` }"
         >
-          <strong>{{ row.node.name }}</strong>
+          <strong class="container-title">
+            <UIcon v-if="toUiIconName(row.node.iconSet, row.node.iconName)" :name="toUiIconName(row.node.iconSet, row.node.iconName) as string" />
+            {{ row.node.name }}
+          </strong>
           <span>{{ row.node.type }}</span>
           <small>{{ row.node.code }}</small>
         </li>
@@ -136,7 +152,8 @@ const containers = ref<ContainerResponse[]>([]);
 const locationForm = reactive({
   name: '',
   code: '',
-  description: ''
+  description: '',
+  icon: undefined as string | undefined
 });
 const locationErrors = reactive({
   name: '',
@@ -149,7 +166,8 @@ const containerForm = reactive({
   type: 'BOX' as ContainerType,
   name: '',
   code: '',
-  description: ''
+  description: '',
+  icon: undefined as string | undefined
 });
 const containerErrors = reactive({
   locationId: '',
@@ -235,6 +253,37 @@ const buildTree = (rows: ContainerResponse[]): Array<{ node: ContainerResponse; 
   return result;
 };
 
+const toUiIconName = (iconSet?: string | null, iconName?: string | null): string | null => {
+  if (!iconSet || !iconName) {
+    return null;
+  }
+
+  if (iconSet === 'TABLER') {
+    return `i-tabler-${iconName}`;
+  }
+
+  if (iconSet === 'LUCIDE') {
+    return `i-lucide-${iconName}`;
+  }
+
+  return null;
+};
+
+const parseSelectedIcon = (icon?: string): { iconSet?: 'TABLER'; iconName?: string } => {
+  if (!icon) {
+    return {};
+  }
+
+  if (icon.startsWith('i-tabler-')) {
+    return {
+      iconSet: 'TABLER',
+      iconName: icon.replace(/^i-tabler-/, '')
+    };
+  }
+
+  return {};
+};
+
 const refreshData = async (): Promise<void> => {
   if (!isAuthenticated.value) {
     return;
@@ -274,15 +323,20 @@ const submitLocation = async (): Promise<void> => {
   successMessage.value = '';
 
   try {
+    const iconSelection = parseSelectedIcon(locationForm.icon);
+
     await createLocation({
       name: locationForm.name.trim(),
       code: locationForm.code.trim().toUpperCase(),
-      description: locationForm.description.trim() || undefined
+      description: locationForm.description.trim() || undefined,
+      iconSet: iconSelection.iconSet,
+      iconName: iconSelection.iconName
     });
 
     locationForm.name = '';
     locationForm.code = '';
     locationForm.description = '';
+    locationForm.icon = undefined;
     successMessage.value = t('inventory_success_location_created');
     await refreshData();
   } catch {
@@ -305,19 +359,24 @@ const submitContainer = async (): Promise<void> => {
   successMessage.value = '';
 
   try {
+    const iconSelection = parseSelectedIcon(containerForm.icon);
+
     await createContainer({
       locationId: containerForm.locationId,
       parentContainerId: containerForm.parentContainerId || undefined,
       type: containerForm.type,
       name: containerForm.name.trim(),
       code: containerForm.code.trim().toUpperCase(),
-      description: containerForm.description.trim() || undefined
+      description: containerForm.description.trim() || undefined,
+      iconSet: iconSelection.iconSet,
+      iconName: iconSelection.iconName
     });
 
     containerForm.parentContainerId = '';
     containerForm.name = '';
     containerForm.code = '';
     containerForm.description = '';
+    containerForm.icon = undefined;
     successMessage.value = t('inventory_success_container_created');
     await refreshData();
   } catch {
@@ -342,6 +401,12 @@ watch(
   margin-top: 1rem;
 }
 
+.location-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
 .container-list {
   list-style: none;
   padding: 0;
@@ -360,6 +425,12 @@ watch(
 .container-row span,
 .container-row small {
   color: #576073;
+}
+
+.container-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .form-actions {
