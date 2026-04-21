@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Inject, Param, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, FileTypeValidator, Get, Inject, MaxFileSizeValidator, Param, ParseFilePipe, ParseUUIDPipe, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AttachmentOwnerType } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -70,11 +70,19 @@ export class MediaController {
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   async uploadItemImage(
     @Param('itemId', new ParseUUIDPipe({ version: '4' })) itemId: string,
-    @UploadedFile() file: UploadedImageFile | undefined,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          new FileTypeValidator({ fileType: /^image\// }),
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 })
+        ]
+      })
+    )
+    file: UploadedImageFile,
     @CurrentUser() user: AuthenticatedUser
   ): Promise<UploadedImageResult> {
-    const validatedFile = this.validateImageFile(file);
-    return await this.mediaService.uploadOwnerImage(AttachmentOwnerType.ITEM, itemId, validatedFile, user.id);
+    return await this.mediaService.uploadOwnerImage(AttachmentOwnerType.ITEM, itemId, file, user.id);
   }
 
   @Post('containers/:containerId/images')
@@ -113,22 +121,18 @@ export class MediaController {
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   async uploadContainerImage(
     @Param('containerId', new ParseUUIDPipe({ version: '4' })) containerId: string,
-    @UploadedFile() file: UploadedImageFile | undefined,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          new FileTypeValidator({ fileType: /^image\// }),
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 })
+        ]
+      })
+    )
+    file: UploadedImageFile,
     @CurrentUser() user: AuthenticatedUser
   ): Promise<UploadedImageResult> {
-    const validatedFile = this.validateImageFile(file);
-    return await this.mediaService.uploadOwnerImage(AttachmentOwnerType.CONTAINER, containerId, validatedFile, user.id);
-  }
-
-  private validateImageFile(file: UploadedImageFile | undefined): UploadedImageFile {
-    if (!file) {
-      throw new BadRequestException('Image file is required.');
-    }
-
-    if (!file.mimetype.startsWith('image/')) {
-      throw new BadRequestException('Only image uploads are allowed.');
-    }
-
-    return file;
+    return await this.mediaService.uploadOwnerImage(AttachmentOwnerType.CONTAINER, containerId, file, user.id);
   }
 }
