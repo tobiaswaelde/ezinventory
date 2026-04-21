@@ -1,13 +1,47 @@
-import { Controller, Delete, FileTypeValidator, Get, Inject, MaxFileSizeValidator, Param, ParseFilePipe, ParseUUIDPipe, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Delete,
+  FileTypeValidator,
+  Get,
+  Inject,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  ParseUUIDPipe,
+  Post,
+  Put,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import prismaClient from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
-import { ListMediaLibraryQueryDto } from '~/modules/media/dto/list-media-library-query.dto.js';
-import { MediaService, type StorageHealthResult, type UploadedImageFile, type UploadedImageResult } from '~/modules/media/media.service.js';
 import type { AuthenticatedUser } from '~/modules/auth/types/authenticated-user.type.js';
+import { ListMediaLibraryQueryDto } from '~/modules/media/dto/list-media-library-query.dto.js';
+import {
+  DeleteImageResponseDto,
+  MediaLibraryItemResponseDto,
+  StorageHealthResponseDto,
+  UploadedImageResponseDto
+} from '~/modules/media/dto/media-response.dto.js';
+import { MediaService, type UploadedImageFile } from '~/modules/media/media.service.js';
 
 const { AttachmentOwnerType } = prismaClient as typeof import('@prisma/client');
 
@@ -20,49 +54,24 @@ export class MediaController {
 
   @Get('storage/health')
   @ApiOperation({ summary: 'Check RustFS storage connectivity and configuration' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        configured: { type: 'boolean', example: true },
-        endpoint: { type: 'string', example: 'http://localhost:9000' },
-        bucket: { type: 'string', example: 'ezinventory-media' },
-        reachable: { type: 'boolean', example: true },
-        statusCode: { type: 'number', nullable: true, example: 200 }
-      }
-    }
-  })
+  @ApiOkResponse({ type: StorageHealthResponseDto })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
-  async storageHealth(): Promise<StorageHealthResult> {
-    return await this.mediaService.getStorageHealth();
+  async storageHealth(): Promise<StorageHealthResponseDto> {
+    const status = await this.mediaService.getStorageHealth();
+    return StorageHealthResponseDto.fromModel(status);
   }
 
   @Get('library')
   @ApiOperation({ summary: 'List personal media library items for the current user' })
-  @ApiOkResponse({
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-          ownerType: { type: 'string', enum: Object.values(AttachmentOwnerType) },
-          ownerId: { type: 'string', format: 'uuid' },
-          fileName: { type: 'string' },
-          mimeType: { type: 'string' },
-          sizeBytes: { type: 'number', example: 128000 },
-          storageKey: { type: 'string' },
-          uploadedByUserId: { type: 'string', format: 'uuid' },
-          createdAt: { type: 'string', format: 'date-time' },
-          url: { type: 'string' }
-        }
-      }
-    }
-  })
+  @ApiOkResponse({ type: MediaLibraryItemResponseDto, isArray: true })
   @ApiBadRequestResponse({ description: 'Validation failed for media library query.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
-  async listLibrary(@Query() query: ListMediaLibraryQueryDto, @CurrentUser() user: AuthenticatedUser): Promise<Array<Record<string, unknown>>> {
-    return await this.mediaService.listUserLibrary(query, user.id);
+  async listLibrary(
+    @Query() query: ListMediaLibraryQueryDto,
+    @CurrentUser() user: AuthenticatedUser
+  ): Promise<MediaLibraryItemResponseDto[]> {
+    const items = await this.mediaService.listUserLibrary(query, user.id);
+    return MediaLibraryItemResponseDto.fromModels(items);
   }
 
   @Post('items/:itemId/images')
@@ -80,22 +89,7 @@ export class MediaController {
       }
     }
   })
-  @ApiCreatedResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        ownerType: { type: 'string', example: 'ITEM' },
-        ownerId: { type: 'string', format: 'uuid' },
-        fileName: { type: 'string' },
-        mimeType: { type: 'string' },
-        sizeBytes: { type: 'number', example: 128000 },
-        storageKey: { type: 'string' },
-        url: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' }
-      }
-    }
-  })
+  @ApiCreatedResponse({ type: UploadedImageResponseDto })
   @ApiBadRequestResponse({ description: 'Missing file, invalid file type, or invalid owner id.' })
   @ApiNotFoundResponse({ description: 'Item not found.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
@@ -112,8 +106,9 @@ export class MediaController {
     )
     file: UploadedImageFile,
     @CurrentUser() user: AuthenticatedUser
-  ): Promise<UploadedImageResult> {
-    return await this.mediaService.uploadOwnerImage(AttachmentOwnerType.ITEM, itemId, file, user.id);
+  ): Promise<UploadedImageResponseDto> {
+    const uploaded = await this.mediaService.uploadOwnerImage(AttachmentOwnerType.ITEM, itemId, file, user.id);
+    return UploadedImageResponseDto.fromModel(uploaded);
   }
 
   @Post('containers/:containerId/images')
@@ -131,22 +126,7 @@ export class MediaController {
       }
     }
   })
-  @ApiCreatedResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        ownerType: { type: 'string', example: 'CONTAINER' },
-        ownerId: { type: 'string', format: 'uuid' },
-        fileName: { type: 'string' },
-        mimeType: { type: 'string' },
-        sizeBytes: { type: 'number', example: 128000 },
-        storageKey: { type: 'string' },
-        url: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' }
-      }
-    }
-  })
+  @ApiCreatedResponse({ type: UploadedImageResponseDto })
   @ApiBadRequestResponse({ description: 'Missing file, invalid file type, or invalid owner id.' })
   @ApiNotFoundResponse({ description: 'Container not found.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
@@ -163,8 +143,14 @@ export class MediaController {
     )
     file: UploadedImageFile,
     @CurrentUser() user: AuthenticatedUser
-  ): Promise<UploadedImageResult> {
-    return await this.mediaService.uploadOwnerImage(AttachmentOwnerType.CONTAINER, containerId, file, user.id);
+  ): Promise<UploadedImageResponseDto> {
+    const uploaded = await this.mediaService.uploadOwnerImage(
+      AttachmentOwnerType.CONTAINER,
+      containerId,
+      file,
+      user.id
+    );
+    return UploadedImageResponseDto.fromModel(uploaded);
   }
 
   @Put('images/:attachmentId')
@@ -182,22 +168,7 @@ export class MediaController {
       }
     }
   })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        ownerType: { type: 'string' },
-        ownerId: { type: 'string', format: 'uuid' },
-        fileName: { type: 'string' },
-        mimeType: { type: 'string' },
-        sizeBytes: { type: 'number' },
-        storageKey: { type: 'string' },
-        url: { type: 'string' },
-        createdAt: { type: 'string', format: 'date-time' }
-      }
-    }
-  })
+  @ApiOkResponse({ type: UploadedImageResponseDto })
   @ApiBadRequestResponse({ description: 'Missing file, invalid file type, or invalid attachment id.' })
   @ApiNotFoundResponse({ description: 'Image not found.' })
   @ApiForbiddenResponse({ description: 'Only own uploads can be replaced.' })
@@ -215,28 +186,22 @@ export class MediaController {
     )
     file: UploadedImageFile,
     @CurrentUser() user: AuthenticatedUser
-  ): Promise<UploadedImageResult> {
-    return await this.mediaService.replaceImage(attachmentId, file, user.id);
+  ): Promise<UploadedImageResponseDto> {
+    const updated = await this.mediaService.replaceImage(attachmentId, file, user.id);
+    return UploadedImageResponseDto.fromModel(updated);
   }
 
   @Delete('images/:attachmentId')
   @ApiOperation({ summary: 'Delete an uploaded image from RustFS and metadata from database' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        deleted: { type: 'boolean', example: true }
-      }
-    }
-  })
+  @ApiOkResponse({ type: DeleteImageResponseDto })
   @ApiNotFoundResponse({ description: 'Image not found.' })
   @ApiForbiddenResponse({ description: 'Only own uploads can be deleted.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   async deleteImage(
     @Param('attachmentId', new ParseUUIDPipe({ version: '4' })) attachmentId: string,
     @CurrentUser() user: AuthenticatedUser
-  ): Promise<{ id: string; deleted: true }> {
-    return await this.mediaService.deleteImage(attachmentId, user.id);
+  ): Promise<DeleteImageResponseDto> {
+    const result = await this.mediaService.deleteImage(attachmentId, user.id);
+    return DeleteImageResponseDto.fromModel(result);
   }
 }

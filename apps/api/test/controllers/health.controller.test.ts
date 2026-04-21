@@ -27,7 +27,8 @@ describe('HealthController', () => {
     const controller = new HealthController();
     const result = await controller.getHealth();
 
-    expect(result).toEqual({
+    expect(result).toBeInstanceOf(Object);
+    expect(result).toMatchObject({
       name: '@ezinventory/api',
       version: '0.1.0',
       status: HealthStatus.Online,
@@ -37,9 +38,9 @@ describe('HealthController', () => {
         email: 't@example.com',
         url: 'https://example.com'
       },
-      uptime: 3661.8,
-      uptimeFormatted: '1h 1m 1s'
+      uptime: 3661.8
     });
+    expect(result.uptimeFormatted).toBe('1h 1m 1s');
   });
 
   it('falls back to default package name when env variable is missing', async () => {

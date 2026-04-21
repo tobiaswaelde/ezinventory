@@ -1,4 +1,18 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -8,10 +22,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse
 } from '@nestjs/swagger';
-import prismaClient from '@prisma/client';
-import type { UserRole as UserRoleType } from '@prisma/client';
 
-import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.types.js';
 import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
 import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
@@ -20,11 +31,19 @@ import { CreatePermissionPolicyDto } from '~/modules/setup/dto/create-permission
 import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
 import { ListUsersQueryDto } from '~/modules/setup/dto/list-users-query.dto.js';
 import { ReplaceUserPoliciesDto } from '~/modules/setup/dto/replace-user-policies.dto.js';
-import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
+import {
+  AdminUserResponseDto,
+  BootstrapAdminResponseDto,
+  PermissionPolicyResponseDto,
+  RegistrationModeResponseDto,
+  ReplaceUserPoliciesResponseDto,
+  SetupStatusResponseDto,
+  SetupUserListItemResponseDto,
+  UpdateUserRoleResponseDto
+} from '~/modules/setup/dto/setup-response.dto.js';
+import { UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
 import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
 import { SetupService } from '~/modules/setup/setup.service.js';
-
-const { UserRole } = prismaClient as typeof import('@prisma/client');
 
 @ApiTags('setup')
 @Controller('setup')
@@ -33,36 +52,20 @@ export class SetupController {
 
   @Get('status')
   @ApiOperation({ summary: 'Get setup initialization status and registration mode' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        setupInitialized: { type: 'boolean', example: true },
-        registrationMode: { type: 'string', enum: ['OPEN', 'ADMIN_ONLY'], example: 'ADMIN_ONLY' }
-      }
-    }
-  })
-  async getSetupStatus(): Promise<{ setupInitialized: boolean; registrationMode: RegistrationMode }> {
-    return await this.setupService.getSetupStatus();
+  @ApiOkResponse({ type: SetupStatusResponseDto })
+  async getSetupStatus(): Promise<SetupStatusResponseDto> {
+    const status = await this.setupService.getSetupStatus();
+    return SetupStatusResponseDto.fromModel(status);
   }
 
   @Post('bootstrap-admin')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Bootstrap the first admin account during initial setup' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        setupInitialized: { type: 'boolean', example: true },
-        adminUserId: { type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440000' }
-      }
-    }
-  })
+  @ApiOkResponse({ type: BootstrapAdminResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed for bootstrap payload.' })
-  async bootstrapAdmin(
-    @Body() dto: BootstrapAdminDto
-  ): Promise<{ setupInitialized: true; adminUserId: string; email: string }> {
-    return await this.setupService.bootstrapAdmin(dto);
+  async bootstrapAdmin(@Body() dto: BootstrapAdminDto): Promise<BootstrapAdminResponseDto> {
+    const result = await this.setupService.bootstrapAdmin(dto);
+    return BootstrapAdminResponseDto.fromModel(result);
   }
 
   @Patch('registration-mode')
@@ -70,19 +73,13 @@ export class SetupController {
   @CheckPolicies({ action: 'manage', subject: 'all' })
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'Update registration mode (open or admin-only)' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        mode: { type: 'string', enum: ['OPEN', 'ADMIN_ONLY'], example: 'ADMIN_ONLY' }
-      }
-    }
-  })
+  @ApiOkResponse({ type: RegistrationModeResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed for registration mode payload.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to manage registration mode.' })
-  async updateRegistrationMode(@Body() dto: UpdateRegistrationModeDto): Promise<{ mode: RegistrationMode }> {
-    return await this.setupService.updateRegistrationMode(dto);
+  async updateRegistrationMode(@Body() dto: UpdateRegistrationModeDto): Promise<RegistrationModeResponseDto> {
+    const result = await this.setupService.updateRegistrationMode(dto);
+    return RegistrationModeResponseDto.fromModel(result);
   }
 
   @Post('users')
@@ -91,21 +88,13 @@ export class SetupController {
   @ApiBearerAuth('bearer')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a user as admin' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440777' },
-        email: { type: 'string', example: 'team.member@example.com' },
-        role: { type: 'string', enum: Object.values(UserRole), example: 'STAFF' }
-      }
-    }
-  })
+  @ApiOkResponse({ type: AdminUserResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed for create-user payload.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to create users.' })
-  async createUserByAdmin(@Body() dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRoleType }> {
-    return await this.setupService.createUserByAdmin(dto);
+  async createUserByAdmin(@Body() dto: CreateUserByAdminDto): Promise<AdminUserResponseDto> {
+    const user = await this.setupService.createUserByAdmin(dto);
+    return AdminUserResponseDto.fromModel(user);
   }
 
   @Get('users')
@@ -113,28 +102,12 @@ export class SetupController {
   @CheckPolicies({ action: 'read', subject: 'User' })
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'List users with assigned policy IDs' })
-  @ApiOkResponse({
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-          email: { type: 'string' },
-          displayName: { type: 'string' },
-          role: { type: 'string', enum: Object.values(UserRole) },
-          preferredLanguage: { type: 'string' },
-          createdAt: { type: 'string', format: 'date-time' },
-          updatedAt: { type: 'string', format: 'date-time' },
-          policyIds: { type: 'array', items: { type: 'string', format: 'uuid' } }
-        }
-      }
-    }
-  })
+  @ApiOkResponse({ type: SetupUserListItemResponseDto, isArray: true })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to read users.' })
-  async listUsers(@Query() query: ListUsersQueryDto): Promise<Array<Record<string, unknown>>> {
-    return await this.setupService.listUsers(query);
+  async listUsers(@Query() query: ListUsersQueryDto): Promise<SetupUserListItemResponseDto[]> {
+    const users = await this.setupService.listUsers(query);
+    return SetupUserListItemResponseDto.fromModels(users);
   }
 
   @Patch('users/:userId/role')
@@ -142,23 +115,16 @@ export class SetupController {
   @CheckPolicies({ action: 'update', subject: 'User' })
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'Update role of a specific user' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        role: { type: 'string', enum: Object.values(UserRole) }
-      }
-    }
-  })
+  @ApiOkResponse({ type: UpdateUserRoleResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed for userId or role payload.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to update users.' })
   async updateUserRole(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() dto: UpdateUserRoleDto
-  ): Promise<{ id: string; role: UserRoleType }> {
-    return await this.setupService.updateUserRole(userId, dto);
+  ): Promise<UpdateUserRoleResponseDto> {
+    const user = await this.setupService.updateUserRole(userId, dto);
+    return UpdateUserRoleResponseDto.fromModel(user);
   }
 
   @Get('permission-policies')
@@ -166,37 +132,12 @@ export class SetupController {
   @CheckPolicies({ action: 'read', subject: 'User' })
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'List all permission policies' })
-  @ApiOkResponse({
-    schema: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-          action: { type: 'string' },
-          subject: { type: 'string' },
-          inverted: { type: 'boolean' },
-          conditions: { nullable: true },
-          reason: { type: 'string', nullable: true },
-          createdAt: { type: 'string', format: 'date-time' }
-        }
-      }
-    }
-  })
+  @ApiOkResponse({ type: PermissionPolicyResponseDto, isArray: true })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to read policies.' })
-  async listPermissionPolicies(): Promise<
-    Array<{
-      id: string;
-      action: CaslAction;
-      subject: CaslSubject;
-      inverted: boolean;
-      conditions: unknown;
-      reason: string | null;
-      createdAt: Date;
-    }>
-  > {
-    return await this.setupService.listPermissionPolicies();
+  async listPermissionPolicies(): Promise<PermissionPolicyResponseDto[]> {
+    const policies = await this.setupService.listPermissionPolicies();
+    return PermissionPolicyResponseDto.fromModels(policies);
   }
 
   @Post('permission-policies')
@@ -205,27 +146,13 @@ export class SetupController {
   @ApiBearerAuth('bearer')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a permission policy' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', format: 'uuid' },
-        action: { type: 'string' },
-        subject: { type: 'string' },
-        inverted: { type: 'boolean' },
-        conditions: { nullable: true },
-        reason: { type: 'string', nullable: true },
-        createdAt: { type: 'string', format: 'date-time' }
-      }
-    }
-  })
+  @ApiOkResponse({ type: PermissionPolicyResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed for permission policy payload.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to create policies.' })
-  async createPermissionPolicy(
-    @Body() dto: CreatePermissionPolicyDto
-  ): Promise<{ id: string; action: CaslAction; subject: CaslSubject; inverted: boolean; conditions: unknown; reason: string | null; createdAt: Date }> {
-    return await this.setupService.createPermissionPolicy(dto);
+  async createPermissionPolicy(@Body() dto: CreatePermissionPolicyDto): Promise<PermissionPolicyResponseDto> {
+    const policy = await this.setupService.createPermissionPolicy(dto);
+    return PermissionPolicyResponseDto.fromModel(policy);
   }
 
   @Put('users/:userId/policies')
@@ -233,22 +160,15 @@ export class SetupController {
   @CheckPolicies({ action: 'update', subject: 'User' })
   @ApiBearerAuth('bearer')
   @ApiOperation({ summary: 'Replace policy assignments for a user' })
-  @ApiOkResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        userId: { type: 'string', format: 'uuid' },
-        policyIds: { type: 'array', items: { type: 'string', format: 'uuid' } }
-      }
-    }
-  })
+  @ApiOkResponse({ type: ReplaceUserPoliciesResponseDto })
   @ApiBadRequestResponse({ description: 'Validation failed for userId or policy payload.' })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to update policies.' })
   async replaceUserPolicies(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() dto: ReplaceUserPoliciesDto
-  ): Promise<{ userId: string; policyIds: string[] }> {
-    return await this.setupService.replaceUserPolicies(userId, dto);
+  ): Promise<ReplaceUserPoliciesResponseDto> {
+    const result = await this.setupService.replaceUserPolicies(userId, dto);
+    return ReplaceUserPoliciesResponseDto.fromModel(result);
   }
 }
