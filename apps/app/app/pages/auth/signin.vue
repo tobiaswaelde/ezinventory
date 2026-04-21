@@ -50,6 +50,11 @@
 
 <script setup lang="ts">
 import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui';
+import {
+  validateSigninInput,
+  validatePasskeySigninInput,
+  normalizeEmail
+} from '~/utils/auth-validation';
 
 definePageMeta({
   layout: 'auth'
@@ -107,11 +112,12 @@ const submit = async (event: FormSubmitEvent<{ email?: string; password?: string
   signinError.value = '';
   passkeyError.value = '';
 
-  const email = event.data.email?.trim() ?? '';
+  const email = normalizeEmail(event.data.email);
   const password = event.data.password ?? '';
 
-  if (!email || !password.trim()) {
-    signinError.value = 'Please provide email and password.';
+  const validationError = validateSigninInput({ email, password });
+  if (validationError) {
+    signinError.value = validationError;
     return;
   }
 
@@ -130,10 +136,11 @@ const submitPasskey = async (event: FormSubmitEvent<{ email?: string }>): Promis
   signinError.value = '';
   passkeyError.value = '';
 
-  const email = event.data.email?.trim() ?? '';
+  const email = normalizeEmail(event.data.email);
 
-  if (!email) {
-    passkeyError.value = 'Email is required for passkey login.';
+  const validationError = validatePasskeySigninInput({ email });
+  if (validationError) {
+    passkeyError.value = validationError;
     return;
   }
 
