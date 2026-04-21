@@ -41,6 +41,7 @@ docker compose up --build
 - API image: `ghcr.io/tobiaswaelde/ezinventory-api`
 - App image: `ghcr.io/tobiaswaelde/ezinventory-app`
 - Build & push workflow: `.github/workflows/deploy-ghcr.yml`
+- Deployment runbook: `.ai/14-deployment-runbook.md`
 
 ## Notes
 - IDs are UUID v4 only.

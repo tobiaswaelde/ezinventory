@@ -1,12 +1,13 @@
 # Implementation Checklist
 
-Last updated: 2026-04-20
+Last updated: 2026-04-21
 
 ## 1. Foundation
 
 - [x] Monorepo setup with `api`, `app`, `.ai`
 - [x] Docker compose setup (`compose.yaml`)
 - [x] CI lint workflows for API and App
+- [x] GHCR image pipeline for App/API (workflow + container images)
 - [x] Import alias convention with `~/...` in API and App
 - [x] Prisma upgraded and split into multiple schema files
 - [x] UUID v4-only IDs in data model
@@ -68,8 +69,8 @@ Last updated: 2026-04-20
 - [x] Core planning docs in English
 - [ ] Root README badges finalized (version, coverage, workflow status)
 - [ ] VitePress docs site setup and publishing via GitHub Pages
-- [ ] Contributor guide (`CONTRIBUTING.md`)
-- [ ] Security policy and issue templates
+- [x] Contributor guide (`CONTRIBUTING.md`)
+- [x] Security policy and issue templates
 - [ ] License and release/versioning strategy
 
 ## 8. Testing & Quality
