@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsObject, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class PasskeyRegisterVerifyDto {
   @ApiProperty({ example: 'admin@example.com' })
   @IsEmail()
+  @IsNotEmpty()
   email!: string;
 
   @ApiProperty({ type: 'object', additionalProperties: true })

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ContainerType, IconSet } from '@prisma/client';
-import { IsEnum, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class CreateContainerDto {
   @ApiProperty({ format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440123' })
@@ -18,11 +18,13 @@ export class CreateContainerDto {
 
   @ApiProperty({ example: 'Freezer Drawer 1' })
   @IsString()
+  @IsNotEmpty()
   @MaxLength(120)
   name!: string;
 
   @ApiProperty({ example: 'FREEZER-DRAWER-1' })
   @IsString()
+  @IsNotEmpty()
   @MaxLength(64)
   code!: string;
 

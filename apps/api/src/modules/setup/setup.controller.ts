@@ -1,5 +1,13 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Patch, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 import { UserRole } from '@prisma/client';
 
 import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.types.js';
@@ -20,6 +28,7 @@ export class SetupController {
   constructor(@Inject(SetupService) private readonly setupService: SetupService) {}
 
   @Get('status')
+  @ApiOperation({ summary: 'Get setup initialization status and registration mode' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -35,6 +44,7 @@ export class SetupController {
 
   @Post('bootstrap-admin')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Bootstrap the first admin account during initial setup' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -44,6 +54,7 @@ export class SetupController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for bootstrap payload.' })
   async bootstrapAdmin(
     @Body() dto: BootstrapAdminDto
   ): Promise<{ setupInitialized: true; adminUserId: string; email: string }> {
@@ -54,6 +65,7 @@ export class SetupController {
   @UseGuards(AccessTokenGuard, PoliciesGuard)
   @CheckPolicies({ action: 'manage', subject: 'all' })
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Update registration mode (open or admin-only)' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -62,6 +74,9 @@ export class SetupController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for registration mode payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to manage registration mode.' })
   async updateRegistrationMode(@Body() dto: UpdateRegistrationModeDto): Promise<{ mode: RegistrationMode }> {
     return await this.setupService.updateRegistrationMode(dto);
   }
@@ -71,6 +86,7 @@ export class SetupController {
   @CheckPolicies({ action: 'create', subject: 'User' })
   @ApiBearerAuth('bearer')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a user as admin' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -81,6 +97,9 @@ export class SetupController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for create-user payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to create users.' })
   async createUserByAdmin(@Body() dto: CreateUserByAdminDto): Promise<{ id: string; email: string; role: UserRole }> {
     return await this.setupService.createUserByAdmin(dto);
   }
@@ -89,6 +108,7 @@ export class SetupController {
   @UseGuards(AccessTokenGuard, PoliciesGuard)
   @CheckPolicies({ action: 'read', subject: 'User' })
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'List users with assigned policy IDs' })
   @ApiOkResponse({
     schema: {
       type: 'array',
@@ -107,6 +127,8 @@ export class SetupController {
       }
     }
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read users.' })
   async listUsers(): Promise<
     Array<{
       id: string;
@@ -126,6 +148,7 @@ export class SetupController {
   @UseGuards(AccessTokenGuard, PoliciesGuard)
   @CheckPolicies({ action: 'update', subject: 'User' })
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Update role of a specific user' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -135,6 +158,9 @@ export class SetupController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for userId or role payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to update users.' })
   async updateUserRole(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() dto: UpdateUserRoleDto
@@ -146,6 +172,7 @@ export class SetupController {
   @UseGuards(AccessTokenGuard, PoliciesGuard)
   @CheckPolicies({ action: 'read', subject: 'User' })
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'List all permission policies' })
   @ApiOkResponse({
     schema: {
       type: 'array',
@@ -163,6 +190,8 @@ export class SetupController {
       }
     }
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read policies.' })
   async listPermissionPolicies(): Promise<
     Array<{
       id: string;
@@ -182,6 +211,7 @@ export class SetupController {
   @CheckPolicies({ action: 'create', subject: 'User' })
   @ApiBearerAuth('bearer')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a permission policy' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -196,6 +226,9 @@ export class SetupController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for permission policy payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to create policies.' })
   async createPermissionPolicy(
     @Body() dto: CreatePermissionPolicyDto
   ): Promise<{ id: string; action: CaslAction; subject: CaslSubject; inverted: boolean; conditions: unknown; reason: string | null; createdAt: Date }> {
@@ -206,6 +239,7 @@ export class SetupController {
   @UseGuards(AccessTokenGuard, PoliciesGuard)
   @CheckPolicies({ action: 'update', subject: 'User' })
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Replace policy assignments for a user' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -215,6 +249,9 @@ export class SetupController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for userId or policy payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to update policies.' })
   async replaceUserPolicies(
     @Param('userId', new ParseUUIDPipe({ version: '4' })) userId: string,
     @Body() dto: ReplaceUserPoliciesDto

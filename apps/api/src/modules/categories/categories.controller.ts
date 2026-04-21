@@ -1,5 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 
 import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
@@ -17,6 +26,7 @@ export class CategoriesController {
   @Post()
   @CheckPolicies({ action: 'create', subject: 'Category' })
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new category' })
   @ApiCreatedResponse({
     schema: {
       type: 'object',
@@ -27,12 +37,16 @@ export class CategoriesController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for category payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to create categories.' })
   async createCategory(@Body() dto: CreateCategoryDto): Promise<{ id: string; name: string; description: string | null }> {
     return await this.categoriesService.createCategory(dto);
   }
 
   @Get()
   @CheckPolicies({ action: 'read', subject: 'Category' })
+  @ApiOperation({ summary: 'List all categories' })
   @ApiOkResponse({
     schema: {
       type: 'array',
@@ -46,6 +60,8 @@ export class CategoriesController {
       }
     }
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read categories.' })
   async listCategories(): Promise<Array<{ id: string; name: string; description: string | null }>> {
     return await this.categoriesService.listCategories();
   }

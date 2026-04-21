@@ -1,15 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IconSet } from '@prisma/client';
-import { IsEnum, IsOptional, IsString, IsUppercase, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUppercase, MaxLength } from 'class-validator';
 
 export class CreateLocationDto {
   @ApiProperty({ example: 'Garage' })
   @IsString()
+  @IsNotEmpty()
   @MaxLength(120)
   name!: string;
 
   @ApiProperty({ example: 'GARAGE' })
   @IsString()
+  @IsNotEmpty()
   @IsUppercase()
   @MaxLength(48)
   code!: string;

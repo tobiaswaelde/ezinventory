@@ -1,5 +1,14 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 
 import { CheckPolicies } from '~/modules/auth/casl/check-policies.decorator.js';
 import { AccessTokenGuard } from '~/modules/auth/guards/access-token.guard.js';
@@ -18,6 +27,7 @@ export class ContainersController {
   @Post()
   @CheckPolicies({ action: 'create', subject: 'Container' })
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new container under a location or parent container' })
   @ApiCreatedResponse({
     schema: {
       type: 'object',
@@ -36,12 +46,16 @@ export class ContainersController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for container payload.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to create containers.' })
   async createContainer(@Body() dto: CreateContainerDto): Promise<ContainerResponse> {
     return await this.containersService.createContainer(dto);
   }
 
   @Get()
   @CheckPolicies({ action: 'read', subject: 'Container' })
+  @ApiOperation({ summary: 'List containers, optionally filtered by location' })
   @ApiOkResponse({
     schema: {
       type: 'array',
@@ -63,6 +77,9 @@ export class ContainersController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for query params.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
+  @ApiForbiddenResponse({ description: 'Insufficient permission to read containers.' })
   async listContainers(@Query() query: ListContainersQueryDto): Promise<ContainerResponse[]> {
     return await this.containersService.listContainers(query.locationId);
   }

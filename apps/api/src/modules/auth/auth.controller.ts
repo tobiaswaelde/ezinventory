@@ -1,5 +1,13 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger';
 
 import { CurrentUser } from '~/modules/auth/decorators/current-user.decorator.js';
 import { AuthService } from '~/modules/auth/auth.service.js';
@@ -22,6 +30,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Get current authenticated user profile' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -33,6 +42,7 @@ export class AuthController {
       }
     }
   })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   async me(@CurrentUser() user: AuthenticatedUser): Promise<AuthenticatedUser> {
     return await this.authService.me(user.id);
   }
@@ -40,6 +50,7 @@ export class AuthController {
   @Patch('me/language')
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Update preferred language for current user' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -49,6 +60,8 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for preferred language.' })
+  @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   async updatePreferredLanguage(
     @CurrentUser() user: AuthenticatedUser,
     @Body() dto: UpdatePreferredLanguageDto
@@ -58,6 +71,7 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Register a new account with password credentials' })
   @ApiCreatedResponse({
     schema: {
       type: 'object',
@@ -68,12 +82,14 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for registration payload.' })
   async register(@Body() dto: RegisterDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
     return await this.authService.register(dto);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Sign in with email and password' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -83,12 +99,14 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for login payload.' })
   async login(@Body() dto: LoginDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
     return await this.authService.login(dto);
   }
 
   @Post('passkeys/register-options')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Start passkey registration and return browser options' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -99,6 +117,7 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for passkey register options payload.' })
   async passkeyRegisterOptions(
     @Body() dto: PasskeyRegisterOptionsDto
   ): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {
@@ -107,6 +126,7 @@ export class AuthController {
 
   @Post('passkeys/register-verify')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Verify passkey registration response and persist credential' })
   @ApiCreatedResponse({
     schema: {
       type: 'object',
@@ -117,6 +137,7 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for passkey register verification payload.' })
   async passkeyRegisterVerify(
     @Body() dto: PasskeyRegisterVerifyDto
   ): Promise<{ verified: true; credentialId: string; email: string }> {
@@ -125,6 +146,7 @@ export class AuthController {
 
   @Post('passkeys/login-options')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Start passkey login and return browser options' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -135,6 +157,7 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for passkey login options payload.' })
   async passkeyLoginOptions(
     @Body() dto: PasskeyLoginOptionsDto
   ): Promise<{ challenge: string; options: Record<string, unknown>; email: string }> {
@@ -143,6 +166,7 @@ export class AuthController {
 
   @Post('passkeys/login-verify')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify passkey login response and issue tokens' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -153,12 +177,14 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for passkey login verification payload.' })
   async passkeyLoginVerify(@Body() dto: PasskeyLoginVerifyDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
     return await this.authService.passkeyLoginVerify(dto);
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Rotate refresh token and issue new token pair' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -169,12 +195,14 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for refresh payload.' })
   async refresh(@Body() dto: RefreshTokenDto): Promise<{ accessToken: string; refreshToken: string; email: string }> {
     return await this.authService.refresh(dto);
   }
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Invalidate refresh token session' })
   @ApiOkResponse({
     schema: {
       type: 'object',
@@ -183,6 +211,7 @@ export class AuthController {
       }
     }
   })
+  @ApiBadRequestResponse({ description: 'Validation failed for logout payload.' })
   async logout(@Body() dto: RefreshTokenDto): Promise<{ loggedOut: true }> {
     return await this.authService.logout(dto);
   }

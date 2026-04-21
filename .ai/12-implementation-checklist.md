@@ -24,6 +24,8 @@ Last updated: 2026-04-21
 - [x] CASL-based fine-grained authorization baseline
 - [ ] Complete endpoint + DTO coverage in Scalar docs
 - [ ] Full server-side validation coverage for all modules
+- [x] Core controllers enriched with operation + error response OpenAPI metadata
+- [x] Required DTO fields hardened with `IsNotEmpty` across auth/setup/core domain payloads
 
 ## 3. App (Nuxt, Mobile-First, PWA)
 
