@@ -3,8 +3,8 @@
 ![Version](https://img.shields.io/github/v/release/tobiaswaelde/ezinventory)
 [![API CI](https://github.com/tobiaswaelde/ezinventory/actions/workflows/api-ci.yml/badge.svg?branch=main)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/api-ci.yml)
 [![App CI](https://github.com/tobiaswaelde/ezinventory/actions/workflows/app-ci.yml/badge.svg?branch=main)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/app-ci.yml)
-[![API Coverage](https://codecov.io/gh/tobiaswaelde/ezinventory/graph/badge.svg?branch=main&flag=api)](https://codecov.io/gh/tobiaswaelde/ezinventory?flag=api)
-[![App Coverage](https://codecov.io/gh/tobiaswaelde/ezinventory/graph/badge.svg?branch=main&flag=app)](https://codecov.io/gh/tobiaswaelde/ezinventory?flag=app)
+[![API Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tobiaswaelde/ezinventory/main/.github/badges/api-coverage.json)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/api-ci.yml)
+[![App Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/tobiaswaelde/ezinventory/main/.github/badges/app-coverage.json)](https://github.com/tobiaswaelde/ezinventory/actions/workflows/app-ci.yml)
 
 EZ Inventory is a mobile-first, open-source inventory system with QR workflows.
 

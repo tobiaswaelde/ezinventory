@@ -15,7 +15,7 @@ jobs:
   app-test:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
 
     steps:
@@ -39,6 +39,27 @@ jobs:
 
       - name: Run app unit tests with coverage
         run: pnpm --filter @ezinventory/app test:coverage
+
+      - name: Update app coverage badge JSON
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          pct=$(awk -F: '/^LF:/{lf+=$2} /^LH:/{lh+=$2} END { if (lf==0) printf "0.0"; else printf "%.1f", (lh/lf)*100 }' apps/app/coverage/lcov.info)
+          color="red"
+          awk -v p="$pct" 'BEGIN { if (p >= 90) exit 0; exit 1 }' && color="brightgreen" || true
+          if [ "$color" = "red" ]; then
+            awk -v p="$pct" 'BEGIN { if (p >= 75) exit 0; exit 1 }' && color="yellow" || true
+          fi
+          mkdir -p .github/badges
+          printf '{"schemaVersion":1,"label":"app coverage","message":"%s%%","color":"%s"}
+' "$pct" "$color" > .github/badges/app-coverage.json
+          if ! git diff --quiet -- .github/badges/app-coverage.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .github/badges/app-coverage.json
+            git commit -m "ci: update app coverage badge [skip ci]"
+            git push
+          fi
 
       - name: Upload app coverage to Codecov
         uses: codecov/codecov-action@v5

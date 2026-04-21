@@ -15,7 +15,7 @@ jobs:
   api-test:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ezinventory
@@ -39,6 +39,27 @@ jobs:
 
       - name: Test API with coverage
         run: pnpm --filter @ezinventory/api test
+
+      - name: Update API coverage badge JSON
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          pct=$(awk -F: '/^LF:/{lf+=$2} /^LH:/{lh+=$2} END { if (lf==0) printf "0.0"; else printf "%.1f", (lh/lf)*100 }' apps/api/coverage/lcov.info)
+          color="red"
+          awk -v p="$pct" 'BEGIN { if (p >= 90) exit 0; exit 1 }' && color="brightgreen" || true
+          if [ "$color" = "red" ]; then
+            awk -v p="$pct" 'BEGIN { if (p >= 75) exit 0; exit 1 }' && color="yellow" || true
+          fi
+          mkdir -p .github/badges
+          printf '{"schemaVersion":1,"label":"api coverage","message":"%s%%","color":"%s"}
+' "$pct" "$color" > .github/badges/api-coverage.json
+          if ! git diff --quiet -- .github/badges/api-coverage.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .github/badges/api-coverage.json
+            git commit -m "ci: update api coverage badge [skip ci]"
+            git push
+          fi
 
       - name: Upload API coverage to Codecov
         uses: codecov/codecov-action@v5
