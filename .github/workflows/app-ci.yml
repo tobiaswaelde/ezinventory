@@ -31,6 +31,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Prepare Nuxt
+        run: pnpm --filter @ezinventory/app exec nuxt prepare
+
       - name: Run app unit tests with coverage
         run: pnpm --filter @ezinventory/app test:coverage
 

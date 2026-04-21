@@ -14,6 +14,9 @@ on:
 jobs:
   api-test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ezinventory
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prisma
 
     steps:
       - name: Checkout
