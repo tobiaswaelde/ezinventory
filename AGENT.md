@@ -33,3 +33,9 @@ This file captures project-specific guardrails for future coding agents working 
 - Keep root `README.md` updated.
 - Maintain planning docs under `.ai/`.
 - Keep architecture and data model docs aligned with implementation changes.
+
+## Git Workflow Rules
+- Never implement issue work directly on `main`.
+- For each issue, create a dedicated branch (for example `feat/issue-<number>-<slug>`).
+- Open a Pull Request for every issue branch and merge via PR only.
+- Keep commits focused and logical within the issue branch.

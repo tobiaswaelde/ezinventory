@@ -24,6 +24,7 @@ export const ENV = cleanEnv(process.env, {
   AUTH_REFRESH_TOKEN_SECRET: str({ default: 'change-me-refresh-secret' }),
   AUTH_ACCESS_TOKEN_TTL: str({ default: '15m' }),
   AUTH_REFRESH_TOKEN_TTL: str({ default: '30d' }),
+  CORS_ORIGIN: str({ default: '*' }),
   AUTH_PASSKEY_RP_ID: str({ default: 'localhost' }),
   AUTH_PASSKEY_RP_NAME: str({ default: 'EZ Inventory' }),
   AUTH_PASSKEY_ORIGIN: str({ default: 'http://localhost:3000' }),
