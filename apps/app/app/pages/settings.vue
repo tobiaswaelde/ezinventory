@@ -1,281 +1,88 @@
 <template>
-  <section class="card">
-    <h1>Settings</h1>
-    <p>Authenticated as: <strong>{{ user?.email ?? 'n/a' }}</strong> ({{ user?.role ?? 'n/a' }})</p>
-  </section>
+  <div class="grid gap-4">
+    <ModulesSettingsPageHeaderCard :email="user?.email ?? 'n/a'" :role="user?.role ?? 'n/a'" />
 
-  <section class="card">
-    <h2>Profile Security</h2>
-    <p>Register a passkey for passwordless sign-in.</p>
+    <UDashboardToolbar>
+      <UNavigationMenu :items="tabItems" highlight class="-mx-1 flex-1" />
+    </UDashboardToolbar>
 
-    <UAlert
-      v-if="!passkeySupported"
-      color="warning"
-      variant="soft"
-      title="Passkeys unavailable"
-      :description="t('auth_error_passkey_not_supported')"
-    />
+    <div v-if="activeTab === 'general'" class="grid gap-4">
+      <ModulesSettingsRegistrationModeCard
+        v-if="isAdmin"
+        :setup-initialized="setupInitialized"
+        :registration-mode="registrationMode"
+        :registration-mode-options="registrationModeOptions"
+        :mode-saving="modeSaving"
+        :mode-message="modeMessage"
+        :on-save="saveRegistrationMode"
+        :on-update-registration-mode="setRegistrationMode"
+      />
 
-    <div class="field">
-      <label for="profile-passkey-email">Email</label>
-      <UInput id="profile-passkey-email" :model-value="passkeyEmail" type="email" readonly />
-    </div>
+      <ModulesSettingsCreateUserCard
+        v-if="isAdmin"
+        :new-user-form="newUserForm"
+        :new-user-errors="newUserErrors"
+        :role-select-options="roleSelectOptions"
+        :language-options="languageOptions"
+        :user-saving="userSaving"
+        :user-message="userMessage"
+        :on-create="createManagedUser"
+      />
 
-    <div class="field">
-      <label for="profile-passkey-password">Current Password</label>
-      <UInput
-        id="profile-passkey-password"
-        v-model="passkeyForm.password"
-        type="password"
-        placeholder="************"
-        autocomplete="current-password"
+      <ModulesSettingsPermissionPoliciesCard
+        v-if="isAdmin"
+        :new-policy-form="newPolicyForm"
+        :new-policy-errors="newPolicyErrors"
+        :action-select-options="actionSelectOptions"
+        :subject-select-options="subjectSelectOptions"
+        :policy-creating="policyCreating"
+        :policy-message="policyMessage"
+        :permission-policies="permissionPolicies"
+        :on-create-policy="createPolicy"
+      />
+
+      <ModulesSettingsUserPermissionsCard
+        v-if="isAdmin"
+        :users-loading="usersLoading"
+        :users-message="usersMessage"
+        :managed-users="managedUsers"
+        :permission-policies="permissionPolicies"
+        :role-draft-by-user="roleDraftByUser"
+        :policy-draft-by-user="policyDraftByUser"
+        :role-saving-by-user="roleSavingByUser"
+        :policy-saving-by-user="policySavingByUser"
+        :role-select-options="roleSelectOptions"
+        :on-toggle-policy-for-user="togglePolicyForUser"
+        :on-save-user-role="saveUserRole"
+        :on-save-user-policies="saveUserPolicies"
       />
     </div>
 
-    <div class="field">
-      <label for="profile-passkey-device-name">Passkey device name (optional)</label>
-      <UInput
-        id="profile-passkey-device-name"
-        v-model="passkeyForm.deviceName"
-        type="text"
-        placeholder="MacBook Touch ID"
+    <div v-if="activeTab === 'security'" class="grid gap-4">
+      <ModulesSettingsPasskeysCard
+        :passkey-supported="passkeySupported"
+        :passkey-not-supported-text="t('auth_error_passkey_not_supported')"
+        :passkey-email="passkeyEmail"
+        :passkey-form="passkeyForm"
+        :passkey-submitting="passkeySubmitting"
+        :passkey-error="passkeyError"
+        :passkey-message="passkeyMessage"
+        :passkeys="passkeys"
+        :passkey-deleting-by-id="passkeyDeletingById"
+        :on-register="registerProfilePasskey"
+        :on-delete="deleteProfilePasskey"
+        :format-date="formatDate"
       />
     </div>
 
-    <UButton
-      color="neutral"
-      variant="soft"
-      :disabled="passkeySubmitting || !passkeySupported || !passkeyEmail"
-      @click="registerProfilePasskey"
-    >
-      {{ passkeySubmitting ? 'Registering...' : 'Register passkey' }}
-    </UButton>
-
-    <p v-if="passkeyError" class="error">{{ passkeyError }}</p>
-    <p v-if="passkeyMessage">{{ passkeyMessage }}</p>
-
-    <div class="policy-catalog">
-      <article v-for="passkey in passkeys" :key="passkey.id" class="policy-item">
-        <strong>{{ passkey.deviceName || 'Unnamed passkey' }}</strong>
-        <small>Created: {{ formatDate(passkey.createdAt) }}</small>
-        <small>Last used: {{ passkey.lastUsedAt ? formatDate(passkey.lastUsedAt) : 'Never' }}</small>
-        <UButton
-          color="error"
-          variant="soft"
-          :disabled="passkeyDeletingById[passkey.id]"
-          @click="deleteProfilePasskey(passkey.id)"
-        >
-          {{ passkeyDeletingById[passkey.id] ? 'Deleting...' : 'Delete passkey' }}
-        </UButton>
-      </article>
+    <div v-if="activeTab === 'validation'" class="grid gap-4">
+      <ModulesSettingsValidationDemoCard :item-form="itemForm" :item-errors="itemErrors" :on-submit="submitItem" />
     </div>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>Registration Mode</h2>
-    <p>Control whether public registration is open or admin-only.</p>
-    <p><strong>Setup initialized:</strong> {{ setupInitialized ? 'yes' : 'no' }}</p>
-
-    <div class="field">
-      <label for="registrationMode">Mode</label>
-      <USelect
-        id="registrationMode"
-        v-model="registrationMode"
-        :items="registrationModeOptions"
-        label-key="label"
-        value-key="value"
-      />
-    </div>
-
-    <UButton color="primary" variant="solid" :disabled="modeSaving || !setupInitialized" @click="saveRegistrationMode">
-      {{ modeSaving ? 'Saving...' : 'Save Mode' }}
-    </UButton>
-    <p v-if="modeMessage">{{ modeMessage }}</p>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>Create User (Admin)</h2>
-
-    <div class="field">
-      <label for="displayName">Display Name</label>
-      <UInput id="displayName" v-model="newUserForm.displayName" placeholder="Team Member" />
-      <p v-if="newUserErrors.displayName" class="error">{{ newUserErrors.displayName }}</p>
-    </div>
-
-    <div class="field">
-      <label for="email">Email</label>
-      <UInput id="email" v-model="newUserForm.email" type="email" placeholder="team.member@example.com" />
-      <p v-if="newUserErrors.email" class="error">{{ newUserErrors.email }}</p>
-    </div>
-
-    <div class="field">
-      <label for="password">Password</label>
-      <UInput id="password" v-model="newUserForm.password" type="password" placeholder="************" />
-      <p v-if="newUserErrors.password" class="error">{{ newUserErrors.password }}</p>
-    </div>
-
-    <div class="field">
-      <label for="role">Role</label>
-      <USelect
-        id="role"
-        v-model="newUserForm.role"
-        :items="roleSelectOptions"
-        label-key="label"
-        value-key="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="preferredLanguage">Preferred Language</label>
-      <USelect
-        id="preferredLanguage"
-        v-model="newUserForm.preferredLanguage"
-        :items="languageOptions"
-        label-key="label"
-        value-key="value"
-      />
-    </div>
-
-    <UButton color="primary" variant="solid" :disabled="userSaving" @click="createManagedUser">
-      {{ userSaving ? 'Creating...' : 'Create User' }}
-    </UButton>
-    <p v-if="userMessage">{{ userMessage }}</p>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>Permission Policies</h2>
-    <p>Create reusable policy entries and assign them to individual users below.</p>
-
-    <div class="field">
-      <label for="policy-action">Action</label>
-      <USelect
-        id="policy-action"
-        v-model="newPolicyForm.action"
-        :items="actionSelectOptions"
-        label-key="label"
-        value-key="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="policy-subject">Subject</label>
-      <USelect
-        id="policy-subject"
-        v-model="newPolicyForm.subject"
-        :items="subjectSelectOptions"
-        label-key="label"
-        value-key="value"
-      />
-    </div>
-
-    <div class="field">
-      <label for="policy-reason">Reason (optional)</label>
-      <UInput id="policy-reason" v-model="newPolicyForm.reason" placeholder="Temporary stock-taking access" />
-    </div>
-
-    <div class="field">
-      <label for="policy-conditions">Conditions JSON (optional)</label>
-      <UTextarea id="policy-conditions" v-model="newPolicyForm.conditionsJson" :rows="3" placeholder='{"id":{"$eq":"..."}}' />
-      <p v-if="newPolicyErrors.conditionsJson" class="error">{{ newPolicyErrors.conditionsJson }}</p>
-    </div>
-
-    <label class="checkbox-row">
-      <UCheckbox v-model="newPolicyForm.inverted" />
-      <span>Inverted (`cannot` rule)</span>
-    </label>
-
-    <UButton color="neutral" variant="soft" :disabled="policyCreating" @click="createPolicy">
-      {{ policyCreating ? 'Creating...' : 'Create Policy' }}
-    </UButton>
-
-    <p v-if="policyMessage">{{ policyMessage }}</p>
-
-    <div class="policy-catalog">
-      <article v-for="policy in permissionPolicies" :key="policy.id" class="policy-item">
-        <strong>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</strong>
-        <small>{{ policy.reason ?? 'No reason provided' }}</small>
-        <small>ID: {{ policy.id }}</small>
-      </article>
-    </div>
-  </section>
-
-  <section v-if="isAdmin" class="card">
-    <h2>User Permissions</h2>
-    <p>Assign role and user-specific fine-grained policy IDs.</p>
-    <p v-if="usersLoading">Loading users...</p>
-    <p v-if="usersMessage">{{ usersMessage }}</p>
-
-    <article v-for="managedUser in managedUsers" :key="managedUser.id" class="managed-user">
-      <header>
-        <strong>{{ managedUser.displayName }}</strong>
-        <small>{{ managedUser.email }}</small>
-      </header>
-
-      <div class="field">
-        <label :for="`role-${managedUser.id}`">Role</label>
-        <USelect
-          :id="`role-${managedUser.id}`"
-          v-model="roleDraftByUser[managedUser.id]"
-          :items="roleSelectOptions"
-          label-key="label"
-          value-key="value"
-        />
-      </div>
-
-      <UButton color="neutral" variant="soft" :disabled="roleSavingByUser[managedUser.id]" @click="saveUserRole(managedUser.id)">
-        {{ roleSavingByUser[managedUser.id] ? 'Saving role...' : 'Save Role' }}
-      </UButton>
-
-      <div class="policy-grid">
-        <label v-for="policy in permissionPolicies" :key="policy.id" class="policy-check-row">
-          <UCheckbox
-            :model-value="(policyDraftByUser[managedUser.id] ?? []).includes(policy.id)"
-            @update:model-value="togglePolicyForUser(managedUser.id, policy.id)"
-          />
-          <span>{{ policy.inverted ? 'cannot' : 'can' }} {{ policy.action }} {{ policy.subject }}</span>
-        </label>
-      </div>
-
-      <UButton color="primary" variant="solid" :disabled="policySavingByUser[managedUser.id]" @click="saveUserPolicies(managedUser.id)">
-        {{ policySavingByUser[managedUser.id] ? 'Saving policies...' : 'Save Policies' }}
-      </UButton>
-    </article>
-  </section>
-
-  <section class="card">
-    <h2>Validation Demo</h2>
-    <p>This form validates client-side before sending to DTO-validated API endpoints.</p>
-
-    <div class="field">
-      <label for="categoryId">Category UUID v4</label>
-      <UInput id="categoryId" v-model="itemForm.categoryId" placeholder="550e8400-e29b-41d4-a716-446655440001" />
-      <p v-if="itemErrors.categoryId" class="error">{{ itemErrors.categoryId }}</p>
-    </div>
-
-    <div class="field">
-      <label for="sku">SKU</label>
-      <UInput id="sku" v-model="itemForm.sku" placeholder="SPAGHETTI-SAUCE-001" />
-      <p v-if="itemErrors.sku" class="error">{{ itemErrors.sku }}</p>
-    </div>
-
-    <div class="field">
-      <label for="name">Name</label>
-      <UInput id="name" v-model="itemForm.name" placeholder="Spaghetti Sauce" />
-      <p v-if="itemErrors.name" class="error">{{ itemErrors.name }}</p>
-    </div>
-
-    <div class="field">
-      <label for="servings">Servings (optional)</label>
-      <UInput id="servings" v-model="itemForm.servings" placeholder="3" />
-      <p v-if="itemErrors.servings" class="error">{{ itemErrors.servings }}</p>
-    </div>
-
-    <UButton color="primary" variant="solid" @click="submitItem">Submit</UButton>
-  </section>
+  </div>
 </template>
 
-
 <script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui';
 import type {
   CaslAction,
   CaslSubject,
@@ -295,6 +102,7 @@ import {
   validatePasskeyRegistrationInput
 } from '~/utils/auth-validation';
 
+const route = useRoute();
 const { user, registerPasskey, listPasskeys, deletePasskey } = useAuth();
 const { t } = useI18n();
 const {
@@ -325,6 +133,39 @@ const actionSelectOptions = actionOptions.map((action) => ({ label: action, valu
 const subjectSelectOptions = subjectOptions.map((subject) => ({ label: subject, value: subject }));
 
 const isAdmin = computed(() => user.value?.role === 'ADMIN');
+
+const activeTab = computed<'general' | 'security' | 'validation'>(() => {
+  const tab = route.query.tab;
+  if (tab === 'security' || tab === 'validation' || tab === 'general') {
+    return tab;
+  }
+
+  return 'general';
+});
+
+const tabItems = computed<NavigationMenuItem[][]>(() => [
+  [
+    {
+      label: 'General',
+      icon: 'i-tabler-settings',
+      to: { path: '/settings', query: { tab: 'general' } },
+      active: activeTab.value === 'general'
+    },
+    {
+      label: 'Security',
+      icon: 'i-tabler-shield',
+      to: { path: '/settings', query: { tab: 'security' } },
+      active: activeTab.value === 'security'
+    },
+    {
+      label: 'Validation',
+      icon: 'i-tabler-checkup-list',
+      to: { path: '/settings', query: { tab: 'validation' } },
+      active: activeTab.value === 'validation'
+    }
+  ]
+]);
+
 const setupInitialized = ref(false);
 const passkeySupported = ref(true);
 const passkeySubmitting = ref(false);
@@ -344,7 +185,6 @@ const itemForm = reactive({
   name: '',
   servings: ''
 });
-
 const itemErrors = reactive<Record<string, string>>({});
 
 const registrationMode = ref<RegistrationMode>('ADMIN_ONLY');
@@ -423,6 +263,12 @@ const saveRegistrationMode = async (): Promise<void> => {
     modeMessage.value = t('settings_error_update_registration_mode');
   } finally {
     modeSaving.value = false;
+  }
+};
+
+const setRegistrationMode = (value: string | undefined): void => {
+  if (value === 'OPEN' || value === 'ADMIN_ONLY') {
+    registrationMode.value = value;
   }
 };
 
@@ -680,72 +526,3 @@ onMounted(async () => {
   await loadAdminData();
 });
 </script>
-
-
-<style scoped>
-.checkbox-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 0.5rem 0 0.75rem;
-}
-
-.policy-catalog {
-  display: grid;
-  gap: 0.4rem;
-  margin-top: 0.75rem;
-}
-
-.policy-item {
-  border: 1px solid #d6dce6;
-  border-radius: 0.6rem;
-  padding: 0.5rem;
-  display: grid;
-  gap: 0.2rem;
-}
-
-.policy-item small {
-  color: #586274;
-}
-
-.managed-user {
-  border: 1px solid #d6dce6;
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.managed-user header {
-  display: grid;
-  margin-bottom: 0.5rem;
-}
-
-.managed-user header small {
-  color: #5a6476;
-}
-
-.policy-grid {
-  display: grid;
-  gap: 0.4rem;
-  margin: 0.75rem 0;
-  max-height: 180px;
-  overflow: auto;
-  border: 1px solid #d7dce5;
-  border-radius: 0.6rem;
-  padding: 0.5rem;
-}
-
-.policy-check-row {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-textarea {
-  width: 100%;
-  border-radius: 0.6rem;
-  border: 1px solid #d3d8e0;
-  font: inherit;
-  padding: 0.65rem 0.75rem;
-}
-</style>
