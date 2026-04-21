@@ -63,6 +63,28 @@
       title="Quick Action"
       :description="actionMessage"
     />
+
+    <div class="field">
+      <label for="item-image-file">Attach image</label>
+      <input
+        :key="itemImageInputKey"
+        id="item-image-file"
+        type="file"
+        accept="image/*"
+        @change="onScannedItemImageChange"
+      />
+    </div>
+
+    <UButton color="neutral" variant="soft" :loading="itemImageUploading" @click="uploadScannedItemImage">
+      Upload Item Image
+    </UButton>
+    <UAlert
+      v-if="itemImageMessage"
+      :color="itemImageError ? 'red' : 'green'"
+      variant="soft"
+      title="Item Image Upload"
+      :description="itemImageMessage"
+    />
   </section>
 </template>
 
@@ -76,7 +98,7 @@ import {
   SCAN_VALIDATION_MESSAGE_KEYS
 } from '~/utils/scan-validation';
 
-const { lookupItemByCode } = useApiClient();
+const { lookupItemByCode, uploadItemImage } = useApiClient();
 const { t } = useI18n();
 
 const videoRef = ref<HTMLVideoElement | null>(null);
@@ -87,7 +109,12 @@ const scanMessage = ref('');
 const actionMessage = ref('');
 const stockOutQuantity = ref(1);
 const isScanning = ref(false);
-  const quickActionOptions = [
+const itemImageFile = ref<File | null>(null);
+const itemImageUploading = ref(false);
+const itemImageMessage = ref('');
+const itemImageError = ref(false);
+const itemImageInputKey = ref(0);
+const quickActionOptions = [
   { label: 'Stock Out', value: 'stock-out' },
   { label: 'Stock In', value: 'stock-in' },
   { label: 'Transfer', value: 'transfer' }
@@ -110,6 +137,10 @@ const lookupScannedCode = async (code: string): Promise<void> => {
     const item = await lookupItemByCode(code.trim());
     scannedItem.value = item;
     scanMessage.value = `${t('scan_message_matched_item_prefix')} ${item.name}`;
+    itemImageMessage.value = '';
+    itemImageError.value = false;
+    itemImageFile.value = null;
+    itemImageInputKey.value += 1;
   } catch {
     scanMessage.value = t('scan_error_item_not_found');
   }
@@ -201,6 +232,42 @@ const applyQuickAction = async (): Promise<void> => {
   }
 
   actionMessage.value = `${t('scan_message_prepared_stock_out_prefix')} ${scannedItem.value.name} (qty: ${stockOutQuantity.value}).`;
+};
+
+const onScannedItemImageChange = (event: Event): void => {
+  const input = event.target as HTMLInputElement;
+  itemImageFile.value = input.files?.item(0) ?? null;
+};
+
+const uploadScannedItemImage = async (): Promise<void> => {
+  itemImageMessage.value = '';
+  itemImageError.value = false;
+
+  if (!scannedItem.value) {
+    itemImageError.value = true;
+    itemImageMessage.value = 'Scan and match an item first.';
+    return;
+  }
+
+  if (!itemImageFile.value) {
+    itemImageError.value = true;
+    itemImageMessage.value = 'Please select an image file first.';
+    return;
+  }
+
+  itemImageUploading.value = true;
+
+  try {
+    const uploaded = await uploadItemImage(scannedItem.value.id, itemImageFile.value);
+    itemImageMessage.value = `Uploaded ${uploaded.fileName} successfully.`;
+    itemImageFile.value = null;
+    itemImageInputKey.value += 1;
+  } catch {
+    itemImageError.value = true;
+    itemImageMessage.value = 'Could not upload item image.';
+  } finally {
+    itemImageUploading.value = false;
+  }
 };
 
 onBeforeUnmount(() => {

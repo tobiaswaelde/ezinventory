@@ -128,6 +128,48 @@
       </ul>
     </div>
   </section>
+
+  <section class="card">
+    <h2>Upload Container Image</h2>
+    <p>Select an existing container and upload an image to RustFS.</p>
+
+    <div class="field">
+      <label for="container-image-target">Container</label>
+      <USelect
+        id="container-image-target"
+        v-model="containerImageTargetId"
+        :items="containerImageTargetOptions"
+        label-key="label"
+        value-key="value"
+        placeholder="Select container"
+      />
+    </div>
+
+    <div class="field">
+      <label for="container-image-file">Image file</label>
+      <input
+        :key="containerImageInputKey"
+        id="container-image-file"
+        type="file"
+        accept="image/*"
+        @change="onContainerImageFileChange"
+      />
+    </div>
+
+    <div class="form-actions">
+      <UButton color="primary" variant="solid" :loading="containerImageUploading" @click="submitContainerImage">
+        Upload Container Image
+      </UButton>
+    </div>
+
+    <UAlert
+      v-if="containerImageMessage"
+      :color="containerImageError ? 'red' : 'green'"
+      variant="soft"
+      title="Container Image Upload"
+      :description="containerImageMessage"
+    />
+  </section>
 </template>
 
 
@@ -140,7 +182,7 @@ import {
 
 const { isAuthenticated } = useAuth();
 const { t } = useI18n();
-const { createContainer, createLocation, listContainers, listLocations } = useApiClient();
+const { createContainer, createLocation, listContainers, listLocations, uploadContainerImage } = useApiClient();
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -174,6 +216,12 @@ const containerErrors = reactive({
   name: '',
   code: ''
 });
+const containerImageTargetId = ref('');
+const containerImageFile = ref<File | null>(null);
+const containerImageUploading = ref(false);
+const containerImageMessage = ref('');
+const containerImageError = ref(false);
+const containerImageInputKey = ref(0);
 
 const sortedLocations = computed(() => {
   return [...locations.value].sort((a, b) => a.name.localeCompare(b.name));
@@ -211,6 +259,15 @@ const containerTypeOptions = [
   { label: 'Bin', value: 'BIN' },
   { label: 'Custom', value: 'CUSTOM' }
 ] as const;
+
+const containerImageTargetOptions = computed(() => {
+  return [...containers.value]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((container) => ({
+      label: `${container.name} (${container.code})`,
+      value: container.id
+    }));
+});
 
 const containersByLocation = computed(() => {
   const map = new Map<string, ContainerResponse[]>();
@@ -302,6 +359,10 @@ const refreshData = async (): Promise<void> => {
     if (!containerForm.locationId && firstLocation) {
       containerForm.locationId = firstLocation.id;
     }
+
+    if (!containerImageTargetId.value && nextContainers.length > 0) {
+      containerImageTargetId.value = nextContainers[0].id;
+    }
   } catch {
     errorMessage.value = t('inventory_error_load');
   } finally {
@@ -381,6 +442,42 @@ const submitContainer = async (): Promise<void> => {
     await refreshData();
   } catch {
     errorMessage.value = t('inventory_error_create_container');
+  }
+};
+
+const onContainerImageFileChange = (event: Event): void => {
+  const input = event.target as HTMLInputElement;
+  containerImageFile.value = input.files?.item(0) ?? null;
+};
+
+const submitContainerImage = async (): Promise<void> => {
+  containerImageMessage.value = '';
+  containerImageError.value = false;
+
+  if (!containerImageTargetId.value) {
+    containerImageError.value = true;
+    containerImageMessage.value = 'Please select a container first.';
+    return;
+  }
+
+  if (!containerImageFile.value) {
+    containerImageError.value = true;
+    containerImageMessage.value = 'Please select an image file first.';
+    return;
+  }
+
+  containerImageUploading.value = true;
+
+  try {
+    const uploaded = await uploadContainerImage(containerImageTargetId.value, containerImageFile.value);
+    containerImageMessage.value = `Uploaded ${uploaded.fileName} successfully.`;
+    containerImageFile.value = null;
+    containerImageInputKey.value += 1;
+  } catch {
+    containerImageError.value = true;
+    containerImageMessage.value = 'Could not upload container image.';
+  } finally {
+    containerImageUploading.value = false;
   }
 };
 

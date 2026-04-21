@@ -7,8 +7,12 @@ import type {
   CreateLocationPayload,
   CreatePermissionPolicyPayload,
   CreateUserByAdminPayload,
+  DeleteMediaImageResponse,
   ItemResponse,
   LocationResponse,
+  MediaImageResponse,
+  MediaLibraryEntry,
+  MediaLibraryQuery,
   ManagedUser,
   PermissionPolicy,
   ReplaceUserPoliciesResponse,
@@ -67,6 +71,49 @@ export function useApiClient() {
     return await authorizedFetch<ItemResponse>('/items/lookup', {
       method: 'GET',
       query: { code }
+    });
+  };
+
+  const uploadItemImage = async (itemId: string, file: File): Promise<MediaImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await authorizedFetch<MediaImageResponse>(`/media/items/${itemId}/images`, {
+      method: 'POST',
+      body: formData
+    });
+  };
+
+  const uploadContainerImage = async (containerId: string, file: File): Promise<MediaImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await authorizedFetch<MediaImageResponse>(`/media/containers/${containerId}/images`, {
+      method: 'POST',
+      body: formData
+    });
+  };
+
+  const listMediaLibrary = async (query?: MediaLibraryQuery): Promise<MediaLibraryEntry[]> => {
+    return await authorizedFetch<MediaLibraryEntry[]>('/media/library', {
+      method: 'GET',
+      query
+    });
+  };
+
+  const replaceMediaImage = async (attachmentId: string, file: File): Promise<MediaImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await authorizedFetch<MediaImageResponse>(`/media/images/${attachmentId}`, {
+      method: 'PUT',
+      body: formData
+    });
+  };
+
+  const deleteMediaImage = async (attachmentId: string): Promise<DeleteMediaImageResponse> => {
+    return await authorizedFetch<DeleteMediaImageResponse>(`/media/images/${attachmentId}`, {
+      method: 'DELETE'
     });
   };
 
@@ -138,15 +185,20 @@ export function useApiClient() {
     createLocation,
     createPermissionPolicy,
     createUserByAdmin,
+    deleteMediaImage,
     getSetupStatus,
     health,
     listContainers,
     listItems,
     listLocations,
+    listMediaLibrary,
     listPermissionPolicies,
     listUsers,
     lookupItemByCode,
+    replaceMediaImage,
     replaceUserPolicies,
+    uploadContainerImage,
+    uploadItemImage,
     updateUserRole,
     updateRegistrationMode
   };

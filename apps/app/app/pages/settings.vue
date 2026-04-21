@@ -91,6 +91,110 @@
         </div>
       </UCard>
 
+      <UCard>
+        <template #header>
+          <div class="space-y-1">
+            <h2 class="text-base font-semibold">Personal Image Library</h2>
+            <p class="text-sm text-muted">Filter, sorting and column selection for your uploaded images.</p>
+          </div>
+        </template>
+
+        <div class="grid gap-4">
+          <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            <div class="grid gap-1">
+              <label for="media-search">Search</label>
+              <UInput id="media-search" v-model="mediaSearch" placeholder="Search by file name" />
+            </div>
+
+            <div class="grid gap-1">
+              <label for="media-owner-filter">Owner Type</label>
+              <USelect
+                id="media-owner-filter"
+                v-model="mediaOwnerFilter"
+                :items="mediaOwnerFilterOptions"
+                label-key="label"
+                value-key="value"
+              />
+            </div>
+
+            <div class="grid gap-1">
+              <label for="media-sort-by">Sort By</label>
+              <USelect id="media-sort-by" v-model="mediaSortBy" :items="mediaSortByOptions" label-key="label" value-key="value" />
+            </div>
+
+            <div class="grid gap-1">
+              <label for="media-sort-dir">Sort Direction</label>
+              <USelect id="media-sort-dir" v-model="mediaSortDir" :items="mediaSortDirOptions" label-key="label" value-key="value" />
+            </div>
+
+            <div class="grid gap-1">
+              <label>Columns</label>
+              <div class="flex flex-wrap gap-2 rounded border border-default px-2 py-2">
+                <label v-for="column in mediaTableColumnDefinition" :key="column.id" class="flex items-center gap-2 text-xs">
+                  <UCheckbox
+                    :model-value="isMediaTableColumnVisible(column.id)"
+                    @update:model-value="setMediaColumnVisibility(column.id, Boolean($event))"
+                  />
+                  <span>{{ column.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <p v-if="mediaFieldsQuery" class="text-xs text-muted">Fields query: {{ mediaFieldsQuery }}</p>
+          <p v-if="mediaLoading">Loading images...</p>
+          <p v-if="mediaMessage">{{ mediaMessage }}</p>
+
+          <div class="overflow-x-auto rounded-lg border border-default">
+            <table class="min-w-full text-sm">
+              <thead class="bg-muted/40">
+                <tr>
+                  <th
+                    v-for="column in mediaTableColumns"
+                    :key="column.id"
+                    class="whitespace-nowrap px-3 py-2 text-left font-medium text-toned"
+                  >
+                    {{ column.label }}
+                  </th>
+                  <th class="whitespace-nowrap px-3 py-2 text-left font-medium text-toned">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr v-for="entry in mediaLibraryEntries" :key="entry.id" class="border-t border-default">
+                  <td
+                    v-for="column in mediaTableColumns"
+                    :key="`${entry.id}-${column.id}`"
+                    class="whitespace-nowrap px-3 py-2"
+                  >
+                    {{ getMediaLibraryCell(entry, column.id) }}
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <input
+                        :key="mediaReplaceInputKeyById[entry.id] ?? 0"
+                        type="file"
+                        accept="image/*"
+                        @change="replaceMediaFromEvent(entry.id, $event)"
+                      />
+                      <UButton
+                        color="error"
+                        variant="soft"
+                        size="xs"
+                        :loading="Boolean(mediaDeletingById[entry.id])"
+                        @click="deleteMediaEntry(entry.id)"
+                      >
+                        Delete
+                      </UButton>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </UCard>
+
       <ModulesSettingsRegistrationModeCard
         v-if="isAdmin"
         :setup-initialized="setupInitialized"
@@ -170,6 +274,8 @@ import type { NavigationMenuItem } from '@nuxt/ui';
 import type {
   CaslAction,
   CaslSubject,
+  MediaLibraryEntry,
+  MediaOwnerType,
   ManagedUser,
   PermissionPolicy,
   RegistrationMode,
@@ -193,9 +299,12 @@ const {
   createItem,
   createPermissionPolicy,
   createUserByAdmin,
+  deleteMediaImage,
   getSetupStatus,
+  listMediaLibrary,
   listPermissionPolicies,
   listUsers,
+  replaceMediaImage,
   replaceUserPolicies,
   updateRegistrationMode,
   updateUserRole
@@ -213,6 +322,12 @@ const usersSortDirOptions = [
   { label: 'Ascending', value: 'asc' },
   { label: 'Descending', value: 'desc' }
 ] as const;
+const mediaSortByOptions = [
+  { label: 'Created At', value: 'createdAt' },
+  { label: 'File Name', value: 'fileName' },
+  { label: 'Size', value: 'sizeBytes' }
+] as const;
+const mediaSortDirOptions = usersSortDirOptions;
 const actionOptions: CaslAction[] = ['read', 'create', 'update', 'delete', 'scan', 'stock-out'];
 const subjectOptions: CaslSubject[] = ['Category', 'Item', 'Location', 'Container', 'Stock', 'User', 'Auth', 'all'];
 const registrationModeOptions = [
@@ -221,6 +336,13 @@ const registrationModeOptions = [
 ] as const;
 const roleSelectOptions = roleOptions.map((role) => ({ label: role, value: role }));
 const usersRoleFilterOptions = [{ label: 'All roles', value: 'ALL' }, ...roleSelectOptions];
+const mediaOwnerFilterOptions = [
+  { label: 'All types', value: 'ALL' },
+  { label: 'Item', value: 'ITEM' },
+  { label: 'Container', value: 'CONTAINER' },
+  { label: 'Location', value: 'LOCATION' },
+  { label: 'Movement', value: 'MOVEMENT' }
+] as const;
 const languageOptions = [
   { label: 'English', value: 'en' },
   { label: 'Deutsch', value: 'de' }
@@ -334,9 +456,29 @@ const usersTableColumnDefinition = ref([
   { id: 'updatedAt', label: 'Updated At' }
 ]);
 
+const mediaLibraryEntries = ref<MediaLibraryEntry[]>([]);
+const mediaLoading = ref(false);
+const mediaMessage = ref('');
+const mediaDeletingById = ref<Record<string, boolean>>({});
+const mediaReplaceInputKeyById = ref<Record<string, number>>({});
+
+const mediaTableColumnDefinition = ref([
+  { id: 'fileName', label: 'File Name' },
+  { id: 'ownerType', label: 'Owner Type' },
+  { id: 'ownerId', label: 'Owner ID' },
+  { id: 'mimeType', label: 'Mime Type' },
+  { id: 'sizeBytes', label: 'Size (Bytes)' },
+  { id: 'createdAt', label: 'Created At' },
+  { id: 'url', label: 'URL' }
+]);
+
 const { columns: usersTableColumns, isVisible: isUsersTableColumnVisible, setVisible: setUsersTableColumnVisible } = useTableColumnsOptions(
   'settings-users-table',
   usersTableColumnDefinition
+);
+const { columns: mediaTableColumns, isVisible: isMediaTableColumnVisible, setVisible: setMediaTableColumnVisible } = useTableColumnsOptions(
+  'settings-media-library-table',
+  mediaTableColumnDefinition
 );
 
 const {
@@ -350,10 +492,25 @@ const {
   defaultSortDir: 'asc',
   defaultRoleFilter: 'ALL'
 });
+const {
+  search: mediaSearch,
+  roleFilter: mediaOwnerFilter,
+  sortBy: mediaSortBy,
+  sortDir: mediaSortDir
+} = useTableQueryOptions<'createdAt' | 'fileName' | 'sizeBytes', 'ALL' | MediaOwnerType>({
+  tableName: 'settings-media-library-table',
+  defaultSortBy: 'createdAt',
+  defaultSortDir: 'desc',
+  defaultRoleFilter: 'ALL'
+});
 
 const usersFieldsQuery = useTableFieldsQuery({
   columns: usersTableColumns,
   staticFields: ['id', 'displayName', 'email', 'role', 'policyIds']
+});
+const mediaFieldsQuery = useTableFieldsQuery({
+  columns: mediaTableColumns,
+  staticFields: ['id']
 });
 
 const setUserColumnVisibility = (columnId: string, visible: boolean): void => {
@@ -364,6 +521,14 @@ const setUserColumnVisibility = (columnId: string, visible: boolean): void => {
   setUsersTableColumnVisible(columnId, visible);
 };
 
+const setMediaColumnVisibility = (columnId: string, visible: boolean): void => {
+  if (!visible && mediaTableColumns.value.length <= 1 && isMediaTableColumnVisible(columnId)) {
+    return;
+  }
+
+  setMediaTableColumnVisible(columnId, visible);
+};
+
 const getManagedUserCell = (managedUser: ManagedUser, columnId: string): string => {
   if (columnId === 'displayName') return managedUser.displayName;
   if (columnId === 'email') return managedUser.email;
@@ -372,6 +537,18 @@ const getManagedUserCell = (managedUser: ManagedUser, columnId: string): string 
   if (columnId === 'policyIds') return String(managedUser.policyIds?.length ?? 0);
   if (columnId === 'createdAt') return formatDate(String(managedUser.createdAt));
   if (columnId === 'updatedAt') return formatDate(String(managedUser.updatedAt));
+
+  return '';
+};
+
+const getMediaLibraryCell = (entry: MediaLibraryEntry, columnId: string): string => {
+  if (columnId === 'fileName') return entry.fileName;
+  if (columnId === 'ownerType') return entry.ownerType;
+  if (columnId === 'ownerId') return entry.ownerId;
+  if (columnId === 'mimeType') return entry.mimeType;
+  if (columnId === 'sizeBytes') return String(entry.sizeBytes);
+  if (columnId === 'createdAt') return formatDate(String(entry.createdAt));
+  if (columnId === 'url') return entry.url;
 
   return '';
 };
@@ -471,6 +648,61 @@ const loadAdminData = async (): Promise<void> => {
     usersMessage.value = t('settings_error_load_user_management_data');
   } finally {
     usersLoading.value = false;
+  }
+};
+
+const loadMediaLibrary = async (): Promise<void> => {
+  mediaMessage.value = '';
+  mediaLoading.value = true;
+
+  try {
+    mediaLibraryEntries.value = await listMediaLibrary({
+      fields: mediaFieldsQuery.value,
+      search: mediaSearch.value.trim() || undefined,
+      ownerType: mediaOwnerFilter.value === 'ALL' ? undefined : mediaOwnerFilter.value,
+      sortBy: mediaSortBy.value,
+      sortDir: mediaSortDir.value,
+      limit: 100
+    });
+  } catch {
+    mediaMessage.value = 'Could not load personal image library.';
+  } finally {
+    mediaLoading.value = false;
+  }
+};
+
+const deleteMediaEntry = async (attachmentId: string): Promise<void> => {
+  mediaMessage.value = '';
+  mediaDeletingById.value[attachmentId] = true;
+
+  try {
+    await deleteMediaImage(attachmentId);
+    mediaMessage.value = 'Image deleted.';
+    await loadMediaLibrary();
+  } catch {
+    mediaMessage.value = 'Could not delete image.';
+  } finally {
+    mediaDeletingById.value[attachmentId] = false;
+  }
+};
+
+const replaceMediaFromEvent = async (attachmentId: string, event: Event): Promise<void> => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.item(0);
+
+  if (!file) {
+    return;
+  }
+
+  mediaMessage.value = '';
+
+  try {
+    await replaceMediaImage(attachmentId, file);
+    mediaMessage.value = 'Image replaced.';
+    mediaReplaceInputKeyById.value[attachmentId] = (mediaReplaceInputKeyById.value[attachmentId] ?? 0) + 1;
+    await loadMediaLibrary();
+  } catch {
+    mediaMessage.value = 'Could not replace image.';
   }
 };
 
@@ -681,9 +913,14 @@ onMounted(async () => {
   await loadProfilePasskeys();
   await loadSetupStatus();
   await loadAdminData();
+  await loadMediaLibrary();
 });
 
 watch([usersSearch, usersRoleFilter, usersSortBy, usersSortDir, usersFieldsQuery], async () => {
   await loadAdminData();
+});
+
+watch([mediaSearch, mediaOwnerFilter, mediaSortBy, mediaSortDir, mediaFieldsQuery], async () => {
+  await loadMediaLibrary();
 });
 </script>
