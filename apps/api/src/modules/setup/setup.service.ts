@@ -7,6 +7,7 @@ import type { CaslAction, CaslSubject } from '~/modules/auth/casl/casl-ability.t
 import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
 import { CreatePermissionPolicyDto } from '~/modules/setup/dto/create-permission-policy.dto.js';
 import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
+import { type UserSortableField, ListUsersQueryDto } from '~/modules/setup/dto/list-users-query.dto.js';
 import { ReplaceUserPoliciesDto } from '~/modules/setup/dto/replace-user-policies.dto.js';
 import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
 import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
@@ -14,17 +15,6 @@ import { REGISTRATION_MODE_KEY, SETUP_INITIALIZED_KEY } from '~/modules/setup/se
 import { PrismaService } from '~/prisma/prisma.service.js';
 
 const { Prisma, UserRole } = prismaClient as typeof import('@prisma/client');
-
-type UserWithPolicies = {
-  id: string;
-  email: string;
-  displayName: string;
-  role: UserRoleType;
-  preferredLanguage: string;
-  createdAt: Date;
-  updatedAt: Date;
-  policyIds: string[];
-};
 
 type PermissionPolicyResponse = {
   id: string;
@@ -35,6 +25,19 @@ type PermissionPolicyResponse = {
   reason: string | null;
   createdAt: Date;
 };
+
+const USER_LIST_ALLOWED_FIELDS = [
+  'id',
+  'email',
+  'displayName',
+  'role',
+  'preferredLanguage',
+  'createdAt',
+  'updatedAt',
+  'policyIds'
+] as const;
+
+type UserListAllowedField = (typeof USER_LIST_ALLOWED_FIELDS)[number];
 
 @Injectable()
 export class SetupService {
@@ -164,35 +167,30 @@ export class SetupService {
     return user;
   }
 
-  async listUsers(): Promise<UserWithPolicies[]> {
+  async listUsers(query: ListUsersQueryDto = {}): Promise<Array<Record<string, unknown>>> {
+    const fields = this.parseUserListFields(query.fields);
+    const where = this.buildUserListWhere(query);
+    const orderBy = this.buildUserListOrderBy(query.sortBy, query.sortDir);
+    const select = this.buildUserListSelect(fields);
+
     const users = await this.prisma.user.findMany({
-      orderBy: [{ createdAt: 'asc' }],
-      select: {
-        id: true,
-        email: true,
-        displayName: true,
-        role: true,
-        preferredLanguage: true,
-        createdAt: true,
-        updatedAt: true,
-        userPolicies: {
-          select: {
-            permissionPolicyId: true
-          }
-        }
-      }
+      where,
+      orderBy: [orderBy],
+      select
     });
 
     return users.map((user) => ({
-      id: user.id,
-      email: user.email,
-      displayName: user.displayName,
-      role: user.role,
-      preferredLanguage: user.preferredLanguage,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      policyIds: user.userPolicies.map((policy) => policy.permissionPolicyId)
-    }));
+      ...('id' in user ? { id: user.id } : {}),
+      ...('email' in user ? { email: user.email } : {}),
+      ...('displayName' in user ? { displayName: user.displayName } : {}),
+      ...('role' in user ? { role: user.role } : {}),
+      ...('preferredLanguage' in user ? { preferredLanguage: user.preferredLanguage } : {}),
+      ...('createdAt' in user ? { createdAt: user.createdAt } : {}),
+      ...('updatedAt' in user ? { updatedAt: user.updatedAt } : {}),
+      ...('userPolicies' in user
+        ? { policyIds: user.userPolicies.map((policy) => policy.permissionPolicyId) }
+        : {})
+    })) as Array<Record<string, unknown>>;
   }
 
   async updateUserRole(userId: string, dto: UpdateUserRoleDto): Promise<{ id: string; role: UserRoleType }> {
@@ -314,5 +312,100 @@ export class SetupService {
       userId,
       policyIds: dto.policyIds
     };
+  }
+
+  private parseUserListFields(rawFields?: string): Set<UserListAllowedField> {
+    const requested = new Set<UserListAllowedField>(['id']);
+
+    if (!rawFields) {
+      for (const field of USER_LIST_ALLOWED_FIELDS) {
+        requested.add(field);
+      }
+      return requested;
+    }
+
+    const tokens = rawFields
+      .split(',')
+      .map((token) => token.trim())
+      .filter(Boolean);
+
+    for (const token of tokens) {
+      if ((USER_LIST_ALLOWED_FIELDS as readonly string[]).includes(token)) {
+        requested.add(token as UserListAllowedField);
+      }
+    }
+
+    return requested;
+  }
+
+  private buildUserListWhere(query: ListUsersQueryDto): PrismaType.UserWhereInput | undefined {
+    const clauses: PrismaType.UserWhereInput[] = [];
+
+    const search = query.search?.trim();
+    if (search) {
+      clauses.push({
+        OR: [
+          { displayName: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } }
+        ]
+      });
+    }
+
+    if (query.role) {
+      clauses.push({ role: query.role });
+    }
+
+    if (clauses.length === 0) {
+      return undefined;
+    }
+
+    if (clauses.length === 1) {
+      return clauses[0];
+    }
+
+    return { AND: clauses };
+  }
+
+  private buildUserListOrderBy(
+    sortBy: UserSortableField | undefined,
+    sortDir: 'asc' | 'desc' | undefined
+  ): PrismaType.UserOrderByWithRelationInput {
+    return {
+      [sortBy ?? 'createdAt']: sortDir ?? 'asc'
+    };
+  }
+
+  private buildUserListSelect(fields: Set<UserListAllowedField>): PrismaType.UserSelect {
+    const select: PrismaType.UserSelect = {
+      id: fields.has('id')
+    };
+
+    if (fields.has('email')) {
+      select.email = true;
+    }
+    if (fields.has('displayName')) {
+      select.displayName = true;
+    }
+    if (fields.has('role')) {
+      select.role = true;
+    }
+    if (fields.has('preferredLanguage')) {
+      select.preferredLanguage = true;
+    }
+    if (fields.has('createdAt')) {
+      select.createdAt = true;
+    }
+    if (fields.has('updatedAt')) {
+      select.updatedAt = true;
+    }
+    if (fields.has('policyIds')) {
+      select.userPolicies = {
+        select: {
+          permissionPolicyId: true
+        }
+      };
+    }
+
+    return select;
   }
 }

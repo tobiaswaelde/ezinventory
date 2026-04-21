@@ -27,6 +27,11 @@
       <UTextarea id="location-description" v-model="locationForm.description" :rows="2" placeholder="Optional" />
     </div>
 
+    <div class="field">
+      <label for="location-icon">Icon (optional)</label>
+      <CommonInputsSelectIcon id="location-icon" v-model="locationForm.icon" placeholder="Select location icon" />
+    </div>
+
     <div class="form-actions">
       <UButton color="neutral" variant="soft" @click="submitLocation">Save Location</UButton>
     </div>
@@ -87,6 +92,11 @@
       <UTextarea id="container-description" v-model="containerForm.description" :rows="2" placeholder="Optional" />
     </div>
 
+    <div class="field">
+      <label for="container-icon">Icon (optional)</label>
+      <CommonInputsSelectIcon id="container-icon" v-model="containerForm.icon" placeholder="Select container icon" />
+    </div>
+
     <div class="form-actions">
       <UButton color="primary" variant="solid" @click="submitContainer">Save Container</UButton>
     </div>
@@ -96,7 +106,10 @@
     <h2>Current Tree</h2>
 
     <div v-for="location in sortedLocations" :key="location.id" class="location-block">
-      <h3>{{ location.name }} ({{ location.code }})</h3>
+      <h3 class="location-title">
+        <UIcon v-if="toUiIconName(location.iconSet, location.iconName)" :name="toUiIconName(location.iconSet, location.iconName) as string" />
+        {{ location.name }} ({{ location.code }})
+      </h3>
 
       <ul class="container-list">
         <li
@@ -105,12 +118,57 @@
           class="container-row"
           :style="{ paddingLeft: `${row.depth * 16}px` }"
         >
-          <strong>{{ row.node.name }}</strong>
+          <strong class="container-title">
+            <UIcon v-if="toUiIconName(row.node.iconSet, row.node.iconName)" :name="toUiIconName(row.node.iconSet, row.node.iconName) as string" />
+            {{ row.node.name }}
+          </strong>
           <span>{{ row.node.type }}</span>
           <small>{{ row.node.code }}</small>
         </li>
       </ul>
     </div>
+  </section>
+
+  <section class="card">
+    <h2>Upload Container Image</h2>
+    <p>Select an existing container and upload an image to RustFS.</p>
+
+    <div class="field">
+      <label for="container-image-target">Container</label>
+      <USelect
+        id="container-image-target"
+        v-model="containerImageTargetId"
+        :items="containerImageTargetOptions"
+        label-key="label"
+        value-key="value"
+        placeholder="Select container"
+      />
+    </div>
+
+    <div class="field">
+      <label for="container-image-file">Image file</label>
+      <input
+        :key="containerImageInputKey"
+        id="container-image-file"
+        type="file"
+        accept="image/*"
+        @change="onContainerImageFileChange"
+      />
+    </div>
+
+    <div class="form-actions">
+      <UButton color="primary" variant="solid" :loading="containerImageUploading" @click="submitContainerImage">
+        Upload Container Image
+      </UButton>
+    </div>
+
+    <UAlert
+      v-if="containerImageMessage"
+      :color="containerImageError ? 'red' : 'green'"
+      variant="soft"
+      title="Container Image Upload"
+      :description="containerImageMessage"
+    />
   </section>
 </template>
 
@@ -124,7 +182,7 @@ import {
 
 const { isAuthenticated } = useAuth();
 const { t } = useI18n();
-const { createContainer, createLocation, listContainers, listLocations } = useApiClient();
+const { createContainer, createLocation, listContainers, listLocations, uploadContainerImage } = useApiClient();
 
 const loading = ref(false);
 const errorMessage = ref('');
@@ -136,7 +194,8 @@ const containers = ref<ContainerResponse[]>([]);
 const locationForm = reactive({
   name: '',
   code: '',
-  description: ''
+  description: '',
+  icon: undefined as string | undefined
 });
 const locationErrors = reactive({
   name: '',
@@ -149,13 +208,20 @@ const containerForm = reactive({
   type: 'BOX' as ContainerType,
   name: '',
   code: '',
-  description: ''
+  description: '',
+  icon: undefined as string | undefined
 });
 const containerErrors = reactive({
   locationId: '',
   name: '',
   code: ''
 });
+const containerImageTargetId = ref('');
+const containerImageFile = ref<File | null>(null);
+const containerImageUploading = ref(false);
+const containerImageMessage = ref('');
+const containerImageError = ref(false);
+const containerImageInputKey = ref(0);
 
 const sortedLocations = computed(() => {
   return [...locations.value].sort((a, b) => a.name.localeCompare(b.name));
@@ -193,6 +259,15 @@ const containerTypeOptions = [
   { label: 'Bin', value: 'BIN' },
   { label: 'Custom', value: 'CUSTOM' }
 ] as const;
+
+const containerImageTargetOptions = computed(() => {
+  return [...containers.value]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((container) => ({
+      label: `${container.name} (${container.code})`,
+      value: container.id
+    }));
+});
 
 const containersByLocation = computed(() => {
   const map = new Map<string, ContainerResponse[]>();
@@ -235,6 +310,37 @@ const buildTree = (rows: ContainerResponse[]): Array<{ node: ContainerResponse; 
   return result;
 };
 
+const toUiIconName = (iconSet?: string | null, iconName?: string | null): string | null => {
+  if (!iconSet || !iconName) {
+    return null;
+  }
+
+  if (iconSet === 'TABLER') {
+    return `i-tabler-${iconName}`;
+  }
+
+  if (iconSet === 'LUCIDE') {
+    return `i-lucide-${iconName}`;
+  }
+
+  return null;
+};
+
+const parseSelectedIcon = (icon?: string): { iconSet?: 'TABLER'; iconName?: string } => {
+  if (!icon) {
+    return {};
+  }
+
+  if (icon.startsWith('i-tabler-')) {
+    return {
+      iconSet: 'TABLER',
+      iconName: icon.replace(/^i-tabler-/, '')
+    };
+  }
+
+  return {};
+};
+
 const refreshData = async (): Promise<void> => {
   if (!isAuthenticated.value) {
     return;
@@ -252,6 +358,10 @@ const refreshData = async (): Promise<void> => {
     const firstLocation = nextLocations.at(0);
     if (!containerForm.locationId && firstLocation) {
       containerForm.locationId = firstLocation.id;
+    }
+
+    if (!containerImageTargetId.value && nextContainers.length > 0) {
+      containerImageTargetId.value = nextContainers[0].id;
     }
   } catch {
     errorMessage.value = t('inventory_error_load');
@@ -274,15 +384,20 @@ const submitLocation = async (): Promise<void> => {
   successMessage.value = '';
 
   try {
+    const iconSelection = parseSelectedIcon(locationForm.icon);
+
     await createLocation({
       name: locationForm.name.trim(),
       code: locationForm.code.trim().toUpperCase(),
-      description: locationForm.description.trim() || undefined
+      description: locationForm.description.trim() || undefined,
+      iconSet: iconSelection.iconSet,
+      iconName: iconSelection.iconName
     });
 
     locationForm.name = '';
     locationForm.code = '';
     locationForm.description = '';
+    locationForm.icon = undefined;
     successMessage.value = t('inventory_success_location_created');
     await refreshData();
   } catch {
@@ -305,23 +420,64 @@ const submitContainer = async (): Promise<void> => {
   successMessage.value = '';
 
   try {
+    const iconSelection = parseSelectedIcon(containerForm.icon);
+
     await createContainer({
       locationId: containerForm.locationId,
       parentContainerId: containerForm.parentContainerId || undefined,
       type: containerForm.type,
       name: containerForm.name.trim(),
       code: containerForm.code.trim().toUpperCase(),
-      description: containerForm.description.trim() || undefined
+      description: containerForm.description.trim() || undefined,
+      iconSet: iconSelection.iconSet,
+      iconName: iconSelection.iconName
     });
 
     containerForm.parentContainerId = '';
     containerForm.name = '';
     containerForm.code = '';
     containerForm.description = '';
+    containerForm.icon = undefined;
     successMessage.value = t('inventory_success_container_created');
     await refreshData();
   } catch {
     errorMessage.value = t('inventory_error_create_container');
+  }
+};
+
+const onContainerImageFileChange = (event: Event): void => {
+  const input = event.target as HTMLInputElement;
+  containerImageFile.value = input.files?.item(0) ?? null;
+};
+
+const submitContainerImage = async (): Promise<void> => {
+  containerImageMessage.value = '';
+  containerImageError.value = false;
+
+  if (!containerImageTargetId.value) {
+    containerImageError.value = true;
+    containerImageMessage.value = 'Please select a container first.';
+    return;
+  }
+
+  if (!containerImageFile.value) {
+    containerImageError.value = true;
+    containerImageMessage.value = 'Please select an image file first.';
+    return;
+  }
+
+  containerImageUploading.value = true;
+
+  try {
+    const uploaded = await uploadContainerImage(containerImageTargetId.value, containerImageFile.value);
+    containerImageMessage.value = `Uploaded ${uploaded.fileName} successfully.`;
+    containerImageFile.value = null;
+    containerImageInputKey.value += 1;
+  } catch {
+    containerImageError.value = true;
+    containerImageMessage.value = 'Could not upload container image.';
+  } finally {
+    containerImageUploading.value = false;
   }
 };
 
@@ -342,6 +498,12 @@ watch(
   margin-top: 1rem;
 }
 
+.location-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
 .container-list {
   list-style: none;
   padding: 0;
@@ -360,6 +522,12 @@ watch(
 .container-row span,
 .container-row small {
   color: #576073;
+}
+
+.container-title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
 .form-actions {

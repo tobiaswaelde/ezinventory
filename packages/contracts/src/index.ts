@@ -48,6 +48,49 @@ export type ContainerResponse = ApiResponse<'/containers', 'post', 201>;
 export type CreateItemPayload = ApiRequest<'/items', 'post'>;
 export type ItemResponse = ApiResponse<'/items', 'post', 201>;
 
+export type MediaOwnerType = 'LOCATION' | 'CONTAINER' | 'ITEM' | 'MOVEMENT';
+export type MediaSortBy = 'createdAt' | 'fileName' | 'sizeBytes';
+
+export type MediaImageResponse = {
+  id: string;
+  ownerType: MediaOwnerType;
+  ownerId: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  storageKey: string;
+  url: string;
+  createdAt: string;
+};
+
+export type MediaLibraryEntry = {
+  id: string;
+  ownerType: MediaOwnerType;
+  ownerId: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  storageKey: string;
+  uploadedByUserId: string;
+  createdAt: string;
+  url: string;
+};
+
+export type MediaLibraryQuery = {
+  fields?: string;
+  ownerType?: MediaOwnerType;
+  ownerId?: string;
+  search?: string;
+  sortBy?: MediaSortBy;
+  sortDir?: 'asc' | 'desc';
+  limit?: number;
+};
+
+export type DeleteMediaImageResponse = {
+  id: string;
+  deleted: true;
+};
+
 export type RegistrationMode = 'OPEN' | 'ADMIN_ONLY';
 export type CaslAction = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'scan' | 'stock-out';
 export type CaslSubject = 'all' | 'Auth' | 'Category' | 'Item' | 'Location' | 'Container' | 'Stock' | 'User';

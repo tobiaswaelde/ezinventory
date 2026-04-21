@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -18,6 +18,7 @@ import { PoliciesGuard } from '~/modules/auth/guards/policies.guard.js';
 import { BootstrapAdminDto } from '~/modules/setup/dto/bootstrap-admin.dto.js';
 import { CreatePermissionPolicyDto } from '~/modules/setup/dto/create-permission-policy.dto.js';
 import { CreateUserByAdminDto } from '~/modules/setup/dto/create-user-by-admin.dto.js';
+import { ListUsersQueryDto } from '~/modules/setup/dto/list-users-query.dto.js';
 import { ReplaceUserPoliciesDto } from '~/modules/setup/dto/replace-user-policies.dto.js';
 import { RegistrationMode, UpdateRegistrationModeDto } from '~/modules/setup/dto/update-registration-mode.dto.js';
 import { UpdateUserRoleDto } from '~/modules/setup/dto/update-user-role.dto.js';
@@ -132,19 +133,8 @@ export class SetupController {
   })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid access token.' })
   @ApiForbiddenResponse({ description: 'Insufficient permission to read users.' })
-  async listUsers(): Promise<
-    Array<{
-      id: string;
-      email: string;
-      displayName: string;
-      role: UserRoleType;
-      preferredLanguage: string;
-      createdAt: Date;
-      updatedAt: Date;
-      policyIds: string[];
-    }>
-  > {
-    return await this.setupService.listUsers();
+  async listUsers(@Query() query: ListUsersQueryDto): Promise<Array<Record<string, unknown>>> {
+    return await this.setupService.listUsers(query);
   }
 
   @Patch('users/:userId/role')

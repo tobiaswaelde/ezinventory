@@ -7,13 +7,18 @@ import type {
   CreateLocationPayload,
   CreatePermissionPolicyPayload,
   CreateUserByAdminPayload,
+  DeleteMediaImageResponse,
   ItemResponse,
   LocationResponse,
+  MediaImageResponse,
+  MediaLibraryEntry,
+  MediaLibraryQuery,
   ManagedUser,
   PermissionPolicy,
   ReplaceUserPoliciesResponse,
   RoleBasedUser,
   SetupStatus,
+  UserRole,
   UpdateRegistrationModeResponse,
   UpdateRegistrationModePayload
 } from '@ezinventory/contracts';
@@ -69,6 +74,49 @@ export function useApiClient() {
     });
   };
 
+  const uploadItemImage = async (itemId: string, file: File): Promise<MediaImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await authorizedFetch<MediaImageResponse>(`/media/items/${itemId}/images`, {
+      method: 'POST',
+      body: formData
+    });
+  };
+
+  const uploadContainerImage = async (containerId: string, file: File): Promise<MediaImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await authorizedFetch<MediaImageResponse>(`/media/containers/${containerId}/images`, {
+      method: 'POST',
+      body: formData
+    });
+  };
+
+  const listMediaLibrary = async (query?: MediaLibraryQuery): Promise<MediaLibraryEntry[]> => {
+    return await authorizedFetch<MediaLibraryEntry[]>('/media/library', {
+      method: 'GET',
+      query
+    });
+  };
+
+  const replaceMediaImage = async (attachmentId: string, file: File): Promise<MediaImageResponse> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return await authorizedFetch<MediaImageResponse>(`/media/images/${attachmentId}`, {
+      method: 'PUT',
+      body: formData
+    });
+  };
+
+  const deleteMediaImage = async (attachmentId: string): Promise<DeleteMediaImageResponse> => {
+    return await authorizedFetch<DeleteMediaImageResponse>(`/media/images/${attachmentId}`, {
+      method: 'DELETE'
+    });
+  };
+
   const health = async (): Promise<ApiResponse<'/health', 'get', 200>> => {
     return await $fetch<ApiResponse<'/health', 'get', 200>>('/health', { baseURL });
   };
@@ -91,9 +139,16 @@ export function useApiClient() {
     });
   };
 
-  const listUsers = async (): Promise<ManagedUser[]> => {
+  const listUsers = async (query?: {
+    fields?: string;
+    search?: string;
+    role?: UserRole;
+    sortBy?: 'displayName' | 'email' | 'createdAt' | 'updatedAt' | 'role';
+    sortDir?: 'asc' | 'desc';
+  }): Promise<ManagedUser[]> => {
     return await authorizedFetch<ManagedUser[]>('/setup/users', {
-      method: 'GET'
+      method: 'GET',
+      query
     });
   };
 
@@ -130,15 +185,20 @@ export function useApiClient() {
     createLocation,
     createPermissionPolicy,
     createUserByAdmin,
+    deleteMediaImage,
     getSetupStatus,
     health,
     listContainers,
     listItems,
     listLocations,
+    listMediaLibrary,
     listPermissionPolicies,
     listUsers,
     lookupItemByCode,
+    replaceMediaImage,
     replaceUserPolicies,
+    uploadContainerImage,
+    uploadItemImage,
     updateUserRole,
     updateRegistrationMode
   };

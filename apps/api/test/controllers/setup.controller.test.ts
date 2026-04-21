@@ -47,8 +47,9 @@ describe('SetupController', () => {
     await expect(controller.createUserByAdmin(dto as never)).resolves.toEqual({ id: 'u2', email: 'user@example.com', role: 'STAFF' });
     expect(service.createUserByAdmin).toHaveBeenCalledWith(dto);
 
-    await expect(controller.listUsers()).resolves.toEqual([{ id: 'u2', policyIds: [] }]);
-    expect(service.listUsers).toHaveBeenCalledTimes(1);
+    const query = { fields: 'id,email' };
+    await expect(controller.listUsers(query as never)).resolves.toEqual([{ id: 'u2', policyIds: [] }]);
+    expect(service.listUsers).toHaveBeenCalledWith(query);
   });
 
   it('delegates updateUserRole()', async () => {
