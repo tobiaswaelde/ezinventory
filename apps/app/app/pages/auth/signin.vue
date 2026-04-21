@@ -1,5 +1,5 @@
 <template>
-  <div class="auth-content">
+  <div class="grid gap-3">
     <UAuthForm
       title="Sign in"
       description="Sign in with your password."
@@ -19,7 +19,7 @@
       </template>
 
       <template #footer>
-        <p class="auth-switch">
+        <p class="mt-1 text-sm text-muted">
           No account yet?
           <NuxtLink to="/auth/signup">Create one</NuxtLink>
         </p>
@@ -155,21 +155,3 @@ const submitPasskey = async (event: FormSubmitEvent<{ email?: string }>): Promis
   }
 };
 </script>
-
-
-<style scoped>
-.auth-content {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.auth-content h1 {
-  margin: 0;
-}
-
-.auth-switch {
-  margin: 0.25rem 0 0;
-  color: rgb(113 113 122);
-  font-size: 0.9rem;
-}
-</style>

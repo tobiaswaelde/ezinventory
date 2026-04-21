@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-default">
+  <UApp class="min-h-screen bg-default">
     <NuxtPwaManifest />
     <NuxtLoadingIndicator />
 
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-  </div>
+  </UApp>
 </template>
 
 <script setup lang="ts">
