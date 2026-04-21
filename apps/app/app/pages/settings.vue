@@ -217,8 +217,14 @@ import type {
   RegistrationMode,
   UserRole
 } from '@ezinventory/contracts';
+import {
+  validateItemInput,
+  validateManagedUserInput,
+  validatePolicyConditionsJson
+} from '~/utils/settings-validation';
 
 const { user } = useAuth();
+const { t } = useI18n();
 const {
   createItem,
   createPermissionPolicy,
@@ -300,19 +306,12 @@ const policyCreating = ref(false);
 const policyMessage = ref('');
 
 const validateItem = (): boolean => {
-  itemErrors.categoryId = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(itemForm.categoryId)
-    ? ''
-    : 'categoryId must be a UUID v4';
+  const errors = validateItemInput(itemForm);
 
-  itemErrors.sku = itemForm.sku.trim().length > 0 ? '' : 'SKU is required';
-  itemErrors.name = itemForm.name.trim().length > 0 ? '' : 'Name is required';
-
-  if (itemForm.servings.trim().length > 0) {
-    const servings = Number(itemForm.servings);
-    itemErrors.servings = Number.isInteger(servings) && servings >= 1 ? '' : 'Servings must be an integer >= 1';
-  } else {
-    itemErrors.servings = '';
-  }
+  itemErrors.categoryId = errors.categoryId ? t(errors.categoryId as never) : '';
+  itemErrors.sku = errors.sku ? t(errors.sku as never) : '';
+  itemErrors.name = errors.name ? t(errors.name as never) : '';
+  itemErrors.servings = errors.servings ? t(errors.servings as never) : '';
 
   return !itemErrors.categoryId && !itemErrors.sku && !itemErrors.name && !itemErrors.servings;
 };
@@ -327,7 +326,7 @@ const submitItem = async (): Promise<void> => {
     servings: itemForm.servings ? Number(itemForm.servings) : undefined
   });
 
-  alert('Valid payload sent to API.');
+  alert(t('settings_message_valid_payload_sent'));
 };
 
 const saveRegistrationMode = async (): Promise<void> => {
@@ -336,9 +335,9 @@ const saveRegistrationMode = async (): Promise<void> => {
 
   try {
     const result = await updateRegistrationMode({ mode: registrationMode.value });
-    modeMessage.value = `Registration mode saved: ${result.mode}`;
+    modeMessage.value = `${t('settings_message_registration_mode_saved_prefix')} ${result.mode}`;
   } catch {
-    modeMessage.value = 'Could not update registration mode.';
+    modeMessage.value = t('settings_error_update_registration_mode');
   } finally {
     modeSaving.value = false;
   }
@@ -352,7 +351,7 @@ const loadSetupStatus = async (): Promise<void> => {
     setupInitialized.value = status.setupInitialized;
     registrationMode.value = status.registrationMode;
   } catch {
-    modeMessage.value = 'Could not load current setup status.';
+    modeMessage.value = t('settings_error_load_setup_status');
   }
 };
 
@@ -383,7 +382,7 @@ const loadAdminData = async (): Promise<void> => {
     permissionPolicies.value = policies;
     hydrateUserDrafts();
   } catch {
-    usersMessage.value = 'Could not load user management data.';
+    usersMessage.value = t('settings_error_load_user_management_data');
   } finally {
     usersLoading.value = false;
   }
@@ -395,12 +394,13 @@ const createManagedUser = async (): Promise<void> => {
   newUserErrors.password = '';
   newUserErrors.displayName = '';
 
-  newUserErrors.displayName = newUserForm.displayName.trim().length >= 2 ? '' : 'Display name must be at least 2 characters.';
-  newUserErrors.email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newUserForm.email.trim()) ? '' : 'Valid email is required.';
-  newUserErrors.password = newUserForm.password.length >= 8 ? '' : 'Password must be at least 8 characters.';
+  const errors = validateManagedUserInput(newUserForm);
+  newUserErrors.displayName = errors.displayName ? t(errors.displayName as never) : '';
+  newUserErrors.email = errors.email ? t(errors.email as never) : '';
+  newUserErrors.password = errors.password ? t(errors.password as never) : '';
 
   if (newUserErrors.displayName || newUserErrors.email || newUserErrors.password) {
-    userMessage.value = 'Please fix the user form errors.';
+    userMessage.value = t('settings_error_fix_user_form');
     return;
   }
 
@@ -415,11 +415,11 @@ const createManagedUser = async (): Promise<void> => {
       preferredLanguage: newUserForm.preferredLanguage
     });
 
-    userMessage.value = `User created: ${created.email} (${created.role})`;
+    userMessage.value = `${t('settings_message_user_created_prefix')} ${created.email} (${created.role})`;
     newUserForm.password = '';
     await loadAdminData();
   } catch {
-    userMessage.value = 'Could not create user. Check permissions or duplicate email.';
+    userMessage.value = t('settings_error_create_user');
   } finally {
     userSaving.value = false;
   }
@@ -432,15 +432,15 @@ const saveUserRole = async (targetUserId: string): Promise<void> => {
   try {
     const nextRole = roleDraftByUser.value[targetUserId];
     if (!nextRole) {
-      usersMessage.value = 'No role selected for this user.';
+      usersMessage.value = t('settings_error_no_role_selected');
       return;
     }
 
     await updateUserRole(targetUserId, nextRole);
-    usersMessage.value = 'User role updated.';
+    usersMessage.value = t('settings_message_user_role_updated');
     await loadAdminData();
   } catch {
-    usersMessage.value = 'Could not update user role.';
+    usersMessage.value = t('settings_error_update_user_role');
   } finally {
     roleSavingByUser.value[targetUserId] = false;
   }
@@ -463,10 +463,10 @@ const saveUserPolicies = async (targetUserId: string): Promise<void> => {
 
   try {
     await replaceUserPolicies(targetUserId, policyDraftByUser.value[targetUserId] ?? []);
-    usersMessage.value = 'User policies updated.';
+    usersMessage.value = t('settings_message_user_policies_updated');
     await loadAdminData();
   } catch {
-    usersMessage.value = 'Could not update user policies.';
+    usersMessage.value = t('settings_error_update_user_policies');
   } finally {
     policySavingByUser.value[targetUserId] = false;
   }
@@ -480,14 +480,15 @@ const createPolicy = async (): Promise<void> => {
   try {
     let conditions: Record<string, unknown> | undefined;
 
+    const conditionsError = validatePolicyConditionsJson(newPolicyForm.conditionsJson);
+    if (conditionsError) {
+      newPolicyErrors.conditionsJson = t(conditionsError as never);
+      policyMessage.value = t('settings_error_create_policy');
+      return;
+    }
+
     if (newPolicyForm.conditionsJson.trim().length > 0) {
-      const parsed = JSON.parse(newPolicyForm.conditionsJson) as unknown;
-
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        throw new Error('Conditions must be a JSON object.');
-      }
-
-      conditions = parsed as Record<string, unknown>;
+      conditions = JSON.parse(newPolicyForm.conditionsJson) as Record<string, unknown>;
     }
 
     await createPermissionPolicy({
@@ -498,14 +499,16 @@ const createPolicy = async (): Promise<void> => {
       conditions
     });
 
-    policyMessage.value = 'Permission policy created.';
+    policyMessage.value = t('settings_message_policy_created');
     newPolicyForm.reason = '';
     newPolicyForm.conditionsJson = '';
     newPolicyErrors.conditionsJson = '';
     await loadAdminData();
   } catch {
-    newPolicyErrors.conditionsJson = 'Conditions must be valid JSON object (or left empty).';
-    policyMessage.value = 'Could not create permission policy. Verify JSON in conditions.';
+    if (!newPolicyErrors.conditionsJson) {
+      newPolicyErrors.conditionsJson = t('settings_validation_policy_conditions_invalid');
+    }
+    policyMessage.value = t('settings_error_create_policy');
   } finally {
     policyCreating.value = false;
   }

@@ -69,6 +69,7 @@ definePageMeta({
 });
 
 const { register, registerPasskey, isAuthenticated } = useAuth();
+const { t } = useI18n();
 
 const submitting = ref(false);
 const passkeySubmitting = ref(false);
@@ -167,7 +168,7 @@ const submit = async (
     displayName
   });
   if (validationError) {
-    signupError.value = validationError;
+    signupError.value = t(validationError as never);
     return;
   }
 
@@ -200,7 +201,7 @@ const submitPasskeyRegister = async (
 
   const validationError = validatePasskeyRegistrationInput({ email, password });
   if (validationError) {
-    passkeyError.value = validationError;
+    passkeyError.value = t(validationError as never);
     return;
   }
 
