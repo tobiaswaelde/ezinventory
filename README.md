@@ -37,6 +37,22 @@ API endpoints during local dev:
 docker compose up --build
 ```
 
+## Devcontainer
+- Open the repo in VS Code and run: `Dev Containers: Reopen in Container`
+- Config path: `.devcontainer/devcontainer.json`
+- Included services in devcontainer: `workspace`, `postgres`, `rustfs`
+- Forwarded ports: `3000` (app), `3001` (api), `5433` (postgres), `9000` (rustfs)
+
+## Testing (App)
+```bash
+pnpm --filter @ezinventory/app test:unit
+pnpm --filter @ezinventory/app test:coverage
+pnpm --filter @ezinventory/app test
+```
+
+Details for local + CI test execution:
+- `docs/testing-app.md`
+
 ## Docs (VitePress)
 - Local docs dev server: `pnpm docs:dev`
 - Build docs: `pnpm docs:build`
