@@ -34,6 +34,20 @@ describe('MediaController', () => {
     expect(service.getStorageHealth).toHaveBeenCalledTimes(1);
   });
 
+  it('lists media library via service', async () => {
+    const list = [{ id: uploaded.id, fileName: uploaded.fileName, ownerType: uploaded.ownerType }];
+    const service = {
+      getStorageHealth: vi.fn(),
+      listUserLibrary: vi.fn().mockResolvedValue(list)
+    };
+
+    const controller = new MediaController(service as never);
+    const query = { fields: 'id,fileName,ownerType', search: 'image', sortBy: 'createdAt', sortDir: 'desc', limit: 25 };
+
+    await expect(controller.listLibrary(query as never, user as never)).resolves.toEqual(list);
+    expect(service.listUserLibrary).toHaveBeenCalledWith(query, user.id);
+  });
+
   it('uploads item image via service', async () => {
     const service = {
       getStorageHealth: vi.fn(),
@@ -84,5 +98,41 @@ describe('MediaController', () => {
       file,
       user.id
     );
+  });
+
+  it('replaces image via service', async () => {
+    const replaced = {
+      ...uploaded,
+      fileName: 'replaced.png'
+    };
+
+    const service = {
+      replaceImage: vi.fn().mockResolvedValue(replaced)
+    };
+
+    const controller = new MediaController(service as never);
+    const file = {
+      originalname: 'replaced.png',
+      mimetype: 'image/png',
+      size: 2345,
+      buffer: Buffer.from('fake')
+    };
+
+    await expect(
+      controller.replaceImage('550e8400-e29b-41d4-a716-446655440020', file as never, user as never)
+    ).resolves.toEqual(replaced);
+
+    expect(service.replaceImage).toHaveBeenCalledWith('550e8400-e29b-41d4-a716-446655440020', file, user.id);
+  });
+
+  it('deletes image via service', async () => {
+    const result = { id: uploaded.id, deleted: true as const };
+    const service = {
+      deleteImage: vi.fn().mockResolvedValue(result)
+    };
+
+    const controller = new MediaController(service as never);
+    await expect(controller.deleteImage(uploaded.id, user as never)).resolves.toEqual(result);
+    expect(service.deleteImage).toHaveBeenCalledWith(uploaded.id, user.id);
   });
 });
