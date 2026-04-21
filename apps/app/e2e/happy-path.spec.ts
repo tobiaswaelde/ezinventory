@@ -74,7 +74,8 @@ test.describe('Happy path', () => {
     await page.locator('input[name="password"]').fill('adminadminadmin');
     await page.getByRole('button', { name: 'Create account' }).click();
 
-    await expect(page.getByRole('heading', { name: /Welcome back/i })).toBeVisible();
+    await expect(page).toHaveURL('/');
+    await expect(page.getByText('Welcome back', { exact: false })).toBeVisible();
 
     await page.goto('/scan');
 
