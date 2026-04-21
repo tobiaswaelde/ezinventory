@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
 
     steps:
       - name: Checkout
@@ -45,7 +44,8 @@ jobs:
         with:
           files: apps/app/coverage/lcov.info
           flags: app
-          use_oidc: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: tobiaswaelde/ezinventory
           verbose: true
           fail_ci_if_error: false
 

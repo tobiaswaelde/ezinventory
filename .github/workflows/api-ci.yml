@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ezinventory
       SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prisma
@@ -45,6 +44,7 @@ jobs:
         with:
           files: apps/api/coverage/lcov.info
           flags: api
-          use_oidc: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: tobiaswaelde/ezinventory
           verbose: true
           fail_ci_if_error: false
