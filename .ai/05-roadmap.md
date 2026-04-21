@@ -2,7 +2,7 @@
 
 ## Sprint 1 - Foundation
 
-- Monorepo baseline (`web`, `api`, `docs`)
+- Monorepo baseline (`web`, `api`, `.ai`)
 - Docker Compose (`web`, `api`, `postgres`, `rustfs`)
 - NestJS + Prisma + initial migration
 - Nuxt + Nuxt UI + PWA bootstrap

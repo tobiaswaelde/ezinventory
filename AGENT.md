@@ -31,5 +31,5 @@ This file captures project-specific guardrails for future coding agents working 
 
 ## Documentation Expectations
 - Keep root `README.md` updated.
-- Maintain planning docs under `docs/`.
+- Maintain planning docs under `.ai/`.
 - Keep architecture and data model docs aligned with implementation changes.

@@ -4,7 +4,7 @@ Last updated: 2026-04-20
 
 ## 1. Foundation
 
-- [x] Monorepo setup with `api`, `app`, `docs`
+- [x] Monorepo setup with `api`, `app`, `.ai`
 - [x] Docker compose setup (`compose.yaml`)
 - [x] CI lint workflows for API and App
 - [x] Import alias convention with `~/...` in API and App

@@ -18,7 +18,7 @@ Mobile-first, open-source inventory management with QR-first workflows.
 - `apps/api` - NestJS API
 - `apps/app` - Nuxt frontend
 - `packages` - shared workspace packages
-- `docs` - planning and architecture docs
+- `.ai` - planning and architecture docs (internal project docs)
 
 ## Quick Start
 ```bash
