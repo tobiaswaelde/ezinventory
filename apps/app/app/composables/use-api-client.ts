@@ -14,6 +14,7 @@ import type {
   ReplaceUserPoliciesResponse,
   RoleBasedUser,
   SetupStatus,
+  UserRole,
   UpdateRegistrationModeResponse,
   UpdateRegistrationModePayload
 } from '@ezinventory/contracts';
@@ -91,9 +92,16 @@ export function useApiClient() {
     });
   };
 
-  const listUsers = async (): Promise<ManagedUser[]> => {
+  const listUsers = async (query?: {
+    fields?: string;
+    search?: string;
+    role?: UserRole;
+    sortBy?: 'displayName' | 'email' | 'createdAt' | 'updatedAt' | 'role';
+    sortDir?: 'asc' | 'desc';
+  }): Promise<ManagedUser[]> => {
     return await authorizedFetch<ManagedUser[]>('/setup/users', {
-      method: 'GET'
+      method: 'GET',
+      query
     });
   };
 

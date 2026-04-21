@@ -7,6 +7,90 @@
     </UDashboardToolbar>
 
     <div v-if="activeTab === 'general'" class="grid gap-4">
+      <UCard v-if="isAdmin">
+        <template #header>
+          <div class="space-y-1">
+            <h2 class="text-base font-semibold">Users Table</h2>
+            <p class="text-sm text-muted">Column select, sorting and filtering with API-backed query options.</p>
+          </div>
+        </template>
+
+        <div class="grid gap-4">
+          <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            <div class="grid gap-1">
+              <label for="users-search">Search</label>
+              <UInput id="users-search" v-model="usersSearch" placeholder="Search by display name or email" />
+            </div>
+
+            <div class="grid gap-1">
+              <label for="users-role-filter">Role</label>
+              <USelect
+                id="users-role-filter"
+                v-model="usersRoleFilter"
+                :items="usersRoleFilterOptions"
+                label-key="label"
+                value-key="value"
+              />
+            </div>
+
+            <div class="grid gap-1">
+              <label for="users-sort-by">Sort By</label>
+              <USelect id="users-sort-by" v-model="usersSortBy" :items="usersSortByOptions" label-key="label" value-key="value" />
+            </div>
+
+            <div class="grid gap-1">
+              <label for="users-sort-dir">Sort Direction</label>
+              <USelect id="users-sort-dir" v-model="usersSortDir" :items="usersSortDirOptions" label-key="label" value-key="value" />
+            </div>
+
+            <div class="grid gap-1">
+              <label>Columns</label>
+              <div class="flex flex-wrap gap-2 rounded border border-default px-2 py-2">
+                <label v-for="column in usersTableColumnDefinition" :key="column.id" class="flex items-center gap-2 text-xs">
+                  <UCheckbox
+                    :model-value="isUsersTableColumnVisible(column.id)"
+                    @update:model-value="setUserColumnVisibility(column.id, Boolean($event))"
+                  />
+                  <span>{{ column.label }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <p v-if="usersFieldsQuery" class="text-xs text-muted">Fields query: {{ usersFieldsQuery }}</p>
+          <p v-if="usersLoading">Loading users...</p>
+          <p v-if="usersMessage">{{ usersMessage }}</p>
+
+          <div class="overflow-x-auto rounded-lg border border-default">
+            <table class="min-w-full text-sm">
+              <thead class="bg-muted/40">
+                <tr>
+                  <th
+                    v-for="column in usersTableColumns"
+                    :key="column.id"
+                    class="whitespace-nowrap px-3 py-2 text-left font-medium text-toned"
+                  >
+                    {{ column.label }}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr v-for="managedUser in managedUsers" :key="managedUser.id" class="border-t border-default">
+                  <td
+                    v-for="column in usersTableColumns"
+                    :key="`${managedUser.id}-${column.id}`"
+                    class="whitespace-nowrap px-3 py-2"
+                  >
+                    {{ getManagedUserCell(managedUser, column.id) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </UCard>
+
       <ModulesSettingsRegistrationModeCard
         v-if="isAdmin"
         :setup-initialized="setupInitialized"
@@ -118,6 +202,17 @@ const {
 } = useApiClient();
 
 const roleOptions: UserRole[] = ['VIEWER', 'STAFF', 'MANAGER', 'ADMIN'];
+const usersSortByOptions = [
+  { label: 'Created At', value: 'createdAt' },
+  { label: 'Updated At', value: 'updatedAt' },
+  { label: 'Display Name', value: 'displayName' },
+  { label: 'Email', value: 'email' },
+  { label: 'Role', value: 'role' }
+] as const;
+const usersSortDirOptions = [
+  { label: 'Ascending', value: 'asc' },
+  { label: 'Descending', value: 'desc' }
+] as const;
 const actionOptions: CaslAction[] = ['read', 'create', 'update', 'delete', 'scan', 'stock-out'];
 const subjectOptions: CaslSubject[] = ['Category', 'Item', 'Location', 'Container', 'Stock', 'User', 'Auth', 'all'];
 const registrationModeOptions = [
@@ -125,6 +220,7 @@ const registrationModeOptions = [
   { label: 'OPEN', value: 'OPEN' }
 ] as const;
 const roleSelectOptions = roleOptions.map((role) => ({ label: role, value: role }));
+const usersRoleFilterOptions = [{ label: 'All roles', value: 'ALL' }, ...roleSelectOptions];
 const languageOptions = [
   { label: 'English', value: 'en' },
   { label: 'Deutsch', value: 'de' }
@@ -228,6 +324,58 @@ const newPolicyErrors = reactive({
 const policyCreating = ref(false);
 const policyMessage = ref('');
 
+const usersTableColumnDefinition = ref([
+  { id: 'displayName', label: 'Display Name' },
+  { id: 'email', label: 'Email' },
+  { id: 'role', label: 'Role' },
+  { id: 'preferredLanguage', label: 'Language' },
+  { id: 'policyIds', label: 'Policies' },
+  { id: 'createdAt', label: 'Created At' },
+  { id: 'updatedAt', label: 'Updated At' }
+]);
+
+const { columns: usersTableColumns, isVisible: isUsersTableColumnVisible, setVisible: setUsersTableColumnVisible } = useTableColumnsOptions(
+  'settings-users-table',
+  usersTableColumnDefinition
+);
+
+const {
+  search: usersSearch,
+  roleFilter: usersRoleFilter,
+  sortBy: usersSortBy,
+  sortDir: usersSortDir
+} = useTableQueryOptions<'displayName' | 'email' | 'createdAt' | 'updatedAt' | 'role', 'ALL' | UserRole>({
+  tableName: 'settings-users-table',
+  defaultSortBy: 'createdAt',
+  defaultSortDir: 'asc',
+  defaultRoleFilter: 'ALL'
+});
+
+const usersFieldsQuery = useTableFieldsQuery({
+  columns: usersTableColumns,
+  staticFields: ['id', 'displayName', 'email', 'role', 'policyIds']
+});
+
+const setUserColumnVisibility = (columnId: string, visible: boolean): void => {
+  if (!visible && usersTableColumns.value.length <= 1 && isUsersTableColumnVisible(columnId)) {
+    return;
+  }
+
+  setUsersTableColumnVisible(columnId, visible);
+};
+
+const getManagedUserCell = (managedUser: ManagedUser, columnId: string): string => {
+  if (columnId === 'displayName') return managedUser.displayName;
+  if (columnId === 'email') return managedUser.email;
+  if (columnId === 'role') return managedUser.role;
+  if (columnId === 'preferredLanguage') return managedUser.preferredLanguage;
+  if (columnId === 'policyIds') return String(managedUser.policyIds?.length ?? 0);
+  if (columnId === 'createdAt') return formatDate(String(managedUser.createdAt));
+  if (columnId === 'updatedAt') return formatDate(String(managedUser.updatedAt));
+
+  return '';
+};
+
 const validateItem = (): boolean => {
   const errors = validateItemInput(itemForm);
 
@@ -306,7 +454,16 @@ const loadAdminData = async (): Promise<void> => {
   usersLoading.value = true;
 
   try {
-    const [users, policies] = await Promise.all([listUsers(), listPermissionPolicies()]);
+    const [users, policies] = await Promise.all([
+      listUsers({
+        fields: usersFieldsQuery.value,
+        search: usersSearch.value.trim() || undefined,
+        role: usersRoleFilter.value === 'ALL' ? undefined : usersRoleFilter.value,
+        sortBy: usersSortBy.value,
+        sortDir: usersSortDir.value
+      }),
+      listPermissionPolicies()
+    ]);
     managedUsers.value = users;
     permissionPolicies.value = policies;
     hydrateUserDrafts();
@@ -523,6 +680,10 @@ onMounted(async () => {
   passkeySupported.value = typeof window !== 'undefined' && 'PublicKeyCredential' in window;
   await loadProfilePasskeys();
   await loadSetupStatus();
+  await loadAdminData();
+});
+
+watch([usersSearch, usersRoleFilter, usersSortBy, usersSortDir, usersFieldsQuery], async () => {
   await loadAdminData();
 });
 </script>
