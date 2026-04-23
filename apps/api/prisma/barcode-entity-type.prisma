@@ -1,4 +1,0 @@
-enum BarcodeEntityType {
-  CONTAINER
-  ITEM
-}

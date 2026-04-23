@@ -1,4 +1,0 @@
-enum RegistrationMode {
-  OPEN
-  ADMIN_ONLY
-}

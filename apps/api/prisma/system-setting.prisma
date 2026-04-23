@@ -1,8 +1,0 @@
-model SystemSetting {
-  id        String   @id @default(uuid()) @db.Uuid
-  key       String   @unique
-  value     Json
-  updatedAt DateTime @updatedAt
-
-  @@map("system_settings")
-}

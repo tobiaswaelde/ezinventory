@@ -1,6 +1,0 @@
-enum MovementType {
-  IN
-  OUT
-  TRANSFER
-  ADJUSTMENT
-}
