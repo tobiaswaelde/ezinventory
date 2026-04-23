@@ -1,0 +1,28 @@
+name: ezinventory-dev
+
+services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: ezinventory-rustfs
+    restart: never
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "sh",
+          "-c",
+          "curl -f http://localhost:9000/health && curl -f
+            http://localhost:9001/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./data/rustfs/data:/data
+      - ./data/rustfs/logs:/app/logs
+    environment:
+      RUSTFS_ACCESS_KEY: admin
+      RUSTFS_SECRET_KEY: admin

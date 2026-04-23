@@ -1,0 +1,28 @@
+headers {
+  Timezone: Europe/Berlin
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:pre-request {
+  if(req.getUrl().includes('/auth')) {
+    console.log('Auth Request detected - skipping auth check');
+    return;
+  }
+  
+  let token = bru.getEnvVar('token')
+  if(!token) {
+    console.log('No token found. Trying authentication.');
+    
+    const res = await bru.runRequest('auth/signin');
+    if(res.status !== 200){
+      throw new Error('Authentication failed. Check credentials.');
+    }
+  }
+}

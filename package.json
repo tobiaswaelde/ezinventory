@@ -1,0 +1,36 @@
+{
+  "name": "ezinventory",
+  "version": "0.0.0",
+  "author": {
+    "name": "Tobias Wälde",
+    "email": "tobias.waelde@gmail.com",
+    "url": "https://tobiaswaelde.com"
+  },
+  "description": "EZ Inventory monorepo",
+  "keywords": [
+    "docker",
+    "open-source",
+    "crud",
+    "database",
+    "dashboard",
+    "rest-api",
+    "inventory",
+    "admin-dashboard",
+    "self-hosted",
+    "web-application",
+    "fullstack",
+    "inventory-management",
+    "warehouse-management",
+    "stock-management",
+    "business-tools",
+    "asset-management",
+    "inventory-system",
+    "asset-tracking",
+    "productivity-tool inventory-tracking"
+  ],
+  "scripts": {
+    "dev": ""
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.2"
+}

@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "name": "EZInventory",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "{{host}}/api/v1"
+  }
+}

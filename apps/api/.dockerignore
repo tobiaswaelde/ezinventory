@@ -1,0 +1,11 @@
+.git
+.github
+.forgejo
+node_modules
+dist
+coverage
+.pnpm-store
+.env
+.env.*
+*.log
+tmp
