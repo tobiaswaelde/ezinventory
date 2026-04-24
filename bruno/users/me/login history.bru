@@ -1,0 +1,50 @@
+meta {
+  name: login history
+  type: graphql
+  seq: 10
+}
+
+post {
+  url: {{host}}/graphql
+  body: graphql
+  auth: inherit
+}
+
+body:graphql {
+  {
+    userLogins {
+      items {
+        id
+        createdAt
+        ip
+        browserName
+        browserVersion
+        cpuArch
+        deviceType
+        deviceModel
+        deviceVendor
+        osName
+        osVersion
+        geoCountry
+        geoRegion
+        geoCity
+        geoTz
+        geoLat
+        geoLng
+        user {
+          id
+          profile {
+            firstname
+            lastname
+          }
+        }
+      }
+    }
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

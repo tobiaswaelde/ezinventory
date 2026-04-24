@@ -4,7 +4,7 @@ import { ENV } from '~/config/env';
 /**
  * Utility class for authentication-related operations.
  */
-export class AuthUtil {
+export class CryptoUtil {
   /**
    * Encrypt password using bcrypt.
    * @param {string} password The password to encrypt.

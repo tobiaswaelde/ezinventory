@@ -1,0 +1,25 @@
+meta {
+  name: query
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/v1/users?include[profile][select][firstname]=true&include[preferences]=true&include[profile][select][lastname]=true&page=1
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include[profile][select][firstname]: true
+  include[preferences]: true
+  include[profile][select][lastname]: true
+  page: 1
+  ~perPage: 2
+  ~include[profile]: true
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

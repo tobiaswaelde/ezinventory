@@ -1,0 +1,26 @@
+meta {
+  name: update preferences
+  type: http
+  seq: 8
+}
+
+patch {
+  url: {{host}}/api/v1/users/:id/preferences
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1d278d52-da73-43a9-89a8-d3b6fe9b86d0
+}
+
+body:json {
+  {
+    "language": "en-US"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

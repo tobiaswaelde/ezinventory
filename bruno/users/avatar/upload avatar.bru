@@ -1,0 +1,24 @@
+meta {
+  name: upload avatar
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{host}}/api/v1/users/:id/avatar
+  body: multipartForm
+  auth: inherit
+}
+
+params:path {
+  id: 1d278d52-da73-43a9-89a8-d3b6fe9b86d0
+}
+
+body:multipart-form {
+  file: @file(D:\Pictures\Albums\Avatars\ein-hauch-von-tüll.jpg)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

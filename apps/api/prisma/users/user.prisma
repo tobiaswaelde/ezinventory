@@ -4,14 +4,17 @@ model User {
   updatedAt DateTime @updatedAt
 
   // fields
-  email          String  @unique @db.VarChar(255)
-  isMfaEnabled   Boolean @default(false) @db.Boolean
-  mfaSecret      String? @db.VarChar(512)
-  websocketToken String  @default("00000000") @db.VarChar(256)
+  email             String    @unique @db.VarChar(255)
+  password          String    @db.VarChar(512)
+  passwordChangedAt DateTime? @db.Timestamp()
+  isMfaEnabled      Boolean   @default(false) @db.Boolean
+  mfaSecret         String?   @db.VarChar(512)
+  websocketToken    String    @default("00000000") @db.VarChar(256)
 
   // relations
   preferences UserPreferences?
   profile     UserProfile?
+  warehouses  WarehouseUser[]  @relation()
 
   @@map("users")
 }

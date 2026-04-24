@@ -1,0 +1,16 @@
+meta {
+  name: get user roles
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{host}}/api/v1/users/me/user-roles
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

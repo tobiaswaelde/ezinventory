@@ -16,4 +16,5 @@ export const s3ClientConfig: S3ClientConfig = {
 
 export enum S3Bucket {
   Avatars = 'avatars',
+  Files = 'files',
 }

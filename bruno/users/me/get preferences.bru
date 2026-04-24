@@ -1,0 +1,15 @@
+meta {
+  name: get preferences
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/v1/users/me/preferences
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

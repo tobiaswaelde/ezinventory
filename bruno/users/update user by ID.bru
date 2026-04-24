@@ -1,0 +1,27 @@
+meta {
+  name: update user by ID
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{host}}/api/v1/users/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: df26424f-1742-4411-b35d-4de3d980ac07
+}
+
+body:json {
+  {
+    "field": "1234",
+    "branchId": "3a0786ec-ced4-4078-bbab-c92b3db368c1"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

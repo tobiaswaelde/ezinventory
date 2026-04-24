@@ -1,0 +1,27 @@
+meta {
+  name: update time tracking policy
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{host}}/api/v1/users/:id/time-tracking-policy
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: df26424f-1742-4411-b35d-4de3d980ac07
+}
+
+body:json {
+  {
+    "timeTrackingMode": "MANUAL",
+    "autoBreakEnabled": true
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

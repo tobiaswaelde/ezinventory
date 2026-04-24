@@ -1,5 +1,13 @@
 {
   "js/ts.suggest.autoImports": true,
   "js/ts.preferences.includePackageJsonAutoImports": "auto",
-  "js/ts.preferences.importModuleSpecifier": "non-relative"
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.inlineSuggest.enabled": true,
+  "js/ts.suggest.completeFunctionCalls": true
 }

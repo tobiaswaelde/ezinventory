@@ -3,6 +3,11 @@
  */
 export enum ApiTag {
   Health = 'health',
+  Auth = 'auth',
+  AuthPassword = 'auth/password',
+  AuthMfa = 'auth/mfa',
+  Users = 'users',
+  UsersMe = 'users/me',
 }
 
 /**

@@ -33,6 +33,7 @@ export const ENV = cleanEnv(process.env, {
     desc: 'JWT expiration time. expressed in seconds or a string describing a time span zeit/ms. Eg: 60, "2 days", "10h", "7d"',
   }),
   AUTH_BCRYPT_ROUNDS: num({ default: 12 }),
+  AUTH_RP_NAME: str({ devDefault: 'EZ Inventory', desc: 'Human readable title for the App' }),
   //#endregion
   //#region init
   INIT_ADMIN_EMAIL: str({ desc: 'Initial admin user email' }),

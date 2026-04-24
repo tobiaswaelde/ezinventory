@@ -1,0 +1,29 @@
+meta {
+  name: update profile
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/users/me/profile
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "firstname": "Admin",
+    "address":{
+      "street": "Mustertraße 123",
+      "city": "Musterstadt",
+      "zip": "12345",
+      "countryCode": "DE",
+      "stateCode": "SL"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

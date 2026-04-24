@@ -1,0 +1,13 @@
+model WarehouseUser {
+  // fields
+  role WarehouseUserRole @default(MEMBER)
+
+  // relations
+  warehouseId String    @db.Uuid
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  userId      String    @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([warehouseId, userId])
+  @@map("warehouses-users")
+}

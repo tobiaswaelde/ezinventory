@@ -1,0 +1,5 @@
+enum WarehouseUserRole {
+  ADMIN
+  MANAGER
+  MEMBER
+}

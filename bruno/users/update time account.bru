@@ -1,0 +1,27 @@
+meta {
+  name: update time account
+  type: http
+  seq: 12
+}
+
+patch {
+  url: {{host}}/api/v1/users/:id/time-account
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: df26424f-1742-4411-b35d-4de3d980ac07
+}
+
+body:json {
+  {
+    "weeklyTargetSeconds": 144000,
+    "dailyTargetSeconds": 28800
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

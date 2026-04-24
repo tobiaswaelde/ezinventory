@@ -1,0 +1,27 @@
+meta {
+  name: find-by-id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{host}}/api/v1/users/find-by-id/:id?include[profile]=true&include[preferences]=true&include[timeTrackingPolicy]=true&include[timeAccount]=true
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include[profile]: true
+  include[preferences]: true
+  include[timeTrackingPolicy]: true
+  include[timeAccount]: true
+}
+
+params:path {
+  id: df26424f-1742-4411-b35d-4de3d980ac07
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,26 @@
+meta {
+  name: update profile
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{host}}/api/v1/users/:id/profile
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1d278d52-da73-43a9-89a8-d3b6fe9b86d0
+}
+
+body:json {
+  {
+    "bio": "bio"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

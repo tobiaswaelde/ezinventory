@@ -1,0 +1,128 @@
+meta {
+  name: users
+  type: graphql
+  seq: 3
+}
+
+post {
+  url: {{host}}/graphql
+  body: graphql
+  auth: inherit
+}
+
+body:graphql {
+  {
+    users(_count: "{ \"select\": { \"logins\": true } }") {
+      items {
+        id
+        createdAt
+        updatedAt
+        email
+        emailVerified
+        isMfaEnabled
+        mfaSecret
+        passwordChangedAt
+        profile {
+          id
+          createdAt
+          updatedAt
+          firstname
+          lastname
+          phone
+          birthday
+          bio
+          jobTitle
+          department
+          avatarUrl
+          address {
+            street
+            apartment
+            city
+            zip
+            countryCode
+            stateCode
+            regionCode
+          }
+        }
+        preferences {
+          id
+          language
+          timezone
+        }
+        timeTrackingPolicy {
+          id
+          createdAt
+          updatedAt
+          timeTrackingMode
+          autoBreakEnabled
+        }
+        timeAccount {
+          id
+          createdAt
+          updatedAt
+          weeklyTargetSeconds
+          overtimeBalanceSeconds
+        }
+        overtimeAdjustments {
+          id
+          createdAt
+          seconds
+          comment
+        }
+        vacationAdjustments {
+          id
+          createdAt
+          seconds
+          comment
+        }
+        createdOvertimeAdjustments {
+          id
+          createdAt
+          seconds
+          comment
+          user {
+            id
+          }
+        }
+        createdVacationAdjustments {
+          id
+          createdAt
+          seconds
+          comment
+          user {
+            id
+          }
+        }
+        _count {
+          logins
+          passkeys
+          roles
+          passwordResetTokens
+          teams
+          timeEntries
+          workdays
+          overtimeAdjustments
+          vacationAdjustments
+          absences
+          absenceStatusChanges
+          createdOvertimeAdjustments
+          createdVacationAdjustments
+        }
+      }
+      meta {
+        page
+        perPage
+        pageCount
+        itemCount
+        hasPrevPage
+        hasNextPage
+      }
+    }
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
