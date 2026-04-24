@@ -7,7 +7,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 export const ENV = cleanEnv(process.env, {
   //#region app
-  NODE_ENV: str({ choices: ['development', 'production', 'test'], default: 'development' }),
+  NODE_ENV: str({ choices: ['development', 'production', 'test'] }),
   PORT: num({ default: 3001 }),
   CORS_ORIGIN: str({ devDefault: '*', desc: 'The allowed CORS origin' }),
   API_BASE_URL: str({ devDefault: 'http://localhost:3001' }),

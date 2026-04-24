@@ -1,0 +1,16 @@
+model UserPreferences {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // fields
+  language String @default("en-US") @db.VarChar(10)
+  timezone String @default("UTC") @db.VarChar(30)
+
+  // relations
+  userId String @unique @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_preferences")
+}

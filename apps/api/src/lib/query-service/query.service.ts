@@ -1,9 +1,9 @@
-import { RoleAction, RoleSubject } from '@/generated/prisma/client';
+// import { RoleAction, RoleSubject } from '@/generated/prisma/client';
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from '@/generated/prisma/internal/prismaNamespace';
-import { accessibleBy } from '@casl/prisma';
+// import { accessibleBy } from '@casl/prisma';
 import {
   BadRequestException,
   HttpException,
@@ -11,7 +11,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { AppAbility } from '~/casl/ability.factory';
+// import { AppAbility } from '~/casl/ability.factory';
 import {
   BaseDelegate,
   BaseDelegateTypeMap,
@@ -32,7 +32,7 @@ export class QueryService<
 > {
   constructor(
     protected table: Table,
-    protected readonly subject: RoleSubject,
+    // protected readonly subject: RoleSubject,
   ) {}
 
   async findOne<T = DelegateType>(options: Options['findOne']): Promise<T | null> {
@@ -76,15 +76,15 @@ export class QueryService<
   async findById<T = DelegateType>(
     id: string,
     options: Options['findById'] = {},
-    ability?: AppAbility,
+    // ability?: AppAbility,
   ): Promise<T | undefined> {
     let mergedWhere: any = { id: id };
-    if (ability) {
-      const where = accessibleBy(ability, RoleAction.READ)[this.subject];
-      mergedWhere = {
-        AND: [where, mergedWhere],
-      };
-    }
+    // if (ability) {
+    //   const where = accessibleBy(ability, RoleAction.READ)[this.subject];
+    //   mergedWhere = {
+    //     AND: [where, mergedWhere],
+    //   };
+    // }
 
     const args: Parameters<DelegateType['findFirst']>[0] = {
       where: mergedWhere,
@@ -150,7 +150,7 @@ export class QueryService<
 
   async query<T = DelegateType>(
     options: Options['query'],
-    ability?: AppAbility,
+    // ability?: AppAbility,
   ): Promise<{ pageMeta: PageMetaDTO; items: T[] }> {
     const { page, perPage, ...findOptions } = options;
     const skip = (page - 1) * perPage;
