@@ -1,0 +1,16 @@
+meta {
+  name: status
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/api/health
+  body: none
+  auth: none
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

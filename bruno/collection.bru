@@ -22,7 +22,7 @@ script:pre-request {
     
     const res = await bru.runRequest('auth/signin');
     if(res.status !== 200){
-      throw new Error('Authentication failed. Check credentials.');
+      console.log('Authentication failed. Check credentials.');
     }
   }
 }
