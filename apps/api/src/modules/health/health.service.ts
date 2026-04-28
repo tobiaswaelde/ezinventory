@@ -13,7 +13,6 @@ export class HealthService {
 
   public getHealthStatus(): HealthStatusDto {
     const pjson = this.packageJsonService.getPackageJson();
-    console.log(pjson);
 
     return new HealthStatusDto({
       name: pjson.name,
