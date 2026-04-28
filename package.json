@@ -29,7 +29,12 @@
     "productivity-tool inventory-tracking"
   ],
   "scripts": {
-    "dev": ""
+    "dev": "pnpm -r --parallel dev",
+    "nx": "nx",
+    "build": "nx run-many -t build --all",
+    "lint": "nx run-many -t lint:check --all",
+    "test": "nx run-many -t test --all",
+    "graph": "nx graph"
   },
   "license": "MIT",
   "packageManager": "pnpm@10.33.2"
