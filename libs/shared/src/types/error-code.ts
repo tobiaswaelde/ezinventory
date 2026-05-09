@@ -36,4 +36,8 @@ export enum ErrorCode {
 	UserConflictSameEmail = 'user/conflict-same-email',
 	UserCreateBranchArchived = 'user/create-branch-archived',
 	//#endregion
+	//#region warehouses
+	WarehouseNotFound = 'warehouses/not-found',
+	WarehouseConflictSameName = 'warehouses/conflict-same-name',
+	//#endregion
 }

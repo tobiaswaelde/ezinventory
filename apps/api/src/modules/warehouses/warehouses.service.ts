@@ -1,5 +1,6 @@
 import { WarehouseDelegate } from '@/generated/prisma/models';
-import { Injectable } from '@nestjs/common';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { QueryService } from '~/lib/query-service/query.service';
 import { WarehouseTypeMap } from '~/modules/warehouses/types';
 import { PrismaService } from '~/prisma/prisma.service';
@@ -22,7 +23,10 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
       });
 
       if (existingWarehouse) {
-        throw new Error(`A warehouse with the name "${data.name}" already exists.`);
+        throw new ConflictException(
+          ErrorCode.WarehouseConflictSameName,
+          `A warehouse with the name "${data.name}" already exists.`,
+        );
       }
 
       // create the new warehouse
