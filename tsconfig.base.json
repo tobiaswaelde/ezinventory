@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "ignoreDeprecations": "6.0"
+  }
+}
