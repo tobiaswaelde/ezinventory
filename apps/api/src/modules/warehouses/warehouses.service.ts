@@ -15,13 +15,18 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
     super(db.warehouse);
   }
 
+  /**
+   * Create a new warehouse.
+   * @param {CreateWarehouseDTO} data The data for the new warehouse
+   * @returns {WarehousePayload} The created warehouse
+   * @throws {ConflictException} ErrorCode.WarehouseConflictSameName
+   */
   public async create(data: CreateWarehouseDTO): Promise<WarehousePayload> {
     return this.db.$transaction(async (tx) => {
       // check if a warehouse with the same name already exists
       const existingWarehouse = await tx.warehouse.findUnique({
         where: { name: data.name },
       });
-
       if (existingWarehouse) {
         throw new ConflictException(
           ErrorCode.WarehouseConflictSameName,
