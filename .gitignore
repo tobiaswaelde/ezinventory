@@ -3,6 +3,10 @@ node_modules
 .nuxt
 .output
 dist
+libs/shared/src/**/*.js
+libs/shared/src/**/*.js.map
+libs/shared/src/**/*.d.ts
+libs/shared/src/**/*.d.ts.map
 coverage
 playwright-report
 test-results

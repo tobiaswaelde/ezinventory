@@ -11,7 +11,7 @@
     "build": "nest build --webpack",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "nest start --watch --entryFile apps/api/src/main",
     "start:debug": "nest start --debug --watch",
     "prestart:prod": "pnpm prisma migrate deploy",
     "start:prod": "node dist/main.js",
