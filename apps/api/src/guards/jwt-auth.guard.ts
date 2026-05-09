@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { jwtVerifyOptions } from '~/config/jwt';
 import { PrismaService } from '~/prisma/prisma.service';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 /**
  * Auth guard to verify JWT token.

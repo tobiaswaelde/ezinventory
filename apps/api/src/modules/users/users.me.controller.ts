@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   Body,
   Controller,
@@ -22,7 +23,6 @@ import { UserPreferencesService } from '~/modules/users/user-preferences/user-pr
 import { UserProfileService } from '~/modules/users/user-profile/user-profile.service';
 import { UsersService } from '~/modules/users/users.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '~/types/error-code';
 import { UpdateUserPreferencesDTO } from '~/types/modules/user-preferences/update-user-preferences.dto';
 import { UserPreferencesDTO } from '~/types/modules/user-preferences/user-preferences.dto';
 import { UpdateUserProfileDTO } from '~/types/modules/user-profile/update-user-profile.dto';

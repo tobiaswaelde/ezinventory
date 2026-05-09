@@ -21,7 +21,7 @@ import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.de
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { MfaEnableDTO } from '~/types/modules/auth/mfa/mfa-enable.dto';
 import { MfaSetupDTO } from '~/types/modules/auth/mfa/mfa-setup.dto';
 import { MfaVerifyDTO } from '~/types/modules/auth/mfa/mfa-verify.dto';

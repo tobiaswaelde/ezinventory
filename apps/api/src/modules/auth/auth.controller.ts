@@ -19,7 +19,7 @@ import { LocalAuthGuard } from '~/guards/local-auth.guard';
 import { AuthService } from '~/modules/auth/auth.service';
 import { UsersService } from '~/modules/users/users.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { AuthResultDTO } from '~/types/modules/auth/auth-result.dto';
 import { SigninDTO } from '~/types/modules/auth/signin.dto';
 import { UserPayload } from '~/types/modules/user';

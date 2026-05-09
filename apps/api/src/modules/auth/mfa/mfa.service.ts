@@ -10,7 +10,7 @@ import * as otplib from 'otplib';
 import * as qrcode from 'qrcode';
 import { ENV } from '~/config/env';
 import { PrismaService } from '~/prisma/prisma.service';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { MfaEnableDTO } from '~/types/modules/auth/mfa/mfa-enable.dto';
 import { MfaVerifyDTO } from '~/types/modules/auth/mfa/mfa-verify.dto';
 import { UserPayload } from '~/types/modules/user';

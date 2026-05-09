@@ -5,7 +5,7 @@ import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.de
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PasswordService } from '~/modules/auth/password/password.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { UpdatePasswordDTO } from '~/types/modules/auth/password/update-password.dto';
 import { UserDTO } from '~/types/modules/user/user.dto';
 

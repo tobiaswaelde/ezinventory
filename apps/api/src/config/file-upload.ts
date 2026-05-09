@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 const AVATAR_FILE_SIZE_LIMIT = 2 * 1024 * 1024; // 2MB
 const TEMP_FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB

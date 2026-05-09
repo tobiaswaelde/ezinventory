@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   Body,
   Controller,
@@ -34,7 +35,6 @@ import { UserTypeMap } from '~/modules/users/types';
 import { UserPreferencesService } from '~/modules/users/user-preferences/user-preferences.service';
 import { UserProfileService } from '~/modules/users/user-profile/user-profile.service';
 import { UsersService } from '~/modules/users/users.service';
-import { ErrorCode } from '~/types/error-code';
 import { UserPayload } from '~/types/modules/user';
 import { UpdateUserPreferencesDTO } from '~/types/modules/user-preferences/update-user-preferences.dto';
 import { UserPreferencesDTO } from '~/types/modules/user-preferences/user-preferences.dto';
@@ -104,9 +104,7 @@ export class UsersController {
   @ApiErrorResponses({
     unauthorizedCodes: [ErrorCode.Unauthorized],
     forbiddenCodes: [ErrorCode.InsufficientPermissions],
-    notFoundCodes: [ErrorCode.BranchNotFound],
     conflictCodes: [ErrorCode.UserConflictSameEmail],
-    internalServerErrorCodes: [ErrorCode.EmailFailedToSend],
   })
   async createUser(@Body() data: CreateUserDTO) {
     const user = await this.usersService.create(data);
@@ -121,7 +119,7 @@ export class UsersController {
     unauthorizedCodes: [ErrorCode.Unauthorized],
     forbiddenCodes: [ErrorCode.InsufficientPermissions],
     badRequestCodes: [ErrorCode.UserArchived],
-    notFoundCodes: [ErrorCode.UserNotFound, ErrorCode.BranchNotFound],
+    notFoundCodes: [ErrorCode.UserNotFound],
   })
   async updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() data: UpdateUserDTO) {
     const user = await this.usersService.update(id, data);

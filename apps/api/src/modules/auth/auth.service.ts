@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
 import { PrismaService } from '~/prisma/prisma.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { AuthResultDTO } from '~/types/modules/auth/auth-result.dto';
 import { SigninDTO } from '~/types/modules/auth/signin.dto';
 import { UserPayload } from '~/types/modules/user';

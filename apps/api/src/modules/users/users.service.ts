@@ -11,8 +11,8 @@ import { QueryService } from '~/lib/query-service/query.service';
 import { UserTypeMap } from '~/modules/users/types';
 import { PrismaService } from '~/prisma/prisma.service';
 
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { S3Service } from '~/services/s3.service';
-import { ErrorCode } from '~/types/error-code';
 import { UserPayload } from '~/types/modules/user';
 import { CreateUserDTO } from '~/types/modules/user/create-user.dto';
 import { UpdateUserDTO } from '~/types/modules/user/update-user.dto';

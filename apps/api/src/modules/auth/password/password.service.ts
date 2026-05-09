@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@n
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
 import { PrismaService } from '~/prisma/prisma.service';
 
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { UpdatePasswordDTO } from '~/types/modules/auth/password/update-password.dto';
 import { UserPayload } from '~/types/modules/user';
 import { CryptoUtil } from '~/util/crypto';

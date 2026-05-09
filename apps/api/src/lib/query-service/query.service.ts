@@ -19,7 +19,7 @@ import {
   QueryOptionsMap,
 } from '~/lib/query-service/types';
 import { serializeDecimalValues } from '~/lib/query-service/util';
-import { ErrorCode } from '~/types/error-code';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { PageMetaDTO } from '~/types/pagination/page-meta.dto';
 import { ObjectUtil } from '~/util/object';
 
