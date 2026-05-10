@@ -4,10 +4,11 @@ import { Optional } from '@prisma/client/runtime/client';
 export type WarehousePayload = Optional<
   WarehouseGetPayload<{
     include: {
+      address: true;
       members: true;
     };
   }>,
-  'members'
+  'address' | 'members'
 >;
 
 export type UserOnWarehousePayload = Optional<

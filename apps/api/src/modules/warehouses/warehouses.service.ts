@@ -2,6 +2,7 @@ import { WarehouseUserRole } from '@/generated/prisma/enums';
 import { WarehouseDelegate } from '@/generated/prisma/models';
 import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -11,6 +12,7 @@ import { QueryService } from '~/lib/query-service/query.service';
 import { WarehouseTypeMap } from '~/modules/warehouses/types';
 import { PrismaService } from '~/prisma/prisma.service';
 import { CaslSubject } from '~/types/casl/subject';
+import { CreateAddressDTO } from '~/types/modules/address/create-address.dto';
 import { WarehousePayload } from '~/types/modules/warehouses';
 import { CreateWarehouseDTO } from '~/types/modules/warehouses/create-warehouse.dto';
 import { UpdateWarehouseDTO } from '~/types/modules/warehouses/update-warehouse.dto';
@@ -21,6 +23,12 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
 
   constructor(protected readonly db: PrismaService) {
     super(db.warehouse, CaslSubject.Warehouse);
+  }
+
+  private isCreateAddressDTO(data: unknown): data is CreateAddressDTO {
+    if (!data || typeof data !== 'object') return false;
+    const address = data as Partial<CreateAddressDTO>;
+    return Boolean(address.street && address.city && address.zip && address.countryCode);
   }
 
   /**
@@ -40,13 +48,13 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
         throw new ConflictException(ErrorCode.WarehouseConflictSameName);
       }
 
+      const { address, ...warehouseData } = data;
+
       // create the new warehouse
       const warehouse = await tx.warehouse.create({
         data: {
-          name: data.name,
-          description: data.description,
-          color: data.color,
-          icon: data.icon,
+          ...warehouseData,
+          address: address ? { create: address } : undefined,
           members: {
             create: {
               userId,
@@ -54,7 +62,7 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
             },
           },
         },
-        include: { members: true },
+        include: { members: true, address: true },
       });
 
       return warehouse;
@@ -82,7 +90,7 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
       // find warehouse by ID
       const warehouse = await tx.warehouse.findUnique({
         where: { id },
-        include: { members: { where: { userId } } },
+        include: { members: { where: { userId } }, address: true },
       });
       // check if warehouse exists
       if (!warehouse) {
@@ -115,13 +123,55 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
         }
       }
 
+      const { address, ...warehouseData } = data ?? {};
+
+      // remove address relation and delete address entity
+      if (address === null && warehouse.addressId) {
+        await tx.warehouse.update({
+          where: { id },
+          data: { address: { disconnect: true } },
+        });
+        await tx.address.deleteMany({
+          where: {
+            id: warehouse.addressId,
+            warehouses: { none: {} },
+          },
+        });
+      }
+
+      // update existing or create/connect new address
+      if (address !== undefined && address !== null) {
+        if (warehouse.addressId) {
+          await tx.address.update({
+            where: { id: warehouse.addressId },
+            data: address,
+          });
+        } else {
+          if (!this.isCreateAddressDTO(address)) {
+            throw new BadRequestException(
+              'A full address is required when adding an address to a warehouse without one.',
+            );
+          }
+
+          const createdAddress = await tx.address.create({ data: address });
+          await tx.warehouse.update({
+            where: { id },
+            data: {
+              address: {
+                connect: { id: createdAddress.id },
+              },
+            },
+          });
+        }
+      }
+
       // update the warehouse
       return tx.warehouse.update({
         where: { id },
         data: {
-          ...data,
+          ...warehouseData,
         },
-        include: { members: { include: { user: true } } },
+        include: { members: { include: { user: true } }, address: true },
       });
     });
   }
@@ -141,7 +191,7 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
       // find warehouse by ID
       const warehouse = await tx.warehouse.findUnique({
         where: { id },
-        include: { members: { where: { userId } } },
+        include: { members: { where: { userId } }, address: true },
       });
       // check if warehouse exists
       if (!warehouse) {
@@ -158,10 +208,22 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
       }
 
       // delete the warehouse
-      return tx.warehouse.delete({
+      const deletedWarehouse = await tx.warehouse.delete({
         where: { id },
-        include: { members: true },
+        include: { members: true, address: true },
       });
+
+      // remove orphaned address entity
+      if (warehouse.addressId) {
+        await tx.address.deleteMany({
+          where: {
+            id: warehouse.addressId,
+            warehouses: { none: {} },
+          },
+        });
+      }
+
+      return deletedWarehouse;
     });
   }
 }

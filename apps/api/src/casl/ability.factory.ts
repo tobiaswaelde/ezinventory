@@ -28,7 +28,14 @@ export class CaslAbilityFactory {
       ]);
       can([CaslAction.Update], CaslSubject.User);
       can([CaslAction.Delete], CaslSubject.User);
+
+      can(CaslAction.Create, CaslSubject.Warehouse);
+      can(CaslAction.Read, CaslSubject.Warehouse, 'all');
+      can(CaslAction.Update, CaslSubject.Warehouse);
+      can(CaslAction.Delete, CaslSubject.Warehouse);
     }
+
+    can(CaslAction.Read, CaslSubject.Address);
 
     can(CaslAction.Read, CaslSubject.User, 'all', { id: user.id });
     can(CaslAction.Read, CaslSubject.User, ['id', 'profile']);
