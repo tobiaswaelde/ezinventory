@@ -10,7 +10,9 @@ model Warehouse {
   icon        String? @db.VarChar(100)
 
   // relations
-  members WarehouseUser[] @relation()
+  addressId String?         @db.Uuid
+  address   Address?        @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  members   WarehouseUser[] @relation()
 
   @@map("warehouses")
 }
