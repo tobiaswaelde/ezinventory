@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/warehouses
+  url: {{host}}/api/v1/warehouses?include[members][include][user]=true
   body: none
   auth: inherit
+}
+
+params:query {
+  include[members][include][user]: true
 }
 
 settings {
