@@ -51,10 +51,10 @@ export class WarehousesController {
     unauthorizedCodes: [ErrorCode.Unauthorized],
     forbiddenCodes: [ErrorCode.InsufficientPermissions],
   })
-  async queryWarehouses(@Query() query: QueryDTO<WarehouseTypeMap>) {
+  async queryWarehouses(@Req() req: AuthRequest, @Query() query: QueryDTO<WarehouseTypeMap>) {
     const { items, pageMeta } = await this.warehousesService.query<WarehousePayload>({ ...query });
     return new PaginatedDTO(
-      await Promise.all(items.map((x) => WarehouseDTO.fromModel(x))),
+      await Promise.all(items.map((x) => WarehouseDTO.fromModel(x, req.ability))),
       pageMeta,
     );
   }
@@ -70,10 +70,11 @@ export class WarehousesController {
   })
   async findById(
     @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: AuthRequest,
     @Query() query: FindByIdDTO<WarehouseTypeMap>,
   ) {
     const item = await this.warehousesService.findById<WarehousePayload>(id, query);
-    return WarehouseDTO.fromModel(item);
+    return WarehouseDTO.fromModel(item, req.ability);
   }
 
   @Post('/')
@@ -86,7 +87,7 @@ export class WarehousesController {
   })
   async createWarehouse(@Req() req: AuthRequest, @Body() data: CreateWarehouseDTO) {
     const warehouse = await this.warehousesService.create(req.user.id, data);
-    return WarehouseDTO.fromModel(warehouse);
+    return WarehouseDTO.fromModel(warehouse, req.ability);
   }
 
   @Patch('/:id')
@@ -104,7 +105,7 @@ export class WarehousesController {
     @Body() data: UpdateWarehouseDTO,
   ) {
     const warehouse = await this.warehousesService.update(req.user.id, id, data);
-    return WarehouseDTO.fromModel(warehouse);
+    return WarehouseDTO.fromModel(warehouse, req.ability);
   }
 
   @Delete('/:id')
@@ -118,6 +119,6 @@ export class WarehousesController {
   })
   async deleteWarehouse(@Param('id', ParseUUIDPipe) id: string, @Req() req: AuthRequest) {
     const warehouse = await this.warehousesService.delete(req.user.id, id);
-    return WarehouseDTO.fromModel(warehouse);
+    return WarehouseDTO.fromModel(warehouse, req.ability);
   }
 }

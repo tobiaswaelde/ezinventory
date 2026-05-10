@@ -10,6 +10,7 @@ import {
 import { QueryService } from '~/lib/query-service/query.service';
 import { WarehouseTypeMap } from '~/modules/warehouses/types';
 import { PrismaService } from '~/prisma/prisma.service';
+import { CaslSubject } from '~/types/casl/subject';
 import { WarehousePayload } from '~/types/modules/warehouses';
 import { CreateWarehouseDTO } from '~/types/modules/warehouses/create-warehouse.dto';
 import { UpdateWarehouseDTO } from '~/types/modules/warehouses/update-warehouse.dto';
@@ -19,7 +20,7 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
   public static readonly token = 'WAREHOUSES_SERVICE';
 
   constructor(protected readonly db: PrismaService) {
-    super(db.warehouse);
+    super(db.warehouse, CaslSubject.Warehouse);
   }
 
   /**

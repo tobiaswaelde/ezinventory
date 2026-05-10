@@ -13,6 +13,7 @@ import { PrismaService } from '~/prisma/prisma.service';
 
 import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { S3Service } from '~/services/s3.service';
+import { CaslSubject } from '~/types/casl/subject';
 import { UserPayload } from '~/types/modules/user';
 import { CreateUserDTO } from '~/types/modules/user/create-user.dto';
 import { UpdateUserDTO } from '~/types/modules/user/update-user.dto';
@@ -23,7 +24,7 @@ export class UsersService extends QueryService<UserDelegate, UserTypeMap> {
   public static readonly token = 'USERS_SERVICE';
 
   constructor(protected readonly db: PrismaService) {
-    super(db.user);
+    super(db.user, CaslSubject.User);
   }
 
   //#region CRUD
@@ -78,7 +79,6 @@ export class UsersService extends QueryService<UserDelegate, UserTypeMap> {
         include: {
           profile: true,
           preferences: true,
-          branch: { include: { address: true, preferences: true } },
         },
       });
     });

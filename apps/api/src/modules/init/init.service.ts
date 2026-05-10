@@ -1,3 +1,4 @@
+import { UserRole } from '@/generated/prisma/enums';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ENV } from '~/config/env';
 import { PrismaService } from '~/prisma/prisma.service';
@@ -33,6 +34,7 @@ export class InitService implements OnModuleInit {
       await tx.user.upsert({
         where: { email: ENV.INIT_ADMIN_EMAIL },
         create: {
+          role: UserRole.ADMIN,
           email: ENV.INIT_ADMIN_EMAIL,
           password: password,
           profile: {

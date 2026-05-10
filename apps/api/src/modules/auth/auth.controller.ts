@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   Body,
   Controller,
@@ -19,7 +20,6 @@ import { LocalAuthGuard } from '~/guards/local-auth.guard';
 import { AuthService } from '~/modules/auth/auth.service';
 import { UsersService } from '~/modules/users/users.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { AuthResultDTO } from '~/types/modules/auth/auth-result.dto';
 import { SigninDTO } from '~/types/modules/auth/signin.dto';
 import { UserPayload } from '~/types/modules/user';
@@ -46,7 +46,8 @@ export class AuthController {
         preferences: true,
       },
     });
-    return instanceToPlain(UserDTO.fromModel(user));
+    const dto = await UserDTO.fromModel(user, req.ability);
+    return instanceToPlain(dto);
   }
 
   @Throttle({ default: { ttl: 60000, limit: 5 } })

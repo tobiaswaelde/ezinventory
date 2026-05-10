@@ -5,7 +5,10 @@ import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-creat
 import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
 import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { S3Service } from '~/services/s3.service';
+import { AppAbility } from '~/types/casl';
+import { CaslSubject } from '~/types/casl/subject';
 import { UserProfilePayload } from '~/types/modules/user-profile';
+import { CaslUtil } from '~/util/casl';
 
 export class UserProfileDTO {
   @Expose()
@@ -39,15 +42,17 @@ export class UserProfileDTO {
     Object.assign(this, partial);
   }
 
-  public static async fromModel(model?: Partial<UserProfilePayload>): Promise<UserProfileDTO> {
+  public static async fromModel(
+    model: Partial<UserProfilePayload> | undefined,
+    ability: AppAbility,
+  ): Promise<UserProfileDTO> {
     if (!model) return null;
 
     const dto = new UserProfileDTO({
       ...model,
-
       avatarUrl: await S3Service.getFileUrl(S3Bucket.Avatars, model.avatarId),
     });
 
-    return dto;
+    return CaslUtil.filterKeys(dto, CaslSubject.UserProfile, ability);
   }
 }

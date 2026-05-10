@@ -51,7 +51,7 @@ export class UsersMeController {
   })
   async getUserPreferences(@Req() req: AuthRequest) {
     const item = await this.userPreferencesService.getPreferences(req.user.id);
-    return UserPreferencesDTO.fromModel(item);
+    return UserPreferencesDTO.fromModel(item, req.ability);
   }
 
   @Patch('/preferences')
@@ -62,7 +62,7 @@ export class UsersMeController {
   })
   async updateUserPreferences(@Req() req: AuthRequest, @Body() data: UpdateUserPreferencesDTO) {
     const item = await this.userPreferencesService.updatePreferences(req.user.id, data);
-    return UserPreferencesDTO.fromModel(item);
+    return UserPreferencesDTO.fromModel(item, req.ability);
   }
   //#endregion
   //#region profile
@@ -74,7 +74,7 @@ export class UsersMeController {
   })
   async getUserProfile(@Req() req: AuthRequest) {
     const item = await this.userProfileService.getProfile(req.user.id);
-    return UserProfileDTO.fromModel(item);
+    return UserProfileDTO.fromModel(item, req.ability);
   }
 
   @Patch('/profile')
@@ -85,7 +85,7 @@ export class UsersMeController {
   })
   async updateUserProfile(@Req() req: AuthRequest, @Body() data: UpdateUserProfileDTO) {
     const item = await this.userProfileService.updateProfile(req.user.id, data);
-    return UserProfileDTO.fromModel(item);
+    return UserProfileDTO.fromModel(item, req.ability);
   }
   //#endregion
   //#region avatar
@@ -104,7 +104,7 @@ export class UsersMeController {
   })
   async uploadAvatar(@Req() req: AuthRequest, @UploadedFile('file') file: Express.Multer.File) {
     const item = await this.usersService.updateAvatar(req.user.id, file);
-    return UserDTO.fromModel(item);
+    return UserDTO.fromModel(item, req.ability);
   }
 
   @Delete('/avatar')
@@ -115,7 +115,7 @@ export class UsersMeController {
   })
   async deleteAvatar(@Req() req: AuthRequest) {
     const item = await this.usersService.deleteAvatar(req.user.id);
-    return UserDTO.fromModel(item);
+    return UserDTO.fromModel(item, req.ability);
   }
   //#endregion
 }

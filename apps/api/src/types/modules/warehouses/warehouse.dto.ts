@@ -3,6 +3,7 @@ import { Expose } from 'class-transformer';
 import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
 import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
 import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
+import { AppAbility } from '~/types/casl';
 import { WarehousePayload } from '~/types/modules/warehouses';
 import { WarehouseUserDTO } from '~/types/modules/warehouses/warehouse-user.dto';
 
@@ -43,12 +44,17 @@ export class WarehouseDTO {
     Object.assign(this, partial);
   }
 
-  public static async fromModel(model?: Partial<WarehousePayload>): Promise<WarehouseDTO> {
+  public static async fromModel(
+    model: Partial<WarehousePayload> | undefined,
+    ability: AppAbility,
+  ): Promise<WarehouseDTO> {
     if (!model) return null;
 
     return new WarehouseDTO({
       ...model,
-      members: await Promise.all((model.members ?? []).map(WarehouseUserDTO.fromModel)),
+      members: await Promise.all(
+        (model.members ?? []).map((member) => WarehouseUserDTO.fromModel(member, ability)),
+      ),
     });
   }
 }

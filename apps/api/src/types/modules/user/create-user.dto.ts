@@ -1,6 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { UserRole } from '@/generated/prisma/enums';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsNotEmptyObject, IsString, ValidateNested } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { CreateUserPreferencesDTO } from '~/types/modules/user-preferences/create-user-preferences.dto';
 import { CreateUserProfileDTO } from '~/types/modules/user-profile/create-user-profile.dto';
 
@@ -15,6 +24,11 @@ export class CreateUserDTO {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiPropertyOptional({ enum: UserRole })
+  @IsEnum(UserRole)
+  @IsOptional()
+  role?: UserRole;
 
   @ApiProperty({ type: () => CreateUserProfileDTO })
   @ValidateNested()

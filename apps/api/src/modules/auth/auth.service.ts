@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   BadRequestException,
   ForbiddenException,
@@ -6,10 +7,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { CaslAbilityFactory } from '~/casl/ability.factory';
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
 import { PrismaService } from '~/prisma/prisma.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
+import { AppAbility } from '~/types/casl';
 import { AuthResultDTO } from '~/types/modules/auth/auth-result.dto';
 import { SigninDTO } from '~/types/modules/auth/signin.dto';
 import { UserPayload } from '~/types/modules/user';
@@ -24,6 +26,7 @@ export class AuthService {
     private readonly db: PrismaService,
     private readonly jwtService: JwtService,
     @Inject(MfaService.token) private readonly mfaService: MfaService,
+    @Inject(CaslAbilityFactory.token) private readonly caslFactory: CaslAbilityFactory,
   ) {}
 
   /**
@@ -110,7 +113,9 @@ export class AuthService {
       }
     }
 
-    return this.signinUser(req.user);
+    const ability = await this.caslFactory.createForUser(req.user);
+
+    return this.signinUser(req.user, ability);
   }
 
   /**
@@ -118,11 +123,11 @@ export class AuthService {
    * @param {UserPayload} user The user payload
    * @returns {AuthResultDTO} The authentication result
    */
-  public async signinUser(user: UserPayload): Promise<AuthResultDTO> {
+  public async signinUser(user: UserPayload, ability: AppAbility): Promise<AuthResultDTO> {
     const token = await this.generateJwt(user);
 
     return new AuthResultDTO({
-      user: await UserDTO.fromModel(user),
+      user: await UserDTO.fromModel(user, ability),
       token: token,
       mfaPending: false,
     });

@@ -9,6 +9,7 @@ model User {
   passwordChangedAt DateTime? @db.Timestamp()
   isMfaEnabled      Boolean   @default(false) @db.Boolean
   mfaSecret         String?   @db.VarChar(512)
+  role              UserRole  @default(USER)
   websocketToken    String    @default("00000000") @db.VarChar(256)
 
   // relations

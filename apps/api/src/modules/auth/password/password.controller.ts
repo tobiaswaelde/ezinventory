@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiAuth, ApiTag } from '~/config/api';
@@ -5,7 +6,6 @@ import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.de
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PasswordService } from '~/modules/auth/password/password.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { UpdatePasswordDTO } from '~/types/modules/auth/password/update-password.dto';
 import { UserDTO } from '~/types/modules/user/user.dto';
 
@@ -30,6 +30,6 @@ export class PasswordController {
   })
   async updatePassword(@Req() req: AuthRequest, @Body() data: UpdatePasswordDTO) {
     const user = await this.passwordService.updatePassword(req.user.id, data);
-    return UserDTO.fromModel(user);
+    return UserDTO.fromModel(user, req.ability);
   }
 }
