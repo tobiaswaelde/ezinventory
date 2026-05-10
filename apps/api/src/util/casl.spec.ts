@@ -11,8 +11,8 @@ jest.mock('@casl/ability', () => ({
 
 jest.mock('@casl/prisma', () => ({
   accessibleBy: jest.fn((ability) => ({
-    users: { id: { gt: 0 } },
-    posts: { published: true },
+    [CaslSubject.User]: { id: { gt: 0 } },
+    [CaslSubject.Warehouse]: { name: { contains: 'Main' } },
   })),
 }));
 
@@ -21,8 +21,8 @@ describe('CaslUtil', () => {
     const obj = { id: 1, name: 'Alice', secret: 'top-secret' };
     const subj = CaslSubject.User;
 
-    it('returns the original object if ability is not provided', () => {
-      expect(CaslUtil.filterKeys(obj, subj)).toEqual(obj);
+    it('throws if ability is not provided', () => {
+      expect(() => CaslUtil.filterKeys(obj, subj)).toThrow('Internal Server Error');
     });
 
     it('returns the original object if all fields are readable', () => {
@@ -40,6 +40,7 @@ describe('CaslUtil', () => {
           if (key === 'all') return false; // cannot read all
           return key !== 'secret'; // can read everything except 'secret'
         }),
+        cannot: jest.fn((action, item, key) => key === 'secret'),
       };
 
       const filtered = CaslUtil.filterKeys({ ...obj }, subj, ability as any);
@@ -55,7 +56,7 @@ describe('CaslUtil', () => {
 
   describe('filterQuery', () => {
     const query = { where: { name: 'Alice' }, orderBy: { id: 'asc' }, page: 1, perPage: 10 };
-    const tableName = 'users';
+    const tableName = CaslSubject.User;
 
     it('returns original query if ability is not provided', () => {
       const result = CaslUtil.filterQuery(query, tableName);
