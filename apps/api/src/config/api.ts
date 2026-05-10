@@ -8,6 +8,7 @@ export enum ApiTag {
   AuthMfa = 'auth/mfa',
   Users = 'users',
   UsersMe = 'users/me',
+  Warehouses = 'warehouses',
 }
 
 /**

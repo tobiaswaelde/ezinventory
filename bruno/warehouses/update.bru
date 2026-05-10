@@ -1,0 +1,26 @@
+meta {
+  name: update
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{host}}/api/v1/warehouses/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 8f4e8159-7fda-4bfc-92fe-a8ff66e1f0ee
+}
+
+body:json {
+  {
+    "color": "red"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

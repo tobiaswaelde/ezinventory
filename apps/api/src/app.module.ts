@@ -3,9 +3,10 @@ import { AuthModule } from '~/modules/auth/auth.module';
 import { HealthModule } from '~/modules/health/health.module';
 import { InitModule } from '~/modules/init/init.module';
 import { UsersModule } from '~/modules/users/users.module';
+import { WarehousesModule } from '~/modules/warehouses/warehouses.module';
 import { PrismaModule } from '~/prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule, InitModule, HealthModule, AuthModule, UsersModule],
+  imports: [PrismaModule, InitModule, HealthModule, AuthModule, UsersModule, WarehousesModule],
 })
 export class AppModule {}

@@ -1,0 +1,24 @@
+meta {
+  name: find by ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/api/v1/warehouses/find-by-id/:id?include[members][include][user]=true
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include[members][include][user]: true
+}
+
+params:path {
+  id: f1a2fb75-46c3-438c-aec9-b236774620b0
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
