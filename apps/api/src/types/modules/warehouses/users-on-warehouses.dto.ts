@@ -1,12 +1,21 @@
 import { WarehouseUserRole } from '@/generated/prisma/enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
 import { AppAbility } from '~/types/casl';
 import { UserDTO } from '~/types/modules/user/user.dto';
-import { WarehouseUserPayload } from '~/types/modules/warehouses';
+import { UserOnWarehousePayload } from '~/types/modules/warehouses';
 import { WarehouseDTO } from '~/types/modules/warehouses/warehouse.dto';
 
-export class WarehouseUserDTO {
+export class UsersOnWarehousesDTO {
+  @Expose()
+  @ApiPropertyId()
+  warehouseId: string;
+
+  @Expose()
+  @ApiPropertyId()
+  userId: string;
+
   @Expose()
   @ApiProperty({ enum: WarehouseUserRole })
   role: WarehouseUserRole;
@@ -19,17 +28,17 @@ export class WarehouseUserDTO {
   @ApiPropertyOptional({ type: () => UserDTO })
   user?: UserDTO;
 
-  constructor(partial: Partial<WarehouseUserDTO>) {
+  constructor(partial: Partial<UsersOnWarehousesDTO>) {
     Object.assign(this, partial);
   }
 
   public static async fromModel(
-    model: Partial<WarehouseUserPayload> | undefined,
+    model: Partial<UserOnWarehousePayload> | undefined,
     ability: AppAbility,
-  ): Promise<WarehouseUserDTO> {
+  ): Promise<UsersOnWarehousesDTO> {
     if (!model) return null;
 
-    return new WarehouseUserDTO({
+    return new UsersOnWarehousesDTO({
       ...model,
       warehouse: await WarehouseDTO.fromModel(model.warehouse, ability),
       user: await UserDTO.fromModel(model.user, ability),

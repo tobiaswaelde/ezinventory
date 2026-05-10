@@ -21,14 +21,18 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ApiAuth, ApiTag } from '~/config/api';
+import { CheckPolicies } from '~/decorators/casl/check-policies.decorator';
 import { ApiParamId } from '~/decorators/params/api-param-id.decorator';
 import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
 import { ApiPaginatedResponse } from '~/decorators/responses/api-paginated-response.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
+import { PoliciesGuard } from '~/guards/policies.guard';
 import { FindByIdDTO, QueryDTO } from '~/lib/query-service/types';
 import { WarehouseTypeMap } from '~/modules/warehouses/types';
 import { WarehousesService } from '~/modules/warehouses/warehouses.service';
 import { AuthRequest } from '~/types/auth-request';
+import { CaslAction } from '~/types/casl/action';
+import { CaslSubject } from '~/types/casl/subject';
 import { WarehousePayload } from '~/types/modules/warehouses';
 import { CreateWarehouseDTO } from '~/types/modules/warehouses/create-warehouse.dto';
 import { UpdateWarehouseDTO } from '~/types/modules/warehouses/update-warehouse.dto';
@@ -38,13 +42,14 @@ import { PaginatedDTO } from '~/types/pagination/paginated.dto';
 @ApiTags(ApiTag.Warehouses)
 @ApiBearerAuth(ApiAuth.JWT)
 @Controller(ApiTag.Warehouses)
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PoliciesGuard)
 export class WarehousesController {
   constructor(
     @Inject(WarehousesService.token) private readonly warehousesService: WarehousesService,
   ) {}
 
   @Get('/')
+  @CheckPolicies((a) => a.can(CaslAction.Read, CaslSubject.Warehouse))
   @ApiOperation({ summary: 'Query warehouses' })
   @ApiPaginatedResponse({ description: 'Paginated warehouses', model: WarehouseDTO })
   @ApiErrorResponses({
@@ -60,6 +65,7 @@ export class WarehousesController {
   }
 
   @Get('/find-by-id/:id')
+  @CheckPolicies((a) => a.can(CaslAction.Read, CaslSubject.Warehouse))
   @ApiParamId({ description: 'The ID of the warehouse to retrieve.' })
   @ApiOperation({ summary: 'Find warehouse by ID' })
   @ApiOkResponse({ description: 'Warehouse', type: WarehouseDTO })
@@ -78,6 +84,7 @@ export class WarehousesController {
   }
 
   @Post('/')
+  @CheckPolicies((a) => a.can(CaslAction.Create, CaslSubject.Warehouse))
   @ApiOperation({ summary: 'Create new warehouse' })
   @ApiCreatedResponse({ description: 'Warehouse created successfully', type: WarehouseDTO })
   @ApiErrorResponses({
@@ -91,6 +98,7 @@ export class WarehousesController {
   }
 
   @Patch('/:id')
+  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.Warehouse))
   @ApiOperation({ summary: 'Update warehouse by ID' })
   @ApiOkResponse({ description: 'Updated warehouse', type: WarehouseDTO })
   @ApiErrorResponses({
@@ -109,6 +117,7 @@ export class WarehousesController {
   }
 
   @Delete('/:id')
+  @CheckPolicies((a) => a.can(CaslAction.Delete, CaslSubject.Warehouse))
   @ApiParamId({ description: 'The ID of the warehouse to delete.' })
   @ApiOperation({ summary: 'Delete warehouse by ID' })
   @ApiOkResponse({ description: 'Deleted warehouse', type: WarehouseDTO })

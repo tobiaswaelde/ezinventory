@@ -16,16 +16,30 @@ export class CaslAbilityFactory {
 
     if (user.role === UserRole.ADMIN) {
       can([CaslAction.Create], CaslSubject.User);
-      can([CaslAction.Read], CaslSubject.User);
+      can([CaslAction.Read], CaslSubject.User, [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'email',
+        'passwordChangedAt',
+        'isMfaEnabled',
+        'profile',
+        'preferences',
+      ]);
       can([CaslAction.Update], CaslSubject.User);
       can([CaslAction.Delete], CaslSubject.User);
     }
 
     can(CaslAction.Read, CaslSubject.User, 'all', { id: user.id });
+    can(CaslAction.Read, CaslSubject.User, ['id', 'profile']);
     can(CaslAction.Read, CaslSubject.UserProfile, 'all', { userId: user.id });
+    can(CaslAction.Read, CaslSubject.UserProfile, ['firstname', 'lastname', 'avatarUrl']);
     can(CaslAction.Read, CaslSubject.UserPreferences, 'all', { userId: user.id });
-    cannot(CaslAction.Read, CaslSubject.UserPreferences, 'userId');
     // can(CaslAction.Read, CaslSubject.UserProfile, ['']);
+
+    can(CaslAction.Read, CaslSubject.Warehouse, 'all', {
+      usersOnWarehouses: { some: { userId: user.id } },
+    });
 
     return build();
   }

@@ -5,14 +5,17 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/warehouses?include[members]=true
+  url: {{host}}/api/v1/warehouses/:warehouse-id/members
   body: none
   auth: inherit
 }
 
 params:query {
-  include[members]: true
-  ~include[members][include][user]: true
+  : 
+}
+
+params:path {
+  warehouse-id: c53f9e51-198d-451c-abab-6eaa630ceb91
 }
 
 settings {

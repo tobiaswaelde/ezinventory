@@ -39,5 +39,8 @@ export enum ErrorCode {
 	//#region warehouses
 	WarehouseNotFound = 'warehouses/not-found',
 	WarehouseConflictSameName = 'warehouses/conflict-same-name',
+	WarehouseMemberAlreadyExists = 'warehouses/member-already-exists',
+	WarehouseMemberNotFound = 'warehouses/member-not-found',
+	WarehouseMemberCannotRemoveLastAdmin = 'warehouses/cannot-remove-last-admin',
 	//#endregion
 }

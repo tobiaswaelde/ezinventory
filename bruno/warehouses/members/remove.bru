@@ -1,0 +1,21 @@
+meta {
+  name: remove
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{host}}/api/v1/warehouses/:warehouse-id/members/:member-id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  warehouse-id: c53f9e51-198d-451c-abab-6eaa630ceb91
+  member-id: 03ab24f8-3935-48d5-b512-fabc064881f8
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

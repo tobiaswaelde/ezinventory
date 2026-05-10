@@ -30,6 +30,12 @@ export const swaggerConfig = new DocumentBuilder()
   )
   // add api tag descriptions
   .addTag(ApiTag.Health, 'Health check')
+  .addTag(ApiTag.Auth, 'Authentication related endpoints')
+  .addTag(ApiTag.AuthMfa, 'Manage Multi-Factor Authentication (MFA) for users')
+  .addTag(ApiTag.AuthPassword, 'Manage user password updates')
+  .addTag(ApiTag.Users, 'User management')
+  .addTag(ApiTag.UsersMe, 'Manage own user account and preferences')
+  .addTag(ApiTag.Warehouses, 'Manage warehouses and members')
   // build the document
   .build();
 

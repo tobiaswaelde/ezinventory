@@ -5,7 +5,7 @@ import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator
 import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { AppAbility } from '~/types/casl';
 import { WarehousePayload } from '~/types/modules/warehouses';
-import { WarehouseUserDTO } from '~/types/modules/warehouses/warehouse-user.dto';
+import { UsersOnWarehousesDTO } from '~/types/modules/warehouses/users-on-warehouses.dto';
 
 export class WarehouseDTO {
   @Expose()
@@ -37,8 +37,8 @@ export class WarehouseDTO {
   icon?: string;
 
   @Expose()
-  @ApiPropertyOptional({ type: () => WarehouseUserDTO, isArray: true })
-  members?: WarehouseUserDTO[];
+  @ApiPropertyOptional({ type: () => UsersOnWarehousesDTO, isArray: true })
+  members?: UsersOnWarehousesDTO[];
 
   constructor(partial: Partial<WarehouseDTO>) {
     Object.assign(this, partial);
@@ -53,7 +53,7 @@ export class WarehouseDTO {
     return new WarehouseDTO({
       ...model,
       members: await Promise.all(
-        (model.members ?? []).map((member) => WarehouseUserDTO.fromModel(member, ability)),
+        (model.members ?? []).map((member) => UsersOnWarehousesDTO.fromModel(member, ability)),
       ),
     });
   }

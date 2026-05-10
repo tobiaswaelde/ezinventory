@@ -10,7 +10,7 @@ export type WarehousePayload = Optional<
   'members'
 >;
 
-export type WarehouseUserPayload = Optional<
+export type UserOnWarehousePayload = Optional<
   WarehouseUserGetPayload<{
     include: {
       warehouse: true;

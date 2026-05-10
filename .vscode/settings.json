@@ -8,6 +8,6 @@
 		"strings": true
 	},
 	"editor.suggestOnTriggerCharacters": true,
-	"editor.inlineSuggest.enabled": true,
-	"js/ts.suggest.completeFunctionCalls": true
+	"editor.inlineSuggest.enabled": true
+	// "js/ts.suggest.completeFunctionCalls": true
 }
