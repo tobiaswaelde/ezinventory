@@ -12,6 +12,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 // import { AppAbility } from '~/casl/ability.factory';
+import { accessibleBy } from '@casl/prisma';
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   BaseDelegate,
   BaseDelegateTypeMap,
@@ -19,7 +21,9 @@ import {
   QueryOptionsMap,
 } from '~/lib/query-service/types';
 import { serializeDecimalValues } from '~/lib/query-service/util';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
+import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
+import { CaslSubject } from '~/types/casl/subject';
 import { PageMetaDTO } from '~/types/pagination/page-meta.dto';
 import { ObjectUtil } from '~/util/object';
 
@@ -32,7 +36,7 @@ export class QueryService<
 > {
   constructor(
     protected table: Table,
-    // protected readonly subject: RoleSubject,
+    protected readonly subject: CaslSubject,
   ) {}
 
   async findOne<T = DelegateType>(options: Options['findOne']): Promise<T | null> {
@@ -76,15 +80,15 @@ export class QueryService<
   async findById<T = DelegateType>(
     id: string,
     options: Options['findById'] = {},
-    // ability?: AppAbility,
+    ability?: AppAbility,
   ): Promise<T | undefined> {
     let mergedWhere: any = { id: id };
-    // if (ability) {
-    //   const where = accessibleBy(ability, RoleAction.READ)[this.subject];
-    //   mergedWhere = {
-    //     AND: [where, mergedWhere],
-    //   };
-    // }
+    if (ability) {
+      const where = accessibleBy(ability, CaslAction.Read)[this.subject];
+      mergedWhere = {
+        AND: [where, mergedWhere],
+      };
+    }
 
     const args: Parameters<DelegateType['findFirst']>[0] = {
       where: mergedWhere,

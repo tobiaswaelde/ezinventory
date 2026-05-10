@@ -1,16 +1,18 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   ExecutionContext,
   ForbiddenException,
   HttpException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { CaslAbilityFactory } from '~/casl/ability.factory';
 import { jwtVerifyOptions } from '~/config/jwt';
 import { PrismaService } from '~/prisma/prisma.service';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 /**
  * Auth guard to verify JWT token.
@@ -27,6 +29,7 @@ export class JwtAuthGuard {
   constructor(
     private jwtService: JwtService,
     private readonly db: PrismaService,
+    @Inject(CaslAbilityFactory.token) private readonly caslFactory: CaslAbilityFactory,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -49,7 +52,7 @@ export class JwtAuthGuard {
       }
 
       req.user = user;
-      // req.ability = await this.caslFactory.createForUser(user);
+      req.ability = await this.caslFactory.createForUser(user);
     } catch (err) {
       if (err instanceof HttpException) {
         throw err;
