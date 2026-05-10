@@ -1,6 +1,7 @@
 import * as CaslAbility from '@casl/ability';
 import * as CaslPrisma from '@casl/prisma';
 import { CaslAction } from '~/types/casl/action';
+import { CaslSubject } from '~/types/casl/subject';
 import { CaslUtil } from '~/util/casl';
 
 jest.mock('@casl/ability', () => ({
@@ -18,7 +19,7 @@ jest.mock('@casl/prisma', () => ({
 describe('CaslUtil', () => {
   describe('filterKeys', () => {
     const obj = { id: 1, name: 'Alice', secret: 'top-secret' };
-    const subj = 'User';
+    const subj = CaslSubject.User;
 
     it('returns the original object if ability is not provided', () => {
       expect(CaslUtil.filterKeys(obj, subj)).toEqual(obj);
