@@ -7,7 +7,7 @@ model File {
   bucket           String    @db.VarChar(100)
   key              String    @db.Uuid
   originalFilename String    @db.VarChar(255)
-  contentType      String    @db.VarChar(100)
+  contentType      String?   @db.VarChar(100)
   fileSize         BigInt    @db.BigInt
   width            Int?      @db.Integer
   height           Int?      @db.Integer

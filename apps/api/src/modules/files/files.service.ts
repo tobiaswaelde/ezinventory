@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import dayjs from 'dayjs';
+import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 import { S3Bucket } from '~/config/s3';
 import { QueryService } from '~/lib/query-service/query.service';
@@ -46,7 +47,6 @@ export class FilesService extends QueryService<FileDelegate, FileTypeMap> {
         bucket: S3Bucket.Files,
         key: key,
         originalFilename: data.originalFilename ?? '',
-        contentType: data.contentType ?? '',
         fileSize: BigInt(data.fileSize ?? 0),
         isTemporary: data.isTemporary ?? true,
         deleteAfter: deleteAfterDate,
@@ -84,12 +84,15 @@ export class FilesService extends QueryService<FileDelegate, FileTypeMap> {
         throw new BadRequestException(ErrorCode.FileUploadAlreadyUploaded);
       }
 
+      const detectedType = await fileTypeFromBuffer(file.buffer);
+      const inputContentType = detectedType?.mime ?? file.mimetype ?? 'application/octet-stream';
+
       // upload file to S3
-      const buffer = await this.prepareFileBuffer(item, file.buffer);
+      const buffer = await this.prepareFileBuffer(inputContentType, item, file.buffer);
       await S3Service.uploadFile(S3Bucket.Files, item.key, buffer);
 
       // update file record with actual file info
-      const contentType = item.contentType.startsWith('image/') ? 'image/webp' : item.contentType;
+      const contentType = inputContentType.startsWith('image/') ? 'image/webp' : inputContentType;
       return tx.file.update({
         where: { id },
         data: {
@@ -189,8 +192,12 @@ export class FilesService extends QueryService<FileDelegate, FileTypeMap> {
    * @returns {Buffer} The processed file buffer
    * @throws {InternalServerErrorException} ErrorCode.FileUploadProcessingError
    */
-  private async prepareFileBuffer(file: FilePayload, buffer: Buffer): Promise<Buffer> {
-    if (!file.contentType.startsWith('image/')) {
+  private async prepareFileBuffer(
+    contentType: string,
+    file: FilePayload,
+    buffer: Buffer,
+  ): Promise<Buffer> {
+    if (!contentType.startsWith('image/')) {
       return buffer;
     }
 

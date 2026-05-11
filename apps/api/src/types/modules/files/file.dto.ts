@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { S3Bucket } from '~/config/s3';
 import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
@@ -34,6 +34,23 @@ export class FileDTO {
   @Expose()
   @ApiProperty({ example: 204800, description: 'Size of the file in bytes.' })
   fileSize: number;
+
+  @Expose()
+  @ApiPropertyOptional({ description: 'The width in pixels (for image files)' })
+  width?: number;
+
+  @Expose()
+  @ApiPropertyOptional({ description: 'The height in pixels (for image files)' })
+  height?: number;
+
+  @Expose()
+  @ApiPropertyOptional({
+    description: 'The quality of the image (for image files, between 1 and 100)',
+    example: 90,
+    minimum: 1,
+    maximum: 100,
+  })
+  quality?: number;
 
   @Expose()
   @ApiProperty({ description: 'URL to access the uploaded file.' })

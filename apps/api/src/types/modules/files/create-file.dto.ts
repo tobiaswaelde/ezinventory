@@ -19,12 +19,6 @@ export class CreateFileDTO {
   @IsOptional()
   originalFilename?: string;
 
-  @ApiPropertyOptional({ description: 'MIME type of the file to be uploaded' })
-  @IsString()
-  @MaxLength(100)
-  @IsOptional()
-  contentType?: string;
-
   @ApiPropertyOptional({ description: 'Size of the file to be uploaded in bytes' })
   @IsString()
   @IsOptional()
