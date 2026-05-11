@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, MaxLength, ValidateNested } from 'class-validator';
 import { UpdateAddressDTO } from '~/types/modules/address/update-address.dto';
 
 export class UpdateWarehouseDTO {
@@ -33,4 +33,10 @@ export class UpdateWarehouseDTO {
   @ValidateNested()
   @Type(() => UpdateAddressDTO)
   address?: UpdateAddressDTO | null;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsUUID(4)
+  @IsOptional()
+  fileId?: string;
 }

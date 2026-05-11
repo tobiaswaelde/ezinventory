@@ -6,9 +6,10 @@ export type WarehousePayload = Optional<
     include: {
       address: true;
       members: true;
+      file: true;
     };
   }>,
-  'address' | 'members'
+  'address' | 'members' | 'file'
 >;
 
 export type UserOnWarehousePayload = Optional<

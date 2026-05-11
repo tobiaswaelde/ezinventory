@@ -6,6 +6,7 @@ import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator
 import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { AppAbility } from '~/types/casl';
 import { AddressDTO } from '~/types/modules/address/address.dto';
+import { FileDTO } from '~/types/modules/files/file.dto';
 import { WarehousePayload } from '~/types/modules/warehouses';
 import { UsersOnWarehousesDTO } from '~/types/modules/warehouses/users-on-warehouses.dto';
 
@@ -50,6 +51,10 @@ export class WarehouseDTO {
   @ApiPropertyOptional({ type: () => AddressDTO })
   address?: AddressDTO;
 
+  @Expose()
+  @ApiPropertyOptional()
+  imageUrl?: string;
+
   constructor(partial: Partial<WarehouseDTO>) {
     Object.assign(this, partial);
   }
@@ -60,12 +65,15 @@ export class WarehouseDTO {
   ): Promise<WarehouseDTO> {
     if (!model) return null;
 
+    const imageFile = await FileDTO.fromModel(model.file, ability);
+
     return new WarehouseDTO({
       ...model,
       address: await AddressDTO.fromModel(model.address, ability),
       members: await Promise.all(
         (model.members ?? []).map((member) => UsersOnWarehousesDTO.fromModel(member, ability)),
       ),
+      imageUrl: imageFile.url,
     });
   }
 }

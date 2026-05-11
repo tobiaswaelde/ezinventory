@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
   ValidateNested,
 } from 'class-validator';
@@ -46,4 +47,10 @@ export class CreateWarehouseDTO {
   @ValidateNested()
   @Type(() => CreateAddressDTO)
   address?: CreateAddressDTO;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsUUID(4)
+  @IsOptional()
+  fileId?: string;
 }

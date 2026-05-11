@@ -48,7 +48,7 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
         throw new ConflictException(ErrorCode.WarehouseConflictSameName);
       }
 
-      const { address, ...warehouseData } = data;
+      const { address, fileId, ...warehouseData } = data;
 
       // create the new warehouse
       const warehouse = await tx.warehouse.create({
@@ -61,8 +61,9 @@ export class WarehousesService extends QueryService<WarehouseDelegate, Warehouse
               role: WarehouseUserRole.ADMIN,
             },
           },
+          file: fileId ? { connect: { id: fileId } } : undefined,
         },
-        include: { members: true, address: true },
+        include: { members: true, address: true, file: true },
       });
 
       return warehouse;
