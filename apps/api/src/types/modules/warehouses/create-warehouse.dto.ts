@@ -1,10 +1,22 @@
+import { WarehouseType } from '@/generated/prisma/enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
-import { ValidateNested } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
 import { CreateAddressDTO } from '~/types/modules/address/create-address.dto';
 
 export class CreateWarehouseDTO {
+  @ApiProperty({ enum: WarehouseType, example: WarehouseType.WAREHOUSE })
+  @IsEnum(WarehouseType)
+  @IsNotEmpty()
+  type: WarehouseType;
+
   @ApiProperty({ example: 'Main Warehouse' })
   @IsString()
   @IsNotEmpty()

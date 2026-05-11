@@ -75,5 +75,6 @@
         "^default"
       ]
     }
-  }
+  },
+  "analytics": false
 }

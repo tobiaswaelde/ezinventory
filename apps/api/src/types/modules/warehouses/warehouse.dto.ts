@@ -1,3 +1,4 @@
+import { WarehouseType } from '@/generated/prisma/enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
@@ -20,6 +21,10 @@ export class WarehouseDTO {
   @Expose()
   @ApiPropertyUpdatedAt()
   updatedAt: Date;
+
+  @Expose()
+  @ApiProperty({ enum: WarehouseType, example: WarehouseType.WAREHOUSE })
+  type: WarehouseType;
 
   @Expose()
   @ApiProperty({ example: 'Main Warehouse' })

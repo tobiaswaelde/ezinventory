@@ -1,7 +1,7 @@
-import { RoleSubject } from '@/generated/prisma/client';
 import { accessibleBy } from '@casl/prisma';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { QueryService } from '~/lib/query-service/query.service';
+import { CaslSubject } from '~/types/casl/subject';
 
 jest.mock('@casl/prisma', () => ({
   accessibleBy: jest.fn().mockReturnValue({ User: {} }),
@@ -21,7 +21,7 @@ describe('QueryService', () => {
 
   beforeEach(() => {
     mockTable = makeTable();
-    service = new QueryService(mockTable as any, RoleSubject.USER);
+    service = new QueryService(mockTable as any, CaslSubject.User);
     jest.clearAllMocks();
   });
 

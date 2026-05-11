@@ -4,10 +4,11 @@ model Warehouse {
   updatedAt DateTime @updatedAt
 
   // fields
-  name        String  @unique @db.VarChar(100)
-  description String? @db.VarChar(1000)
-  color       String? @db.VarChar(100)
-  icon        String? @db.VarChar(100)
+  type        WarehouseType @default(WAREHOUSE)
+  name        String        @unique @db.VarChar(100)
+  description String?       @db.VarChar(1000)
+  color       String?       @db.VarChar(100)
+  icon        String?       @db.VarChar(100)
 
   // relations
   addressId String?         @db.Uuid
