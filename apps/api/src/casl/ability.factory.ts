@@ -29,6 +29,11 @@ export class CaslAbilityFactory {
       can([CaslAction.Update], CaslSubject.User);
       can([CaslAction.Delete], CaslSubject.User);
 
+      can(CaslAction.Create, CaslSubject.File);
+      can(CaslAction.Read, CaslSubject.File, 'all');
+      can(CaslAction.Update, CaslSubject.File);
+      can(CaslAction.Delete, CaslSubject.File);
+
       can(CaslAction.Create, CaslSubject.Warehouse);
       can(CaslAction.Read, CaslSubject.Warehouse, 'all');
       can(CaslAction.Update, CaslSubject.Warehouse);

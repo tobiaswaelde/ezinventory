@@ -13,6 +13,8 @@ model Warehouse {
   // relations
   addressId String?         @db.Uuid
   address   Address?        @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  fileId    String?         @db.Uuid
+  file      File?           @relation(fields: [fileId], references: [id], onDelete: SetNull)
   members   WarehouseUser[] @relation()
 
   @@map("warehouses")

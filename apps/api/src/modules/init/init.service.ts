@@ -2,6 +2,7 @@ import { UserRole } from '@/generated/prisma/enums';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ENV } from '~/config/env';
 import { PrismaService } from '~/prisma/prisma.service';
+import { S3Service } from '~/services/s3.service';
 import { CryptoUtil } from '~/util/crypto';
 
 const logger = new Logger('INIT');
@@ -19,6 +20,7 @@ export class InitService implements OnModuleInit {
 
     logger.log('Begin initialization...');
     //
+    await S3Service.createBuckets();
     await this.createInitialAdminUser();
 
     const durationMs = performance.now().valueOf() - start.valueOf();

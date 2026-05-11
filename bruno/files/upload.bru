@@ -1,0 +1,24 @@
+meta {
+  name: upload
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{host}}/api/v1/files/:file-id/upload
+  body: multipartForm
+  auth: inherit
+}
+
+params:path {
+  file-id: ff81db92-116a-4dc7-8f52-e347ea5392e4
+}
+
+body:multipart-form {
+  file: @file(/mnt/data/Pictures/Albums/Avatars/ein-hauch-von-tüll.jpg)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

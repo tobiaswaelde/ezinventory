@@ -1,9 +1,9 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { BadRequestException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 const AVATAR_FILE_SIZE_LIMIT = 2 * 1024 * 1024; // 2MB
-const TEMP_FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
+const TEMP_FILE_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
 
 /**
  * Multer options for avatar file uploads.
@@ -27,11 +27,11 @@ export const uploadAvatarOptions: MulterOptions = {
 };
 
 /**
- * Multer options for temporary file uploads.
+ * Multer options for file uploads.
  * Limits file size to 5MB and only allows image and PDF files.
  * @throws {BadRequestException} ErrorCode.FileUploadInvalidFileType
  */
-export const uploadTempFileOptions: MulterOptions = {
+export const uploadFileOptions: MulterOptions = {
   limits: { files: 1, fileSize: TEMP_FILE_SIZE_LIMIT },
   fileFilter(req, file, callback) {
     const isImage = file.mimetype.match(/^image\/(png|jpeg|jpg|gif)$/i);

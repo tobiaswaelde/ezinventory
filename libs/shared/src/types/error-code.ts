@@ -6,10 +6,12 @@ export enum ErrorCode {
 	InsufficientPermissions = 'auth/insufficient-permissions',
 	//#endregion
 	//#region file upload
-	FileUploadNoFileProvided = 'file-upload/no-file-provided',
-	FileUploadInvalidFileType = 'file-upload/invalid-file-type',
-	FileUploadFileTooLarge = 'file-upload/file-too-large',
-	FileUploadAlreadyUploaded = 'file-upload/already-uploaded',
+	FileNotFound = 'files/file-not-found',
+	FileUploadNoFileProvided = 'files/no-file-provided',
+	FileUploadInvalidFileType = 'files/invalid-file-type',
+	FileUploadFileTooLarge = 'files/file-too-large',
+	FileUploadAlreadyUploaded = 'files/already-uploaded',
+	FileUploadProcessingError = 'files/processing-error',
 	//#endregion
 	//#region auth
 	AuthInvalidCredentials = 'auth/invalid-credentials',

@@ -1,0 +1,24 @@
+model File {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // fields
+  bucket           String    @db.VarChar(100)
+  key              String    @db.Uuid
+  originalFilename String    @db.VarChar(255)
+  contentType      String    @db.VarChar(100)
+  fileSize         BigInt    @db.BigInt
+  width            Int?      @db.Integer
+  height           Int?      @db.Integer
+  quality          Int?      @db.Integer
+  fit              ImageFit? @default(COVER)
+  isTemporary      Boolean   @default(false)
+  isUploaded       Boolean   @default(false)
+  deleteAfter      DateTime?
+
+  // relations
+  warehouses Warehouse[] @relation()
+
+  @@map("files")
+}

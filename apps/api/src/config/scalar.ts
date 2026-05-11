@@ -35,6 +35,7 @@ export const swaggerConfig = new DocumentBuilder()
   .addTag(ApiTag.AuthPassword, 'Manage user password updates')
   .addTag(ApiTag.Users, 'User management')
   .addTag(ApiTag.UsersMe, 'Manage own user account and preferences')
+  .addTag(ApiTag.Files, 'File upload and management')
   .addTag(ApiTag.Warehouses, 'Manage warehouses and members')
   // build the document
   .build();
