@@ -1,4 +1,41 @@
 {
+  "common": {
+    "alerts": {
+      "coming-soon": {
+        "description": "Diese Funktion wird gerade entwickelt und kommt in einem zukünftigen Release.",
+        "title": "Kommt bald"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "alert": {
+          "description": "Diese Aktion kann nicht rückgängig gemacht werden.",
+          "title": "ACHTUNG!"
+        },
+        "description": "Möchten Sie das ausgewählte Element wirklich löschen?",
+        "title": "Löschen bestätigen"
+      }
+    },
+    "errors": {},
+    "inputs": {},
+    "labels": {
+      "back": "Zurück",
+      "cancel": "Abbrechen",
+      "click-again-to-confirm": "Erneut klicken, um zu bestätigen",
+      "close": "Schließen",
+      "copyright": "© {year} Tobias Wälde",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "error": "Fehler",
+      "new": "Neu",
+      "next": "Weiter",
+      "no": "Nein",
+      "remove": "Entfernen",
+      "save": "Speichern",
+      "submit": "Bestätigen",
+      "yes": "Ja"
+    }
+  },
   "pages": {
     "auth": {
       "signin": {

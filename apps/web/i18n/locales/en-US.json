@@ -1,4 +1,41 @@
 {
+  "common": {
+    "alerts": {
+      "coming-soon": {
+        "description": "This feature is currently in development and will be added in a future release.",
+        "title": "Coming Soon"
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "alert": {
+          "description": "This action cannot be undone.",
+          "title": "WARNING!"
+        },
+        "description": "Do you really want to delete the selected item?",
+        "title": "Confirm delete"
+      }
+    },
+    "errors": {},
+    "inputs": {},
+    "labels": {
+      "back": "Back",
+      "cancel": "Cancel",
+      "click-again-to-confirm": "Click again to confirm",
+      "close": "Close",
+      "copyright": "© {year} Tobias Wälde",
+      "delete": "Delete",
+      "edit": "Edit",
+      "error": "Error",
+      "new": "New",
+      "next": "Next",
+      "no": "No",
+      "remove": "Remove",
+      "save": "Save",
+      "submit": "Submit",
+      "yes": "Yes"
+    }
+  },
   "pages": {
     "auth": {
       "signin": {
