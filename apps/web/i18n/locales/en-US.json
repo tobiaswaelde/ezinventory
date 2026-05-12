@@ -71,6 +71,22 @@
     }
   },
   "core": {
+    "navbar": {
+      "user-menu": {
+        "language": {
+          "label": "Language"
+        },
+        "shortcuts": {
+          "label": "Shortcuts"
+        },
+        "signout": {
+          "label": "Sign out"
+        },
+        "theme": {
+          "label": "Theme"
+        }
+      }
+    },
     "navigation": {
       "administration": {
         "label": "Administration",
@@ -97,6 +113,13 @@
           "label": "Report Bug"
         }
       }
+    }
+  },
+  "enums": {
+    "color-mode": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
     }
   },
   "modules": {

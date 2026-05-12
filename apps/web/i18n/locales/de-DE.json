@@ -71,6 +71,22 @@
     }
   },
   "core": {
+    "navbar": {
+      "user-menu": {
+        "language": {
+          "label": "Sprache"
+        },
+        "shortcuts": {
+          "label": "Tastenkürzel"
+        },
+        "signout": {
+          "label": "Abmelden"
+        },
+        "theme": {
+          "label": "Theme"
+        }
+      }
+    },
     "navigation": {
       "administration": {
         "label": "Administration",
@@ -97,6 +113,13 @@
           "label": "Problem melden"
         }
       }
+    }
+  },
+  "enums": {
+    "color-mode": {
+      "dark": "Dunkel",
+      "light": "Hell",
+      "system": "System"
     }
   },
   "modules": {
