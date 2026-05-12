@@ -51,6 +51,9 @@
       "warehouses/not-found": "The warehouse was not found."
     },
     "inputs": {
+      "select-user-role": {
+        "placeholder": "Select role"
+      }
     },
     "labels": {
       "back": "Back",

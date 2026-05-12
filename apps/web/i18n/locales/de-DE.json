@@ -51,6 +51,9 @@
       "warehouses/not-found": "Das Lager wurde nicht gefunden."
     },
     "inputs": {
+      "select-user-role": {
+        "placeholder": "Rolle auswählen"
+      }
     },
     "labels": {
       "back": "Zurück",
