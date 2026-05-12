@@ -1,4 +1,13 @@
-<template>
-  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam assumenda alias, corrupti, asperiores dignissimos
-  consequatur autem consequuntur officiis dolorum vero iure odit quasi omnis nemo facilis nam dolore! Facere, placeat.
-</template>
+<template></template>
+
+<script setup lang="ts">
+import { Routes } from '~/types/routes';
+
+navigateTo(
+  { name: Routes.Dashboard },
+  {
+    replace: true,
+    // redirectCode: 301
+  },
+);
+</script>

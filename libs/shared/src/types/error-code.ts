@@ -24,11 +24,6 @@ export enum ErrorCode {
 	AuthMfaInvalidCode = 'auth/invalid-mfa-code',
 	AuthMfaAlreadyEnabled = 'auth/mfa-already-enabled',
 	AuthMfaNotEnabled = 'auth/mfa-not-enabled',
-	AuthPasskeyNoUserOrNoPasskeys = 'auth/no-user-or-no-passkeys',
-	AuthPasskeyNotFound = 'auth/passkey-not-found',
-	AuthPasskeyNoChallenge = 'auth/passkey-no-challenge',
-	AuthPasskeyRegistrationVerificationFailed = 'auth/passkey-registration-verification-failed',
-	AuthPasskeyAuthenticationVerificationFailed = 'auth/passkey-authentication-verification-failed',
 	AuthPasswordResetTokenInvalid = 'auth/invalid-password-reset-token',
 	AuthPasswordResetTokenExpired = 'auth/password-reset-token-expired',
 	//#endregion

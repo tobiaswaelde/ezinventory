@@ -169,6 +169,11 @@ export default defineNuxtConfig({
   typescript: {
     tsConfig: {
       compilerOptions: {
+        ignoreDeprecations: '6.0',
+        baseUrl: '.',
+        paths: {
+          '@ezinventory/shared/*': ['../../../libs/shared/src/*'],
+        },
         // verbatimModuleSyntax: false,
         noUncheckedIndexedAccess: false,
       },

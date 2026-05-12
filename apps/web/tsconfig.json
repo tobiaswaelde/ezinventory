@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   // https://nuxt.com/docs/guide/concepts/typescript
   "files": [],
   "references": [
@@ -19,7 +20,9 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./*"],
+      "@/*": ["./*"],
+      "@ezinventory/shared/*": ["../../libs/shared/src/*"]
     }
   }
 }

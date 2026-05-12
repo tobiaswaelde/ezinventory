@@ -1,1 +1,9 @@
-{}
+{
+  "pages": {
+    "auth": {
+      "signin": {
+        "title": "Anmelden"
+      }
+    }
+  }
+}
