@@ -8,6 +8,7 @@ import {
   IsNotEmptyObject,
   IsOptional,
   IsString,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { CreateUserPreferencesDTO } from '~/types/modules/user-preferences/create-user-preferences.dto';
@@ -17,11 +18,13 @@ export class CreateUserDTO {
   @ApiProperty({ example: 'user@domain.com' })
   @IsString()
   @IsEmail()
+  @MaxLength(255)
   @IsNotEmpty()
   email: string;
 
   @ApiProperty({ example: 'some-password' })
   @IsString()
+  @MaxLength(72)
   @IsNotEmpty()
   password: string;
 
