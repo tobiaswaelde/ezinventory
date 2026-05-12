@@ -34,6 +34,9 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   ssr: true,
+  routeRules: {
+    '/**': { ssr: false },
+  },
 
   //#region plugins
   modules: [
@@ -161,8 +164,26 @@ export default defineNuxtConfig({
     port: 3000,
   },
   vite: {
+    resolve: {
+      alias: {
+        '@ezinventory/shared': new URL('../../libs/shared/src', import.meta.url).pathname,
+      },
+    },
     optimizeDeps: {
-      include: [],
+      include: [
+        'axios',
+        'dayjs', // CJS
+        'dayjs/locale/de', // CJS
+        'dayjs/locale/en', // CJS
+        'dayjs/plugin/duration', // CJS
+        'dayjs/plugin/objectSupport', // CJS
+        'dayjs/plugin/relativeTime', // CJS
+        'dayjs/plugin/timezone', // CJS
+        'dayjs/plugin/utc', // CJS
+        'js-cookie',
+        'jwt-decode',
+        'zod/v4',
+      ],
     },
   },
 

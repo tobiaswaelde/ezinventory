@@ -22,13 +22,13 @@
     </template>
 
     <template #submit="{ loading }">
-      <div class="grid sm:grid-cols-2 gap-4">
+      <div class="grid gap-4">
         <UButton
           block
           type="submit"
           color="primary"
           :loading="loading"
-          :label="t('modules.auth.signin.form.actions.signin-with-password')"
+          :label="t('modules.auth.signin.form.actions.signin')"
           icon="i-tabler-login"
         />
       </div>
@@ -38,9 +38,7 @@
 
 <script setup lang="ts">
 import type { FormSubmitEvent } from '#ui/types';
-import { AxiosError } from 'axios';
 import { useErrors } from '~/composables/api/errors';
-import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { type SigninDTO } from '~/types/api/modules/auth';
 import { Routes } from '~/types/routes';

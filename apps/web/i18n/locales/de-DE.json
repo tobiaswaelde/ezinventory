@@ -16,8 +16,42 @@
         "title": "Löschen bestätigen"
       }
     },
-    "errors": {},
-    "inputs": {},
+    "errors": {
+      "something-went-wrong": "Es ist ein Fehler aufgetreten.",
+      "item-already-exists": "Dieses Element existiert bereits.",
+      "common/not-found": "Das angeforderte Element wurde nicht gefunden.",
+      "auth/unauthorized": "Sie sind nicht autorisiert.",
+      "auth/insufficient-permissions": "Sie haben nicht genügend Berechtigungen.",
+      "files/file-not-found": "Die Datei wurde nicht gefunden.",
+      "files/no-file-provided": "Es wurde keine Datei bereitgestellt.",
+      "files/invalid-file-type": "Der ausgewählte Dateityp ist nicht erlaubt.",
+      "files/file-too-large": "Die ausgewählte Datei ist zu groß.",
+      "files/already-uploaded": "Diese Datei wurde bereits hochgeladen.",
+      "files/processing-error": "Die Datei konnte nicht verarbeitet werden.",
+      "auth/invalid-credentials": "Ungültige E-Mail oder ungültiges Passwort.",
+      "auth/no-token-provided": "Es wurde kein Authentifizierungs-Token bereitgestellt.",
+      "auth/invalid-token": "Das Authentifizierungs-Token ist ungültig.",
+      "auth/token-expired": "Das Authentifizierungs-Token ist abgelaufen.",
+      "auth/mfa-verification-required": "Eine Multi-Faktor-Verifizierung ist erforderlich.",
+      "auth/mfa-not-pending": "Es liegt keine ausstehende MFA-Verifizierung vor.",
+      "auth/mfa-code-required": "Ein MFA-Code ist erforderlich.",
+      "auth/invalid-mfa-code": "Der MFA-Code ist ungültig.",
+      "auth/mfa-already-enabled": "Die Multi-Faktor-Authentifizierung ist bereits aktiviert.",
+      "auth/mfa-not-enabled": "Die Multi-Faktor-Authentifizierung ist nicht aktiviert.",
+      "auth/invalid-password-reset-token": "Das Passwort-Reset-Token ist ungültig.",
+      "auth/password-reset-token-expired": "Das Passwort-Reset-Token ist abgelaufen.",
+      "user/user-not-found": "Der Benutzer wurde nicht gefunden.",
+      "user/archived": "Dieser Benutzer wurde archiviert.",
+      "user/conflict-same-email": "Ein Benutzer mit dieser E-Mail existiert bereits.",
+      "user/create-branch-archived": "Für eine archivierte Niederlassung kann kein Benutzer erstellt werden.",
+      "warehouses/not-found": "Das Lager wurde nicht gefunden.",
+      "warehouses/conflict-same-name": "Ein Lager mit diesem Namen existiert bereits.",
+      "warehouses/member-already-exists": "Dieses Mitglied ist dem Lager bereits zugewiesen.",
+      "warehouses/member-not-found": "Das Lagermitglied wurde nicht gefunden.",
+      "warehouses/cannot-remove-last-admin": "Der letzte Lager-Administrator kann nicht entfernt werden."
+    },
+    "inputs": {
+    },
     "labels": {
       "back": "Zurück",
       "cancel": "Abbrechen",
@@ -34,6 +68,33 @@
       "save": "Speichern",
       "submit": "Bestätigen",
       "yes": "Ja"
+    }
+  },
+  "modules": {
+    "auth": {
+      "signin": {
+        "form": {
+          "actions": {
+            "signin": "Anmelden"
+          },
+          "fields": {
+            "email": {
+              "label": "E-Mail",
+              "placeholder": "max.mustermann{'@'}domain.de"
+            },
+            "otp": {
+              "label": "OTP",
+              "placeholder": "******"
+            },
+            "password": {
+              "label": "Passwort",
+              "placeholder": "********"
+            }
+          }
+        },
+        "paragraph": "Bitte melden Sie sich mit Ihren Zugangsdaten an.",
+        "title": "Anmelden"
+      }
     }
   },
   "pages": {
