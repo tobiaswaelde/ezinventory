@@ -1,7 +1,7 @@
 <template>
   <UDashboardGroup unit="rem" storage="local" storage-key="ezinventory">
     <template #default>
-      <!-- <LayoutSidebar /> -->
+      <LayoutSidebar />
 
       <slot></slot>
 

@@ -172,14 +172,14 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         'axios',
-        'dayjs', // CJS
-        'dayjs/locale/de', // CJS
-        'dayjs/locale/en', // CJS
-        'dayjs/plugin/duration', // CJS
-        'dayjs/plugin/objectSupport', // CJS
-        'dayjs/plugin/relativeTime', // CJS
-        'dayjs/plugin/timezone', // CJS
-        'dayjs/plugin/utc', // CJS
+        'dayjs',
+        'dayjs/locale/de',
+        'dayjs/locale/en',
+        'dayjs/plugin/duration',
+        'dayjs/plugin/objectSupport',
+        'dayjs/plugin/relativeTime',
+        'dayjs/plugin/timezone',
+        'dayjs/plugin/utc',
         'js-cookie',
         'jwt-decode',
         'zod/v4',

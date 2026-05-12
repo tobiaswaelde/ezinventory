@@ -17,38 +17,38 @@
       }
     },
     "errors": {
-      "something-went-wrong": "Something went wrong.",
-      "item-already-exists": "This item already exists.",
-      "common/not-found": "The requested item was not found.",
-      "auth/unauthorized": "You are not authorized.",
       "auth/insufficient-permissions": "You do not have sufficient permissions.",
-      "files/file-not-found": "The file was not found.",
-      "files/no-file-provided": "No file was provided.",
-      "files/invalid-file-type": "The selected file type is not allowed.",
-      "files/file-too-large": "The selected file is too large.",
-      "files/already-uploaded": "This file has already been uploaded.",
-      "files/processing-error": "The file could not be processed.",
       "auth/invalid-credentials": "Invalid email or password.",
-      "auth/no-token-provided": "No authentication token was provided.",
-      "auth/invalid-token": "The authentication token is invalid.",
-      "auth/token-expired": "The authentication token has expired.",
-      "auth/mfa-verification-required": "Multi-factor verification is required.",
-      "auth/mfa-not-pending": "No pending MFA verification was found.",
-      "auth/mfa-code-required": "An MFA code is required.",
       "auth/invalid-mfa-code": "The MFA code is invalid.",
-      "auth/mfa-already-enabled": "Multi-factor authentication is already enabled.",
-      "auth/mfa-not-enabled": "Multi-factor authentication is not enabled.",
       "auth/invalid-password-reset-token": "The password reset token is invalid.",
+      "auth/invalid-token": "The authentication token is invalid.",
+      "auth/mfa-already-enabled": "Multi-factor authentication is already enabled.",
+      "auth/mfa-code-required": "An MFA code is required.",
+      "auth/mfa-not-enabled": "Multi-factor authentication is not enabled.",
+      "auth/mfa-not-pending": "No pending MFA verification was found.",
+      "auth/mfa-verification-required": "Multi-factor verification is required.",
+      "auth/no-token-provided": "No authentication token was provided.",
       "auth/password-reset-token-expired": "The password reset token has expired.",
-      "user/user-not-found": "The user was not found.",
+      "auth/token-expired": "The authentication token has expired.",
+      "auth/unauthorized": "You are not authorized.",
+      "common/not-found": "The requested item was not found.",
+      "files/already-uploaded": "This file has already been uploaded.",
+      "files/file-not-found": "The file was not found.",
+      "files/file-too-large": "The selected file is too large.",
+      "files/invalid-file-type": "The selected file type is not allowed.",
+      "files/no-file-provided": "No file was provided.",
+      "files/processing-error": "The file could not be processed.",
+      "item-already-exists": "This item already exists.",
+      "something-went-wrong": "Something went wrong.",
       "user/archived": "This user has been archived.",
       "user/conflict-same-email": "A user with this email already exists.",
       "user/create-branch-archived": "Cannot create a user for an archived branch.",
-      "warehouses/not-found": "The warehouse was not found.",
+      "user/user-not-found": "The user was not found.",
+      "warehouses/cannot-remove-last-admin": "The last warehouse admin cannot be removed.",
       "warehouses/conflict-same-name": "A warehouse with this name already exists.",
       "warehouses/member-already-exists": "This member is already assigned to the warehouse.",
       "warehouses/member-not-found": "The warehouse member was not found.",
-      "warehouses/cannot-remove-last-admin": "The last warehouse admin cannot be removed."
+      "warehouses/not-found": "The warehouse was not found."
     },
     "inputs": {
     },
@@ -68,6 +68,35 @@
       "save": "Save",
       "submit": "Submit",
       "yes": "Yes"
+    }
+  },
+  "core": {
+    "navigation": {
+      "administration": {
+        "label": "Administration",
+        "users": "Users"
+      },
+      "dashboard": "Dashboard",
+      "inventory": {
+        "items": "Items",
+        "label": "Inventory",
+        "shelf-places": "Shelf Places",
+        "storages": "Storage Areas",
+        "warehouses": "Warehouses"
+      }
+    },
+    "sidebar": {
+      "footer": {
+        "about": {
+          "label": "About"
+        },
+        "github": {
+          "label": "GitHub"
+        },
+        "report-bug": {
+          "label": "Report Bug"
+        }
+      }
     }
   },
   "modules": {
