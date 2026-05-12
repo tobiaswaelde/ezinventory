@@ -33,7 +33,7 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/main.css'],
-  ssr: false,
+  ssr: true,
 
   //#region plugins
   modules: [
@@ -151,30 +151,16 @@ export default defineNuxtConfig({
   //#endregion
   //#endregion
 
+  content: {
+    experimental: {
+      sqliteConnector: 'native',
+    },
+  },
+
   devServer: {
     port: 3000,
   },
-  vite: {
-    define: {
-      __ICONIFY_DISABLE_CACHE__: true,
-      __ICONIFY_NO_REMOTE__: true,
-    },
-    server: {
-      watch: {
-        ignored: ['**/node_modules/**', '**/static/**', '**/public/**', '**/.output/**', '**/.nuxt/**'],
-      },
-    },
-    optimizeDeps: {
-      exclude: ['@nuxt/ui', '@nuxt/content', '@nuxt/image', '@nuxtjs/i18n'],
-      include: [
-        '@nuxt/ui > prosemirror-state',
-        '@nuxt/ui > prosemirror-transform',
-        '@nuxt/ui > prosemirror-model',
-        '@nuxt/ui > prosemirror-view',
-        '@nuxt/ui > prosemirror-gapcursor',
-      ],
-    },
-  },
+  vite: {},
 
   typescript: {
     tsConfig: {
