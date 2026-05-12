@@ -160,7 +160,11 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000,
   },
-  vite: {},
+  vite: {
+    optimizeDeps: {
+      include: [],
+    },
+  },
 
   typescript: {
     tsConfig: {
