@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{host}}/api/v1/users?include[profile][select][firstname]=true&include[preferences]=true&include[profile][select][lastname]=true&page=1&include[profile][select][userId]=true
+  url: {{host}}/api/v1/users?include[profile][select][firstname]=true&include[preferences]=true&include[profile][select][lastname]=true&page=1
   body: none
   auth: inherit
 }
@@ -15,7 +15,7 @@ params:query {
   include[preferences]: true
   include[profile][select][lastname]: true
   page: 1
-  include[profile][select][userId]: true
+  ~include[profile][select][userId]: true
   ~perPage: 2
   ~include[profile]: true
 }

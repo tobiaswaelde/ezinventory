@@ -13,7 +13,11 @@
         v-model:column-order="columnOrder"
         v-model:column-visibility="columnVisibility"
         v-model:column-pinning="columnPinning"
-      />
+      >
+        <template #new>
+          <ModulesUsersCreateModel @created="refresh" />
+        </template>
+      </CommonTableToolbar>
     </template>
 
     <template #body>

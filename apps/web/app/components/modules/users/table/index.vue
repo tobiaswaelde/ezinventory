@@ -2,12 +2,19 @@
   <UTable
     sticky
     class="shrink-0"
-    :columns="columns"
-    :data="items"
     :ui="{
       th: 'first:pl-8 bg-neutral-100 dark:bg-neutral-950/20',
       td: 'first:pl-8',
       tr: 'cursor-pointer',
+    }"
+    :columns="columns"
+    :data="items"
+    :pagination-options="{ manualPagination: true }"
+    :sorting-options="{ manualSorting: true }"
+    :loading="loading"
+    :row-selection-options="{
+      enableMultiRowSelection: false,
+      enableRowSelection: true,
     }"
     @select="
       (e, row) => {

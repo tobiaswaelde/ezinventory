@@ -4,7 +4,8 @@
       "coming-soon": {
         "description": "This feature is currently in development and will be added in a future release.",
         "title": "Coming Soon"
-      }
+      },
+      "unsaved-changes": "You have unsaved changes. Do you really want to leave the site?"
     },
     "dialogs": {
       "delete": {
@@ -51,6 +52,16 @@
       "warehouses/not-found": "The warehouse was not found."
     },
     "inputs": {
+      "password": {
+        "hide": "Hide password",
+        "show": "Show password"
+      },
+      "select-language": {
+        "placeholder": "Select language"
+      },
+      "select-timezone": {
+        "placeholder": "Select time zone"
+      },
       "select-user-role": {
         "placeholder": "Select role"
       }
@@ -222,6 +233,38 @@
       }
     },
     "users": {
+      "create": {
+        "modal": {
+          "description": "Create a new user",
+          "title": "Create user"
+        }
+      },
+      "fields": {
+        "email": {
+          "label": "Email",
+          "placeholder": "john.doe{'@'}domain.com"
+        },
+        "firstname": {
+          "label": "First name",
+          "placeholder": "John"
+        },
+        "lastname": {
+          "label": "Last name",
+          "placeholder": "Doe"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "********"
+        },
+        "preferences": {
+          "label": "Preferences",
+          "language": "Language",
+          "timezone": "Time zone"
+        },
+        "role": {
+          "label": "User role"
+        }
+      },
       "table": {
         "columns": {
           "email": "Email",

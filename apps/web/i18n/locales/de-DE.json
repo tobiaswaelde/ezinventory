@@ -4,7 +4,8 @@
       "coming-soon": {
         "description": "Diese Funktion wird gerade entwickelt und kommt in einem zukünftigen Release.",
         "title": "Kommt bald"
-      }
+      },
+      "unsaved-changes": "Sie haben ungespeicherte Änderungen. Wollen Sie die Seite wirklich verlassen?"
     },
     "dialogs": {
       "delete": {
@@ -51,6 +52,16 @@
       "warehouses/not-found": "Das Lager wurde nicht gefunden."
     },
     "inputs": {
+      "password": {
+        "hide": "Passwort verbergen",
+        "show": "Passwort anzeigen"
+      },
+      "select-language": {
+        "placeholder": "Sprache auswählen"
+      },
+      "select-timezone": {
+        "placeholder": "Zeitzone auswählen"
+      },
       "select-user-role": {
         "placeholder": "Rolle auswählen"
       }
@@ -217,6 +228,38 @@
       }
     },
     "users": {
+      "create": {
+        "modal": {
+          "description": "Erstellen Sie einen neuen Benutzer",
+          "title": "Benutzer erstellen"
+        }
+      },
+      "fields": {
+        "email": {
+          "label": "E-Mail",
+          "placeholder": "max.mustermann{'@'}domain.de"
+        },
+        "firstname": {
+          "label": "Vorname",
+          "placeholder": "Max"
+        },
+        "lastname": {
+          "label": "Nachname",
+          "placeholder": "Mustermann"
+        },
+        "password": {
+          "label": "Passwort",
+          "placeholder": "********"
+        },
+        "preferences": {
+          "label": "Einstellungen",
+          "language": "Sprache",
+          "timezone": "Zeitzone"
+        },
+        "role": {
+          "label": "Benutzerrolle"
+        }
+      },
       "table": {
         "columns": {
           "email": "E-Mail",
