@@ -269,8 +269,10 @@
         "columns": {
           "email": "Email",
           "firstName": "First name",
+          "language": "Language",
           "lastname": "Last name",
-          "role": "Role"
+          "role": "Role",
+          "timezone": "Time zone"
         }
       }
     }

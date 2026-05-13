@@ -1,3 +1,4 @@
+import { header } from '#build/ui';
 import { EnumsUserRoleSelect } from '#components';
 import { useRouteQuery } from '@vueuse/router';
 import { UserRole } from '~/types/api/enums/user-role';
@@ -14,6 +15,10 @@ export type UsersTableRow = {
     firstname: string;
     lastname: string;
     avatarUrl?: string;
+  };
+  preferences: {
+    language: string;
+    timezone: string;
   };
 };
 
@@ -43,6 +48,16 @@ export const useUsersTableOptions = (): TableOptions<UsersTableRow> => {
       id: 'profile.lastname',
       accessorKey: 'profile.lastname',
       header: t('modules.users.table.columns.lastname'),
+    },
+    {
+      id: 'language',
+      accessorKey: 'preferences.language',
+      header: t('modules.users.table.columns.language'),
+    },
+    {
+      id: 'preferences.timezone',
+      accessorKey: 'preferences.timezone',
+      header: t('modules.users.table.columns.timezone'),
     },
   ]);
 

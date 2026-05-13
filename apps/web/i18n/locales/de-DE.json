@@ -264,8 +264,10 @@
         "columns": {
           "email": "E-Mail",
           "firstName": "Vorname",
+          "language": "Sprache",
           "lastname": "Nachname",
-          "role": "Rolle"
+          "role": "Rolle",
+          "timezone": "Zeitzone"
         }
       }
     }

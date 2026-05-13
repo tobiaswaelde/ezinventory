@@ -25,6 +25,9 @@
     <template #role-cell="{ row }">
       <EnumsUserRoleBadge :value="row.original.role" variant="soft" />
     </template>
+    <template #language-cell="{ row }">
+      <EnumsLanguageBadge :value="row.original.preferences.language" color="neutral" variant="soft" />
+    </template>
   </UTable>
 </template>
 
