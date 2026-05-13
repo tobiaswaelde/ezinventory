@@ -1,7 +1,7 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { MfaGuard } from '~/guards/mfa.guard';
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 jest.mock('~/modules/auth/mfa/mfa.service', () => ({
   MfaService: class {

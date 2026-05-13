@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   CanActivate,
   ExecutionContext,
@@ -7,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
 import { AuthRequest } from '~/types/auth-request';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 /**
  * Guard to enforce MFA verification.

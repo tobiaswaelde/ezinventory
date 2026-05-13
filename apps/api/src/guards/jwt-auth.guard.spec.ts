@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import {
   ExecutionContext,
   ForbiddenException,
@@ -8,7 +9,6 @@ import { JwtService } from '@nestjs/jwt';
 import { CaslAbilityFactory } from '~/casl/ability.factory';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PrismaService } from '~/prisma/prisma.service';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 
 const makeContext = (request: any): ExecutionContext => {
   return {

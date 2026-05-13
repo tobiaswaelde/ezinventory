@@ -1,6 +1,6 @@
+import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '~/prisma/prisma.service';
-import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { UserProfilePayload } from '~/types/modules/user-profile';
 import { UpdateUserProfileDTO } from '~/types/modules/user-profile/update-user-profile.dto';
 
