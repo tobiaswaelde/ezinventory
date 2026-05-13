@@ -71,6 +71,72 @@
       "save": "Save",
       "submit": "Submit",
       "yes": "Yes"
+    },
+    "search": {
+      "placeholder": "Search..."
+    },
+    "table": {
+      "filtering": {
+        "actions": {
+          "add": {
+            "label": "Add field to filtering"
+          },
+          "remove": {
+            "label": "Remove filter"
+          },
+          "toggle-mode": {
+            "tooltip": {
+              "intersect": "Intersect: Show results maching all filters",
+              "union": "Union: Show results maching at least one filter"
+            }
+          }
+        },
+        "inputs": {
+          "field": {
+            "placeholder": "Select field to filter"
+          }
+        },
+        "title": "Filtering"
+      },
+      "options": {
+        "pinning": {
+          "pin-left": "Drag here to pin left",
+          "pin-right": "Drag here to pin right",
+          "unpin": "Drag here to unpin"
+        },
+        "title": "Column options"
+      },
+      "pagination": {
+        "show-items": "Show rows {start}-{end} of {total}"
+      },
+      "sorting": {
+        "actions": {
+          "add": {
+            "label": "Add field to sorting"
+          },
+          "clear": {
+            "label": "Clear",
+            "tooltip": "Remove all fields from sorting"
+          },
+          "remove": {
+            "label": "Remove",
+            "tooltip": "Remove field from sorting"
+          },
+          "toggle-direction": {
+            "label": "Toggle direction"
+          }
+        },
+        "directions": {
+          "ascending": "Ascending",
+          "descending": "Descending"
+        },
+        "inputs": {
+          "field": {
+            "placeholder": "Select field to sort"
+          }
+        },
+        "title": "Sorting"
+      }
     }
   },
   "core": {
@@ -123,6 +189,10 @@
       "dark": "Dark",
       "light": "Light",
       "system": "System"
+    },
+    "user-role": {
+      "ADMIN": "Admin",
+      "USER": "User"
     }
   },
   "modules": {
@@ -149,6 +219,16 @@
         },
         "paragraph": "Please sign in with your credentials.",
         "title": "Sign In"
+      }
+    },
+    "users": {
+      "table": {
+        "columns": {
+          "email": "Email",
+          "firstName": "First name",
+          "lastname": "Last name",
+          "role": "Role"
+        }
       }
     }
   },

@@ -21,6 +21,7 @@ export class CaslAbilityFactory {
         'createdAt',
         'updatedAt',
         'email',
+        'role',
         'passwordChangedAt',
         'isMfaEnabled',
         'profile',

@@ -71,6 +71,67 @@
       "save": "Speichern",
       "submit": "Bestätigen",
       "yes": "Ja"
+    },
+    "search": {
+      "placeholder": "Suchen..."
+    },
+    "table": {
+      "filtering": {
+        "actions": {
+          "add": {
+            "label": "Feld zur Filterung hinzufügen"
+          },
+          "remove": {
+            "label": "Filter entfernen"
+          },
+          "toggle-mode": {
+            "tooltip": {
+              "intersect": "Vereinigung: Zeige Ergebnisse die allen Filtern entsprechen",
+              "union": "Schnittmenge: Zeige Ergebnisse die mindestens einem Filter entsprechen"
+            }
+          }
+        },
+        "inputs": {
+          "field": {
+            "placeholder": "Feld zum Filtern auswählen"
+          }
+        },
+        "title": "Filterung"
+      },
+      "options": {
+        "title": "Spaltenoptionen"
+      },
+      "pagination": {
+        "show-items": "Zeige Zeilen {start}-{end} von {total}"
+      },
+      "sorting": {
+        "actions": {
+          "add": {
+            "label": "Feld zur Sortierung hinzufügen"
+          },
+          "clear": {
+            "label": "Löschen",
+            "tooltip": "Alle Felder aus der Sortierung entfernen"
+          },
+          "remove": {
+            "label": "Entfernen",
+            "tooltip": "Feld von Sortierung entfernen"
+          },
+          "toggle-direction": {
+            "label": "Richtung umschalten"
+          }
+        },
+        "directions": {
+          "ascending": "Aufsteigend",
+          "descending": "Absteigend"
+        },
+        "inputs": {
+          "field": {
+            "placeholder": "Feld zum Sortieren auswählen"
+          }
+        },
+        "title": "Sortierung"
+      }
     }
   },
   "core": {
@@ -123,6 +184,10 @@
       "dark": "Dunkel",
       "light": "Hell",
       "system": "System"
+    },
+    "user-role": {
+      "ADMIN": "Admin",
+      "USER": "Benutzer"
     }
   },
   "modules": {
@@ -149,6 +214,16 @@
         },
         "paragraph": "Bitte melden Sie sich mit Ihren Zugangsdaten an.",
         "title": "Anmelden"
+      }
+    },
+    "users": {
+      "table": {
+        "columns": {
+          "email": "E-Mail",
+          "firstName": "Vorname",
+          "lastname": "Nachname",
+          "role": "Rolle"
+        }
       }
     }
   },
