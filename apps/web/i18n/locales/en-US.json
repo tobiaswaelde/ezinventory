@@ -266,6 +266,16 @@
           "label": "Security"
         }
       },
+      "profile": {
+        "description": "Edit your personal details",
+        "form": {
+          "actions": {
+            "error": "We could not save your changes. Please try again later or contact support.",
+            "success": "Your profile settings have been successfully saved."
+          }
+        },
+        "title": "Personal Details"
+      },
       "theme": {
         "description": "Set the color of the user interface.",
         "title": "Theme"

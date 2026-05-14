@@ -16,7 +16,10 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
+import { useApi } from '~/composables/api/api';
+import type { UserDTO } from '~/types/api/modules/user';
 import { Routes } from '~/types/routes';
+import { UserContextKey } from '~/types/symbols/user';
 
 const { t } = useI18n();
 
