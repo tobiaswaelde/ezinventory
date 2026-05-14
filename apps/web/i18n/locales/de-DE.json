@@ -143,6 +143,15 @@
         },
         "title": "Sortierung"
       }
+    },
+    "toasts": {
+      "error": "Fehler",
+      "info": "Information",
+      "item-archived": "Das ausgewählte Element wurde erfolgreich archiviert.",
+      "item-deleted": "Das ausgewählte Element wurde erfolgreich gelöscht.",
+      "item-unarchived": "Das ausgewählte Element wurde erfolgreich entarchiviert.",
+      "success": "Erfolgreich",
+      "warning": "Warnung"
     }
   },
   "core": {
@@ -150,6 +159,9 @@
       "user-menu": {
         "language": {
           "label": "Sprache"
+        },
+        "preferences": {
+          "label": "Einstellungen"
         },
         "shortcuts": {
           "label": "Tastenkürzel"
@@ -227,11 +239,46 @@
         "title": "Anmelden"
       }
     },
+    "preferences": {
+      "language": {
+        "actions": {
+          "submission": {
+            "failure": "Das Aktualisieren der Sprache ist fehlgeschlagen.",
+            "success": "Die Sprache wurde erfolgreich geändert."
+          }
+        },
+        "description": "Stellen Sie Ihre bevorzugte Sprache der Oberfläche ein.",
+        "title": "Sprache"
+      },
+      "navigation": {
+        "general": {
+          "label": "Allgemein"
+        },
+        "profile": {
+          "label": "Profil"
+        },
+        "security": {
+          "label": "Sicherheit"
+        }
+      },
+      "theme": {
+        "description": "Stellen Sie die Farbe der Oberfläche ein.",
+        "title": "Erscheinungsbild"
+      }
+    },
     "users": {
       "create": {
         "modal": {
           "description": "Erstellen Sie einen neuen Benutzer",
           "title": "Benutzer erstellen"
+        }
+      },
+      "details": {
+        "navigation": {
+          "preferences": "Einstellungen",
+          "profile": "Profil",
+          "security": "Sicherheit",
+          "title": "Benutzer"
         }
       },
       "fields": {

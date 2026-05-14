@@ -41,12 +41,12 @@ const items = computed<DropdownMenuItem[]>(() => [
     icon: 'i-tabler-palette',
     children: themeItems.value,
   },
-  // {
-  //   label: t('core.navbar.user-menu.preferences.label'),
-  //   kbds: [';'],
-  //   icon: 'i-tabler-settings',
-  //   to: { name: Routes.PreferencesGeneral },
-  // },
+  {
+    label: t('core.navbar.user-menu.preferences.label'),
+    kbds: [';'],
+    icon: 'i-tabler-settings',
+    to: { name: Routes.PreferencesGeneral },
+  },
   { type: 'separator' },
   {
     label: t('core.navbar.user-menu.shortcuts.label'),

@@ -18,7 +18,7 @@
     }"
     @select="
       (e, row) => {
-        // onSelect(row.original);
+        handleSelect(row.original);
       }
     "
   >
@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import type { UsersTableRow } from '~/components/modules/users/table/options';
+import { Routes } from '~/types/routes';
 import type { ColumnDefinition, TableProps } from '~/types/table';
 
 const props = defineProps<TableProps<UsersTableRow>>();
@@ -41,4 +42,11 @@ const columns = computed<ColumnDefinition<UsersTableRow>[]>(() => [
   ...props.columns,
   { id: 'actions', accessorKey: 'actions', header: '' },
 ]);
+
+const handleSelect = (row: UsersTableRow) => {
+  navigateTo({
+    name: Routes.AdminUsersUserProfile,
+    params: { id: row.id },
+  });
+};
 </script>

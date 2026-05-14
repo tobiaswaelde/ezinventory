@@ -148,6 +148,15 @@
         },
         "title": "Sorting"
       }
+    },
+    "toasts": {
+      "error": "Error",
+      "info": "Info",
+      "item-archived": "The selected item has been archived successfully.",
+      "item-deleted": "The selected item has been deleted successfully.",
+      "item-unarchived": "The selected item has been unarchived successfully.",
+      "success": "Success",
+      "warning": "Warning"
     }
   },
   "core": {
@@ -155,6 +164,9 @@
       "user-menu": {
         "language": {
           "label": "Language"
+        },
+        "preferences": {
+          "label": "Preferences"
         },
         "shortcuts": {
           "label": "Shortcuts"
@@ -232,11 +244,46 @@
         "title": "Sign In"
       }
     },
+    "preferences": {
+      "language": {
+        "actions": {
+          "submission": {
+            "failure": "Updating the language has failed.",
+            "success": "The language has been successfully changed."
+          }
+        },
+        "description": "Set the preferred language of the user interface.",
+        "title": "Language"
+      },
+      "navigation": {
+        "general": {
+          "label": "General"
+        },
+        "profile": {
+          "label": "Profile"
+        },
+        "security": {
+          "label": "Security"
+        }
+      },
+      "theme": {
+        "description": "Set the color of the user interface.",
+        "title": "Theme"
+      }
+    },
     "users": {
       "create": {
         "modal": {
           "description": "Create a new user",
           "title": "Create user"
+        }
+      },
+      "details": {
+        "navigation": {
+          "preferences": "Preferences",
+          "profile": "Profile",
+          "security": "Security",
+          "title": "User"
         }
       },
       "fields": {

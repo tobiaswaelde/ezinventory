@@ -36,7 +36,7 @@ export const useModuleApi = <TEndpoint extends Endpoint>(endpoint: TEndpoint) =>
       encodeValuesOnly: true,
       addQueryPrefix: true,
     });
-    return useApi().get<Endpoints[TEndpoint]['dto']>(`/${String(endpoint)}/${id}${q}`);
+    return useApi().get<Endpoints[TEndpoint]['dto']>(`/${String(endpoint)}/find-by-id/${id}${q}`);
   };
 
   const count = async (query: Record<string, any> = {}) => {
