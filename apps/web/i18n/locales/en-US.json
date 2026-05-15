@@ -244,7 +244,40 @@
         "title": "Sign In"
       }
     },
+    "inputs": {
+      "image-crop": {
+        "crop": "Crop",
+        "title": "Crop image"
+      }
+    },
     "preferences": {
+      "avatar": {
+        "description": "Upload or remove your profile picture",
+        "form": {
+          "actions": {
+            "delete": "Delete avatar",
+            "delete-success": "Your avatar has been removed.",
+            "select": "Select image",
+            "select-new": "Select new image",
+            "upload-success": "Your avatar has been updated."
+          },
+          "errors": {
+            "avatar-delete-submission-error": "The avatar could not be deleted. Please try again.",
+            "avatar-submit-empty-form": "Please choose an image first.",
+            "avatar-submit-invalid-file": "Please select an image file.",
+            "avatar-submit-invalid-size": "The image is too large. Please choose an image smaller than {size}.",
+            "avatar-submit-invalid-type": "Please upload a valid image file (JPEG, PNG, or WebP).",
+            "avatar-submit-submission-error": "The avatar could not be uploaded. Please try again."
+          },
+          "fields": {
+            "avatar": {
+              "description": "JPG, PNG, WebP, max. 10MB",
+              "label": "Avatar"
+            }
+          }
+        },
+        "title": "Profile Picture"
+      },
       "language": {
         "actions": {
           "submission": {

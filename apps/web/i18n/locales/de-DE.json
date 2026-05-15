@@ -239,7 +239,40 @@
         "title": "Anmelden"
       }
     },
+    "inputs": {
+      "image-crop": {
+        "crop": "Zuschneiden",
+        "title": "Bild zuschneiden"
+      }
+    },
     "preferences": {
+      "avatar": {
+        "description": "Profilbild hochladen oder löschen",
+        "form": {
+          "actions": {
+            "delete": "Avatar löschen",
+            "delete-success": "Ihr Avatar wurde entfernt.",
+            "select": "Bild auswählen",
+            "select-new": "Neues Bild auswählen",
+            "upload-success": "Ihr Avatar wurde aktualisiert."
+          },
+          "errors": {
+            "avatar-delete-submission-error": "Der Avatar konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+            "avatar-submit-empty-form": "Bitte wählen Sie zuerst ein Bild aus.",
+            "avatar-submit-invalid-file": "Bitte wählen Sie eine Bilddatei aus.",
+            "avatar-submit-invalid-size": "Das Bild ist zu groß. Bitte wählen Sie ein Bild kleiner als {size}.",
+            "avatar-submit-invalid-type": "Bitte laden Sie eine gültige Bilddatei hoch (JPEG, PNG oder WebP).",
+            "avatar-submit-submission-error": "Der Avatar konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
+          },
+          "fields": {
+            "avatar": {
+              "description": "JPG, PNG, WebP, max. 10MB",
+              "label": "Avatar"
+            }
+          }
+        },
+        "title": "Profilbild"
+      },
       "language": {
         "actions": {
           "submission": {
