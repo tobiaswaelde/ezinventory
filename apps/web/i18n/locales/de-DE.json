@@ -83,6 +83,17 @@
       "submit": "Bestätigen",
       "yes": "Ja"
     },
+    "modals": {
+      "otp": {
+        "description": "Bitte bestätigen Sie Ihr Einmalpasswort um fortzufahren.",
+        "fields": {
+          "otp": {
+            "placeholder": "Einmalpasswort eingeben"
+          }
+        },
+        "title": "Einmalpasswort bestätigen"
+      }
+    },
     "search": {
       "placeholder": "Suchen..."
     },
@@ -307,6 +318,25 @@
       "theme": {
         "description": "Stellen Sie die Farbe der Oberfläche ein.",
         "title": "Erscheinungsbild"
+      },
+      "update-password": {
+        "actions": {
+          "error": "Fehler beim Ändern des Passworts.",
+          "success": "Passwort erfolgreich geändert."
+        },
+        "description": "Ändern Sie hier das Passwort Ihres Benutzerprofils.",
+        "fields": {
+          "confirm-password": {
+            "label": "Neues Passwort bestätigen"
+          },
+          "current-password": {
+            "label": "Aktuelles Passwort"
+          },
+          "new-password": {
+            "label": "Neues Passwort"
+          }
+        },
+        "title": "Passwort"
       }
     },
     "users": {

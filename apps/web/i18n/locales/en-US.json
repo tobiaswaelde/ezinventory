@@ -83,6 +83,17 @@
       "submit": "Submit",
       "yes": "Yes"
     },
+    "modals": {
+      "otp": {
+        "description": "Please enter the One-Time password to continue.",
+        "fields": {
+          "otp": {
+            "placeholder": "Enter OTP"
+          }
+        },
+        "title": "Enter OTP"
+      }
+    },
     "search": {
       "placeholder": "Search..."
     },
@@ -312,6 +323,25 @@
       "theme": {
         "description": "Set the color of the user interface.",
         "title": "Theme"
+      },
+      "update-password": {
+        "actions": {
+          "error": "Failed to update password.",
+          "success": "Password updated successfully."
+        },
+        "description": "Change your account password here.",
+        "fields": {
+          "confirm-password": {
+            "label": "Confirm New Password"
+          },
+          "current-password": {
+            "label": "Current Password"
+          },
+          "new-password": {
+            "label": "New Password"
+          }
+        },
+        "title": "Password"
       }
     },
     "users": {

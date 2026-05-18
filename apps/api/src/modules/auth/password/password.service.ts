@@ -45,7 +45,7 @@ export class PasswordService {
         where: { id: userId },
         data: {
           password: hashedPassword,
-          passwordChangeRequested: false,
+          passwordChangedAt: new Date(),
         },
         include: { profile: true, preferences: true },
       });

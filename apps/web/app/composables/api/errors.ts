@@ -61,9 +61,10 @@ export const useErrors = () => {
   /**
    * Extracts a user-friendly error message from an error object, with support for internationalization.
    * @param {unknown} err The error object to extract the message from, which can be of any type but is expected to be an AxiosError for API-related errors.
+   * @param {string} [fallbackMessage] An optional fallback message to use if the error does not match any known error codes. If not provided, a generic "something went wrong" message will be used.
    * @returns {string} A user-friendly error message, either specific to the error or a generic fallback message.
    */
-  const getErrorMessage = (err: unknown): string => {
+  const getErrorMessage = (err: unknown, fallbackMessage?: string): string => {
     // if (isAxiosError(err)) {
     //   const message = err.response?.data.message;
     //   if (typeof message === 'string' && errorMessages.value[message as ErrorCode]) {
@@ -78,15 +79,16 @@ export const useErrors = () => {
     }
 
     // fallback message
-    return t('common.errors.something-went-wrong');
+    return fallbackMessage ?? t('common.errors.something-went-wrong');
   };
 
   /**
    * Handles an error by extracting a user-friendly message and displaying it as a toast notification.
    * @param {unknown} err The error object to handle, which can be of any type but is expected to be an AxiosError for API-related errors.
+   * @param {string} [fallbackMessage] An optional fallback message to use if the error does not match any known error codes. If not provided, a generic "something went wrong" message will be used.
    */
-  const handleError = (err: unknown) => {
-    const message = getErrorMessage(err);
+  const handleError = (err: unknown, fallbackMessage?: string) => {
+    const message = getErrorMessage(err, fallbackMessage);
     toasts.error(message);
   };
 

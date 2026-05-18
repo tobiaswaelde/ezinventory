@@ -1,5 +1,11 @@
 <template>
-  <UPageCard variant="subtle" :ui="{ footer: 'flex flex-row justify-end w-full', body: 'w-full' }">
+  <UPageCard
+    variant="subtle"
+    :ui="{
+      footer: 'flex flex-row justify-end w-full',
+      body: 'w-full',
+    }"
+  >
     <template #header>
       <LayoutPageCardHeader
         icon="i-tabler-user"
@@ -13,16 +19,7 @@
     </template>
 
     <template #footer>
-      <UButton
-        color="neutral"
-        type="submit"
-        class="w-fit lg:ms-auto"
-        icon="i-tabler:device-floppy"
-        :label="$t('common.labels.save')"
-        :disabled="!isValid || !dirty"
-        :loading="loading"
-        @click="handleSave"
-      />
+      <CommonButtonsSave :disabled="!isValid || !dirty" :loading="loading" @click="handleSave" />
     </template>
   </UPageCard>
 </template>
