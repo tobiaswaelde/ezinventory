@@ -52,6 +52,9 @@
       "warehouses/not-found": "The warehouse was not found."
     },
     "inputs": {
+      "copy-to-clipboard": {
+        "tooltip": "Copy to clipboard"
+      },
       "password": {
         "hide": "Hide password",
         "show": "Show password"
@@ -298,6 +301,47 @@
         },
         "description": "Set the preferred language of the user interface.",
         "title": "Language"
+      },
+      "mfa": {
+        "description": "Enhance your account security by enabling Multi-Factor Authentication (MFA). This adds an extra layer of protection to your account.",
+        "disabled": {
+          "actions": {
+            "enable": {
+              "error": "Failed to enable MFA.",
+              "label": "Enable MFA",
+              "success": "MFA enabled successfully."
+            },
+            "request": {
+              "error": "Failed to request MFA secret"
+            },
+            "verify": "Verify & Enable MFA"
+          },
+          "alert": {
+            "description": "MFA is currently disabled on your account.",
+            "title": "MFA disabled"
+          },
+          "setup": {
+            "alert": {
+              "title": "Scan the QR code with your authenticator app or use the secret key below."
+            },
+            "fields": {
+              "secret": {
+                "label": "Secret"
+              }
+            }
+          }
+        },
+        "enabled": {
+          "actions": {
+            "disable": "Disable MFA",
+            "error": "Failed to disable MFA.",
+            "success": "MFA disabled successfully."
+          },
+          "alert": {
+            "title": "MFA is currently enabled on your account."
+          }
+        },
+        "title": "Multi-Factor Authentication (MFA)"
       },
       "navigation": {
         "general": {

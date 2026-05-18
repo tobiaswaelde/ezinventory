@@ -16,12 +16,13 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
-import { useApi } from '~/composables/api/api';
-import type { UserDTO } from '~/types/api/modules/user';
+import { useAuthStore } from '~/store/auth';
 import { Routes } from '~/types/routes';
-import { UserContextKey } from '~/types/symbols/user';
 
 const { t } = useI18n();
+const auth = useAuthStore();
+
+const isMfaEnabled = computed(() => auth.currentUser?.isMfaEnabled);
 
 const navItems = computed<NavigationMenuItem[]>(() => [
   {
@@ -39,6 +40,7 @@ const navItems = computed<NavigationMenuItem[]>(() => [
     label: t('modules.preferences.navigation.security.label'),
     icon: 'i-tabler-shield',
     to: { name: Routes.PreferencesSecurity },
+    chip: isMfaEnabled.value ? undefined : { color: 'error' },
   },
 ]);
 </script>

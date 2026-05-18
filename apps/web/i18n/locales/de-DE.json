@@ -52,6 +52,9 @@
       "warehouses/not-found": "Das Lager wurde nicht gefunden."
     },
     "inputs": {
+      "copy-to-clipboard": {
+        "tooltip": "In die Zwischenablage kopieren"
+      },
       "password": {
         "hide": "Passwort verbergen",
         "show": "Passwort anzeigen"
@@ -293,6 +296,47 @@
         },
         "description": "Stellen Sie Ihre bevorzugte Sprache der Oberfläche ein.",
         "title": "Sprache"
+      },
+      "mfa": {
+        "description": "Verbessern Sie die Sicherheit Ihres Kontos, indem Sie die Multi-Faktor-Authentifizierung (MFA) aktivieren. Dies bietet Ihrem Konto eine zusätzliche Schutzebene.",
+        "disabled": {
+          "actions": {
+            "enable": {
+              "error": "MFA konnte nicht aktiviert werden.",
+              "label": "MFA aktivieren",
+              "success": "MFA erfolgreich aktiviert."
+            },
+            "request": {
+              "error": "MFA-Schlüssel konnte nicht angefordert werden"
+            },
+            "verify": "Überprüfen und aktivieren"
+          },
+          "alert": {
+            "description": "MFA ist derzeit für Ihr Konto deaktiviert.",
+            "title": "MFA deaktiviert"
+          },
+          "setup": {
+            "alert": {
+              "title": "Scannen Sie den QR-Code mit Ihrer Authentifizierungs-App oder verwenden Sie den unten stehenden geheimen Schlüssel."
+            },
+            "fields": {
+              "secret": {
+                "label": "Schlüssel"
+              }
+            }
+          }
+        },
+        "enabled": {
+          "actions": {
+            "disable": "MFA deaktivieren",
+            "error": "MFA konnte nicht deaktiviert werder.",
+            "success": "MFA erfolgreich deaktiviert."
+          },
+          "alert": {
+            "title": "MFA ist derzeit für Ihr Konto aktiviert."
+          }
+        },
+        "title": "Multi-Faktor-Authentifizierung (MFA)"
       },
       "navigation": {
         "general": {
