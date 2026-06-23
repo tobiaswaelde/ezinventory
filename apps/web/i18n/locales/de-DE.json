@@ -425,6 +425,22 @@
         }
       },
       "preferences": {
+        "avatar": {
+          "description": "Laden Sie ein Profilbild für den Benutzer hoch oder löschen Sie es",
+          "form": {
+            "actions": {
+              "delete-success": "Das Profilbild wurde gelöscht.",
+              "upload-success": "Das Profilbild wurde aktualisiert."
+            },
+            "fields": {
+              "avatar": {
+                "description": "JPG, PNG, WebP, max. 10MB",
+                "label": "Avatar"
+              }
+            }
+          },
+          "title": "Profilbild"
+        },
         "profile": {
           "description": "Bearbeiten Sie die persönlichen Details des Benutzers",
           "form": {

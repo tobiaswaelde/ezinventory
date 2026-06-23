@@ -430,6 +430,22 @@
         }
       },
       "preferences": {
+        "avatar": {
+          "description": "Upload or remove the profile picture for the user",
+          "form": {
+            "actions": {
+              "delete-success": "The avatar has been deleted.",
+              "upload-success": "The avatar has been updated."
+            },
+            "fields": {
+              "avatar": {
+                "description": "JPG, PNG, WebP, max. 10MB",
+                "label": "Avatar"
+              }
+            }
+          },
+          "title": "Profile Picture"
+        },
         "profile": {
           "description": "Edit the personal details of the user",
           "form": {

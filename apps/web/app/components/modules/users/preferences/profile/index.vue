@@ -35,14 +35,13 @@ import { buildTitle } from '~/util/app';
 import { injectStrict } from '~/util/inject-strict';
 
 const props = defineProps<{
+  userId: string;
   profile: UserProfileDTO;
 }>();
 
 const { t } = useI18n();
 const toasts = useToasts();
 const { refresh } = injectStrict(UserContextKey);
-
-const userId = useRouteParams<string>('id');
 
 useHead({
   title: buildTitle(
@@ -63,7 +62,7 @@ const handleSave = async () => {
   try {
     loading.value = true;
 
-    await useApi().patch(`/users/${userId.value}/profile`, data.value);
+    await useApi().patch(`/users/${props.userId}/profile`, data.value);
     await refresh();
 
     data.value = updateUserProfileSchema.parse({ ...props.profile });
