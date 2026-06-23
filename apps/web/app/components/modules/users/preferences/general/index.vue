@@ -1,47 +1,63 @@
 <template>
-  <UPageCard
-    variant="subtle"
-    :ui="{
-      footer: 'flex flex-row justify-end w-full',
-      body: 'w-full',
-    }"
-  >
-    <template #header>
-      <LayoutPageCardHeader
-        icon="i-tabler-settings"
-        :title="$t('modules.users.preferences.general.title')"
-        :description="$t('modules.users.preferences.general.description')"
-      />
-    </template>
+  <div class="grid gap-8">
+    <UPageCard
+      variant="subtle"
+      :ui="{
+        footer: 'flex flex-row justify-end w-full',
+        body: 'w-full',
+      }"
+    >
+      <template #header>
+        <LayoutPageCardHeader
+          icon="i-tabler-language"
+          :title="$t('modules.preferences.language.title')"
+          :description="$t('modules.preferences.language.description')"
+        />
+      </template>
 
-    <template #body>
-      <UForm ref="formRef" :schema="updateUserPreferencesSchema" :state="data" class="grid gap-4 md:grid-cols-2">
+      <template #body>
         <UFormField name="language" :label="$t('modules.users.fields.preferences.language')">
-          <CommonInputsSelectLanguage v-model="data.language" />
+          <CommonInputsSelectLanguage v-model="language" class="w-full sm:w-72" />
         </UFormField>
+      </template>
 
+      <template #footer>
+        <CommonButtonsSave :disabled="!languageDirty" :loading="loadingLanguage" @click="handleSaveLanguage" />
+      </template>
+    </UPageCard>
+
+    <UPageCard
+      variant="subtle"
+      :ui="{
+        footer: 'flex flex-row justify-end w-full',
+        body: 'w-full',
+      }"
+    >
+      <template #header>
+        <LayoutPageCardHeader
+          icon="i-tabler-world"
+          :title="$t('modules.preferences.timezone.title')"
+          :description="$t('modules.preferences.timezone.description')"
+        />
+      </template>
+
+      <template #body>
         <UFormField name="timezone" :label="$t('modules.users.fields.preferences.timezone')">
-          <CommonInputsSelectTimezone v-model="data.timezone" />
+          <CommonInputsSelectTimezone v-model="timezone" class="w-full sm:w-72" />
         </UFormField>
-      </UForm>
-    </template>
+      </template>
 
-    <template #footer>
-      <CommonButtonsSave :disabled="!isValid || !dirty" :loading="loading" @click="handleSave" />
-    </template>
-  </UPageCard>
+      <template #footer>
+        <CommonButtonsSave :disabled="!timezoneDirty" :loading="loadingTimezone" @click="handleSaveTimezone" />
+      </template>
+    </UPageCard>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useApi } from '~/composables/api/api';
-import { useSchema } from '~/composables/api/schema';
 import { useToasts } from '~/composables/app/toasts';
-import { useFormDirty } from '~/composables/helpers/form-dirty';
-import { usePreventLeave } from '~/composables/helpers/prevent-leave';
-import {
-  updateUserPreferencesSchema,
-  type UserPreferencesDTO,
-} from '~/types/api/modules/user-preferences';
+import type { UserPreferencesDTO } from '~/types/api/modules/user-preferences';
 import { UserContextKey } from '~/types/symbols/user';
 import { injectStrict } from '~/util/inject-strict';
 
@@ -54,37 +70,54 @@ const { t } = useI18n();
 const toasts = useToasts();
 const { refresh } = injectStrict(UserContextKey);
 
-const formRef = useTemplateRef('formRef');
-const dirty = ref<boolean>(false);
-useFormDirty(formRef, dirty);
-usePreventLeave(dirty);
+const language = ref<string>(props.preferences.language);
+const timezone = ref<string | undefined>(props.preferences.timezone);
+const loadingLanguage = ref<boolean>(false);
+const loadingTimezone = ref<boolean>(false);
 
-const loading = ref<boolean>(false);
-const { data, isValid } = useSchema(updateUserPreferencesSchema, () => ({
-  language: props.preferences.language,
-  timezone: props.preferences.timezone,
-}));
+watch(
+  () => props.preferences,
+  (value) => {
+    language.value = value.language;
+    timezone.value = value.timezone;
+  },
+  { immediate: true, deep: true },
+);
 
-const handleSave = async () => {
-  if (!data.value) return;
+const languageDirty = computed(() => language.value !== props.preferences.language);
+const timezoneDirty = computed(() => timezone.value !== props.preferences.timezone);
+
+const handleSaveLanguage = async () => {
+  if (!languageDirty.value) return;
 
   try {
-    loading.value = true;
+    loadingLanguage.value = true;
 
-    await useApi().patch(`/users/${props.userId}/preferences`, data.value);
+    await useApi().patch(`/users/${props.userId}/preferences`, { language: language.value });
     await refresh();
-
-    data.value = updateUserPreferencesSchema.parse({
-      language: props.preferences.language,
-      timezone: props.preferences.timezone,
-    });
-    dirty.value = false;
 
     toasts.success(t('modules.users.preferences.general.form.actions.success'));
   } catch (err) {
     toasts.error(t('modules.users.preferences.general.form.actions.error'));
   } finally {
-    loading.value = false;
+    loadingLanguage.value = false;
+  }
+};
+
+const handleSaveTimezone = async () => {
+  if (!timezoneDirty.value) return;
+
+  try {
+    loadingTimezone.value = true;
+
+    await useApi().patch(`/users/${props.userId}/preferences`, { timezone: timezone.value });
+    await refresh();
+
+    toasts.success(t('modules.users.preferences.general.form.actions.success'));
+  } catch (err) {
+    toasts.error(t('modules.users.preferences.general.form.actions.error'));
+  } finally {
+    loadingTimezone.value = false;
   }
 };
 </script>

@@ -8,7 +8,7 @@
       />
     </template>
 
-    <CommonInputsSelectLanguage :disabled="loading" v-model="value" class="w-full sm:w-56" />
+    <CommonInputsSelectLanguage :disabled="loading" v-model="value" class="w-full sm:w-72" />
   </UPageCard>
 </template>
 

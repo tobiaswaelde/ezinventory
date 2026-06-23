@@ -297,6 +297,16 @@
         "description": "Stellen Sie Ihre bevorzugte Sprache der Oberfläche ein.",
         "title": "Sprache"
       },
+      "timezone": {
+        "actions": {
+          "submission": {
+            "failure": "Das Aktualisieren der Zeitzone ist fehlgeschlagen.",
+            "success": "Die Zeitzone wurde erfolgreich geändert."
+          }
+        },
+        "description": "Stellen Sie Ihre bevorzugte Zeitzone für die Oberfläche ein.",
+        "title": "Zeitzone"
+      },
       "mfa": {
         "description": "Verbessern Sie die Sicherheit Ihres Kontos, indem Sie die Multi-Faktor-Authentifizierung (MFA) aktivieren. Dies bietet Ihrem Konto eine zusätzliche Schutzebene.",
         "disabled": {
