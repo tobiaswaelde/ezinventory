@@ -429,6 +429,18 @@
           "label": "User role"
         }
       },
+      "preferences": {
+        "profile": {
+          "description": "Edit the personal details of the user",
+          "form": {
+            "actions": {
+              "error": "User profile could not be updated.",
+              "success": "User profile updated successfully."
+            }
+          },
+          "title": "Personal Details"
+        }
+      },
       "table": {
         "columns": {
           "email": "Email",

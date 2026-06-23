@@ -424,6 +424,18 @@
           "label": "Benutzerrolle"
         }
       },
+      "preferences": {
+        "profile": {
+          "description": "Bearbeiten Sie die persönlichen Details des Benutzers",
+          "form": {
+            "actions": {
+              "error": "Benutzerprofil konnte nicht aktualisiert werden.",
+              "success": "Benutzerprofile erfolgreich aktualisiert."
+            }
+          },
+          "title": "Persönliche Details"
+        }
+      },
       "table": {
         "columns": {
           "email": "E-Mail",

@@ -1,8 +1,8 @@
-import type { InjectionKey } from 'vue';
+import type { InjectionKey, Ref } from 'vue';
 import type { UserDTO } from '~/types/api/modules/user';
 
 export type UserContext = {
-  user: UserDTO;
+  user: Ref<UserDTO>;
   refresh(): Promise<void>;
 };
 

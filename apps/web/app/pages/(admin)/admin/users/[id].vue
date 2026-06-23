@@ -29,7 +29,9 @@
 import type { NavigationMenuItem } from '@nuxt/ui';
 import { useRouteParams } from '@vueuse/router';
 import { useModuleApi } from '~/composables/api/module-api';
+import { type UserDTO } from '~/types/api/modules/user';
 import { Routes } from '~/types/routes';
+import { UserContextKey } from '~/types/symbols/user';
 
 const { t } = useI18n();
 
@@ -39,7 +41,7 @@ useHead({
 
 const id = useRouteParams<string>('id');
 
-const { data, refresh } = useAsyncData(
+const { data, refresh } = await useAsyncData<UserDTO>(
   async () => {
     const res = await useModuleApi('users').get(id.value, {
       include: {
@@ -52,9 +54,19 @@ const { data, refresh } = useAsyncData(
   { watch: [id], immediate: true },
 );
 
+const user = computed<UserDTO>(() => {
+  if (!data.value) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'User not found',
+    });
+  }
+
+  return data.value;
+});
+
 const name = computed(() => {
-  if (!data.value) return undefined;
-  return [data.value.profile?.firstname, data.value.profile?.lastname].filter(Boolean).join(' ');
+  return [user.value.profile?.firstname, user.value.profile?.lastname].filter(Boolean).join(' ');
 });
 
 const navItems = computed<NavigationMenuItem[]>(() => [
@@ -77,4 +89,9 @@ const navItems = computed<NavigationMenuItem[]>(() => [
     exact: true,
   },
 ]);
+
+provide(UserContextKey, {
+  user,
+  refresh: refresh,
+});
 </script>
