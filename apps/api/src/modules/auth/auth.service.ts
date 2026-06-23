@@ -13,6 +13,7 @@ import { PrismaService } from '~/prisma/prisma.service';
 import { AuthRequest } from '~/types/auth-request';
 import { AppAbility } from '~/types/casl';
 import { AuthResultDTO } from '~/types/modules/auth/auth-result.dto';
+import type { JwtPayloadMfa } from '~/types/modules/auth/jwt-payload';
 import { SigninDTO } from '~/types/modules/auth/signin.dto';
 import { UserPayload } from '~/types/modules/user';
 import { UserDTO } from '~/types/modules/user/user.dto';

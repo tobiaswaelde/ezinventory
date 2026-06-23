@@ -7,6 +7,8 @@ const config: Config.InitialOptions = {
     '^~/(.*)$': '<rootDir>/src/$1',
     // @/* → ./*
     '^@/(.*)$': '<rootDir>/$1',
+    // @ezinventory/shared/* → ../../libs/shared/src/*
+    '^@ezinventory/shared/(.*)$': '<rootDir>/../../libs/shared/src/$1',
   },
   testRegex: '.*\\.spec\\.ts$',
   preset: 'ts-jest',

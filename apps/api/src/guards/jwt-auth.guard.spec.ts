@@ -6,7 +6,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CaslAbilityFactory } from '~/casl/ability.factory';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PrismaService } from '~/prisma/prisma.service';
 
@@ -28,12 +27,14 @@ describe('JwtAuthGuard', () => {
   let guard: JwtAuthGuard;
   let mockJwtService: jest.Mocked<Pick<JwtService, 'verifyAsync'>>;
   let mockDb: any;
-  let mockCaslFactory: jest.Mocked<Pick<CaslAbilityFactory, 'createForUser'>>;
+  let mockCaslFactory: {
+    createForUser: jest.Mock<Promise<any>, [any]>;
+  };
 
   beforeEach(() => {
     mockJwtService = { verifyAsync: jest.fn() } as any;
     mockDb = { user: { findUnique: jest.fn() } };
-    mockCaslFactory = { createForUser: jest.fn().mockResolvedValue({ rules: [] }) } as any;
+    mockCaslFactory = { createForUser: jest.fn().mockResolvedValue({ rules: [] }) };
 
     guard = new JwtAuthGuard(
       mockJwtService as any,

@@ -13,6 +13,7 @@ import { Request } from 'express';
 import { CaslAbilityFactory } from '~/casl/ability.factory';
 import { jwtVerifyOptions } from '~/config/jwt';
 import { PrismaService } from '~/prisma/prisma.service';
+import type { JwtPayloadMfa } from '~/types/modules/auth/jwt-payload';
 
 /**
  * Auth guard to verify JWT token.

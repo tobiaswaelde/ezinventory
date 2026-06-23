@@ -54,6 +54,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@iconify-json/flag": "^1.2.12",
     "@iconify-json/lucide": "^1.2.114",
     "@iconify-json/tabler": "^1.2.26",
     "@nuxtjs/tailwindcss": "^7.0.0-beta.0",

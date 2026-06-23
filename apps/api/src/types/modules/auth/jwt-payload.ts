@@ -1,9 +1,9 @@
-type JwtPayload = {
+export type JwtPayload = {
   sub: string;
   email: string;
 };
 
-type JwtPayloadMfa = {
+export type JwtPayloadMfa = {
   sub: string;
   email: string;
   mfaPending: boolean;

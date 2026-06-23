@@ -47,6 +47,7 @@ import { UserPreferencesDTO } from '~/types/modules/user-preferences/user-prefer
 import { UpdateUserProfileDTO } from '~/types/modules/user-profile/update-user-profile.dto';
 import { UserProfileDTO } from '~/types/modules/user-profile/user-profile.dto';
 import { CreateUserDTO } from '~/types/modules/user/create-user.dto';
+import { UpdateUserPasswordDTO } from '~/types/modules/user/update-user-password.dto';
 import { UpdateUserDTO } from '~/types/modules/user/update-user.dto';
 import { UserDTO } from '~/types/modules/user/user.dto';
 import { PaginatedDTO } from '~/types/pagination/paginated.dto';
@@ -184,6 +185,41 @@ export class UsersController {
   ) {
     const profile = await this.userProfileService.updateProfile(id, data);
     return UserProfileDTO.fromModel(profile, req.ability);
+  }
+
+  @Patch('/:id/password')
+  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @ApiParamId({ description: 'The ID of the user to set a password for.' })
+  @ApiOperation({ summary: 'Set user password by ID' })
+  @ApiOkResponse({ description: 'User password updated successfully', type: UserDTO })
+  @ApiErrorResponses({
+    unauthorizedCodes: [ErrorCode.Unauthorized],
+    forbiddenCodes: [ErrorCode.InsufficientPermissions],
+    notFoundCodes: [ErrorCode.UserNotFound],
+  })
+  async updateUserPassword(
+    @Req() req: AuthRequest,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() data: UpdateUserPasswordDTO,
+  ) {
+    const user = await this.usersService.setPassword(id, data);
+    return UserDTO.fromModel(user, req.ability);
+  }
+
+  @Post('/:id/mfa/disable')
+  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @ApiParamId({ description: 'The ID of the user to disable MFA for.' })
+  @ApiOperation({ summary: 'Disable MFA for a user by ID' })
+  @ApiOkResponse({ description: 'User MFA disabled successfully', type: UserDTO })
+  @ApiErrorResponses({
+    unauthorizedCodes: [ErrorCode.Unauthorized],
+    forbiddenCodes: [ErrorCode.InsufficientPermissions],
+    notFoundCodes: [ErrorCode.UserNotFound],
+    conflictCodes: [ErrorCode.AuthMfaNotEnabled],
+  })
+  async disableUserMfa(@Req() req: AuthRequest, @Param('id', ParseUUIDPipe) id: string) {
+    const user = await this.usersService.disableMfa(id);
+    return UserDTO.fromModel(user, req.ability);
   }
 
   @Delete('/:id')

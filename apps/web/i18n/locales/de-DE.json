@@ -441,6 +441,16 @@
           },
           "title": "Profilbild"
         },
+        "general": {
+          "description": "Bearbeiten Sie die gespeicherte Sprache und Zeitzone des Benutzers",
+          "form": {
+            "actions": {
+              "error": "Benutzereinstellungen konnten nicht aktualisiert werden.",
+              "success": "Benutzereinstellungen erfolgreich aktualisiert."
+            }
+          },
+          "title": "Einstellungen"
+        },
         "profile": {
           "description": "Bearbeiten Sie die persönlichen Details des Benutzers",
           "form": {
@@ -450,6 +460,48 @@
             }
           },
           "title": "Persönliche Details"
+        }
+      },
+      "security": {
+        "mfa": {
+          "description": "Deaktivieren Sie die Multi-Faktor-Authentifizierung für diesen Benutzer, wenn er keinen Zugriff mehr auf seinen Authenticator hat.",
+          "disabled": {
+            "alert": {
+              "description": "Für diesen Benutzer ist MFA derzeit nicht aktiviert.",
+              "title": "MFA ist deaktiviert."
+            }
+          },
+          "enabled": {
+            "actions": {
+              "disable": "MFA deaktivieren",
+              "error": "Fehler beim Deaktivieren von MFA.",
+              "success": "MFA erfolgreich deaktiviert."
+            },
+            "alert": {
+              "description": "Für diesen Benutzer ist MFA derzeit aktiviert.",
+              "title": "MFA ist aktiviert."
+            }
+          },
+          "title": "Multi-Faktor-Authentifizierung (MFA)"
+        },
+        "password": {
+          "actions": {
+            "error": "Fehler beim Ändern des Passworts.",
+            "success": "Passwort erfolgreich geändert."
+          },
+          "description": "Legen Sie direkt ein neues Passwort für diesen Benutzer fest.",
+          "errors": {
+            "password-mismatch": "Die Passwörter müssen übereinstimmen."
+          },
+          "fields": {
+            "confirm-password": {
+              "label": "Neues Passwort bestätigen"
+            },
+            "password": {
+              "label": "Neues Passwort"
+            }
+          },
+          "title": "Passwort"
         }
       },
       "table": {

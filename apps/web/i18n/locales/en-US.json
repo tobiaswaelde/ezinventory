@@ -446,6 +446,16 @@
           },
           "title": "Profile Picture"
         },
+        "general": {
+          "description": "Edit the saved language and time zone for the user",
+          "form": {
+            "actions": {
+              "error": "User preferences could not be updated.",
+              "success": "User preferences updated successfully."
+            }
+          },
+          "title": "Preferences"
+        },
         "profile": {
           "description": "Edit the personal details of the user",
           "form": {
@@ -455,6 +465,48 @@
             }
           },
           "title": "Personal Details"
+        }
+      },
+      "security": {
+        "mfa": {
+          "description": "Disable multi-factor authentication for this user when they lose access to their authenticator.",
+          "disabled": {
+            "alert": {
+              "description": "This user currently does not have MFA enabled.",
+              "title": "MFA is disabled."
+            }
+          },
+          "enabled": {
+            "actions": {
+              "disable": "Disable MFA",
+              "error": "Failed to disable MFA.",
+              "success": "MFA disabled successfully."
+            },
+            "alert": {
+              "description": "This user currently has MFA enabled.",
+              "title": "MFA is enabled."
+            }
+          },
+          "title": "Multi-Factor Authentication (MFA)"
+        },
+        "password": {
+          "actions": {
+            "error": "Failed to update password.",
+            "success": "Password updated successfully."
+          },
+          "description": "Set a new password directly for this user.",
+          "errors": {
+            "password-mismatch": "Passwords must match."
+          },
+          "fields": {
+            "confirm-password": {
+              "label": "Confirm New Password"
+            },
+            "password": {
+              "label": "New Password"
+            }
+          },
+          "title": "Password"
         }
       },
       "table": {

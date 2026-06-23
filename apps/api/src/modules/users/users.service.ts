@@ -16,6 +16,7 @@ import { S3Service } from '~/services/s3.service';
 import { CaslSubject } from '~/types/casl/subject';
 import { UserPayload } from '~/types/modules/user';
 import { CreateUserDTO } from '~/types/modules/user/create-user.dto';
+import { UpdateUserPasswordDTO } from '~/types/modules/user/update-user-password.dto';
 import { UpdateUserDTO } from '~/types/modules/user/update-user.dto';
 import { CryptoUtil } from '~/util/crypto';
 
@@ -111,7 +112,6 @@ export class UsersService extends QueryService<UserDelegate, UserTypeMap> {
         include: {
           profile: true,
           preferences: true,
-          branch: { include: { address: true, preferences: true } },
         },
       });
     });
@@ -135,6 +135,70 @@ export class UsersService extends QueryService<UserDelegate, UserTypeMap> {
       return tx.user.delete({
         where: { id },
         include: { profile: true, preferences: true },
+      });
+    });
+  }
+
+  /**
+   * Set a new password for a user by ID.
+   * @param {string} id The ID of the user to update
+   * @param {UpdateUserPasswordDTO} data The new password data
+   * @returns {UserPayload} The updated user
+   * @throws {NotFoundException} ErrorCode.UserNotFound
+   */
+  public async setPassword(id: string, data: UpdateUserPasswordDTO): Promise<UserPayload> {
+    return this.db.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({ where: { id } });
+      if (!user) {
+        throw new NotFoundException(ErrorCode.UserNotFound);
+      }
+
+      const hashedPassword = await CryptoUtil.encryptPassword(data.password);
+
+      return tx.user.update({
+        where: { id },
+        data: {
+          password: hashedPassword,
+          passwordChangedAt: new Date(),
+        },
+        include: {
+          profile: true,
+          preferences: true,
+        },
+      });
+    });
+  }
+
+  /**
+   * Disable MFA for a user by ID.
+   * @param {string} id The ID of the user to update
+   * @returns {UserPayload} The updated user
+   * @throws {NotFoundException} ErrorCode.UserNotFound
+   * @throws {ConflictException} ErrorCode.AuthMfaNotEnabled
+   */
+  public async disableMfa(id: string): Promise<UserPayload> {
+    return this.db.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id },
+        select: { isMfaEnabled: true },
+      });
+      if (!user) {
+        throw new NotFoundException(ErrorCode.UserNotFound);
+      }
+      if (!user.isMfaEnabled) {
+        throw new ConflictException(ErrorCode.AuthMfaNotEnabled);
+      }
+
+      return tx.user.update({
+        where: { id },
+        data: {
+          isMfaEnabled: false,
+          mfaSecret: null,
+        },
+        include: {
+          profile: true,
+          preferences: true,
+        },
       });
     });
   }
