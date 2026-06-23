@@ -19,3 +19,4 @@ test-results
 .nx/workspace-data
 docs/.vitepress/.temp
 docs/.vitepress/dist
+.worktrees
