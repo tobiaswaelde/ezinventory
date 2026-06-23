@@ -13,7 +13,7 @@
         color="neutral"
         variant="ghost"
         :avatar="{ src: logo, size: 'lg' }"
-        :label="collapsed ? undefined : `OpenCRM`"
+        :label="collapsed ? undefined : `EzInventory`"
         :square="collapsed"
         :class="[!collapsed && 'py-2']"
         :block="collapsed"

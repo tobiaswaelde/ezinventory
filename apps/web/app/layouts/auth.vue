@@ -5,7 +5,7 @@
         color="neutral"
         variant="ghost"
         :avatar="{ src: logo, size: 'lg' }"
-        label="OpenCRM"
+        label="EzInventory"
         class="w-full p-2"
         :to="{ name: Routes.Index }"
       />
