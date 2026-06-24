@@ -1,0 +1,63 @@
+name: nx-lint
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: nx-lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ github.ref_name }}-
+            nx-${{ runner.os }}-main-
+            nx-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve NX base/head
+        run: |
+          set -eu
+
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            BASE="origin/${GITHUB_BASE_REF}"
+            git fetch origin "${GITHUB_BASE_REF}" --depth=1
+          else
+            BASE="${GITHUB_EVENT_BEFORE:-}"
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="HEAD~1"
+            fi
+          fi
+
+          echo "NX_BASE=${BASE}" >> "$GITHUB_ENV"
+          echo "NX_HEAD=${GITHUB_SHA}" >> "$GITHUB_ENV"
+
+      - name: Run affected lint
+        run: pnpm nx affected -t lint:check --base="$NX_BASE" --head="$NX_HEAD" --parallel=3
