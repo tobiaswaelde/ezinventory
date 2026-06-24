@@ -133,9 +133,7 @@ describe('About changelog', () => {
             props: ['versions'],
             template: `
               <section>
-                <div v-for="version in versions" :key="version.version" class="version">
-                  <slot :version="version">{{ version.title }}</slot>
-                </div>
+                <slot />
               </section>
             `,
           },

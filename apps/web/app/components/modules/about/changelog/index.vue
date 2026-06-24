@@ -12,41 +12,41 @@
       </div>
     </template>
 
-    <UChangelogVersions :versions="versions" :indicator="versions.length > 1">
-      <template #default="{ version }">
-        <UChangelogVersion
-          :title="version.name"
-          :date="version.publishedAt"
-          :badge="version.version"
-          :to="version.url"
-          target="_blank"
-        >
-          <template #body>
-            <div class="space-y-3">
-              <div class="flex flex-wrap gap-2">
-                <UBadge
-                  v-if="version.isInstalled"
-                  label="Installed"
-                  color="warning"
-                  variant="soft"
-                />
-                <UBadge
-                  v-if="version.isLatest"
-                  label="Latest"
-                  color="neutral"
-                  variant="soft"
-                />
-              </div>
-
-              <div
-                v-if="version.body"
-                class="prose prose-sm max-w-none text-default dark:prose-invert"
-                v-html="renderBody(version.body)"
+    <UChangelogVersions :indicator="versions.length > 1">
+      <UChangelogVersion
+        v-for="version in versions"
+        :key="version.version"
+        :title="version.name"
+        :date="version.publishedAt"
+        :badge="version.version"
+        :to="version.url"
+        target="_blank"
+      >
+        <template #body>
+          <div class="space-y-3">
+            <div class="flex flex-wrap gap-2">
+              <UBadge
+                v-if="version.isInstalled"
+                label="Installed"
+                color="warning"
+                variant="soft"
+              />
+              <UBadge
+                v-if="version.isLatest"
+                label="Latest"
+                color="neutral"
+                variant="soft"
               />
             </div>
-          </template>
-        </UChangelogVersion>
-      </template>
+
+            <div
+              v-if="version.body"
+              class="prose prose-sm max-w-none text-default dark:prose-invert"
+              v-html="renderBody(version.body)"
+            />
+          </div>
+        </template>
+      </UChangelogVersion>
     </UChangelogVersions>
   </UPageCard>
 </template>
