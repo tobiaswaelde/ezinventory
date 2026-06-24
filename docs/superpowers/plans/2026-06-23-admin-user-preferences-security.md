@@ -70,7 +70,7 @@ Add focused Jest coverage for:
 Run:
 
 ```bash
-pnpm --filter @exinventory/api test -- users.service.spec.ts
+pnpm --filter @ezinventory/api test -- users.service.spec.ts
 ```
 
 Expected: FAIL because the new admin methods and DTO wiring do not exist yet.
@@ -107,7 +107,7 @@ Both must reuse the same `CaslAction.Update` policy pattern as the existing admi
 Run:
 
 ```bash
-pnpm --filter @exinventory/api test -- users.service.spec.ts
+pnpm --filter @ezinventory/api test -- users.service.spec.ts
 ```
 
 Expected: PASS.
@@ -179,7 +179,7 @@ Expected: all new components are wired in.
 - [ ] **Step 1: Run targeted backend verification**
 
 ```bash
-pnpm --filter @exinventory/api test -- users.service.spec.ts
+pnpm --filter @ezinventory/api test -- users.service.spec.ts
 ```
 
 Expected: PASS.
