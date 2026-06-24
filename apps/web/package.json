@@ -1,7 +1,7 @@
 {
   "name": "@ezinventory/web",
   "description": "EZInventory is an inventory management system built with NestJS, Nuxt3, and Prisma. It provides a user-friendly interface for managing inventory, tracking stock levels, and generating reports. The web application is designed to be responsive and accessible on various devices.",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "Tobias Wälde",
     "email": "tobias.waelde@gmail.com",
