@@ -6,7 +6,7 @@ describe('PackageJsonService', () => {
       const service = new PackageJsonService();
 
       expect(service.getPackageJson()).toEqual({
-        name: '@exinventory/api',
+        name: '@ezinventory/api',
         version: '0.0.0',
         description: undefined,
         author: {

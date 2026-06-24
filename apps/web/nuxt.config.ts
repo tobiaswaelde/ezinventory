@@ -1,3 +1,10 @@
+import packageJson from './package.json' with { type: 'json' };
+
+const appVersion = process.env.APP_VERSION || process.env.npm_package_version || packageJson.version || '0.0.0';
+const githubToken = process.env.GITHUB_TOKEN || process.env.NUXT_GITHUB_TOKEN || '';
+const githubRepoOwner = process.env.GITHUB_REPO_OWNER || process.env.NUXT_GITHUB_REPO_OWNER || 'tobiaswaelde';
+const githubRepoName = process.env.GITHUB_REPO_NAME || process.env.NUXT_GITHUB_REPO_NAME || 'ezinventory';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -6,9 +13,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   sourcemap: false,
   runtimeConfig: {
+    githubToken,
+    githubRepoOwner,
+    githubRepoName,
     public: {
       APP_BASE_URL: '',
       API_BASE_URL: '',
+      APP_VERSION: appVersion,
     },
   },
 
