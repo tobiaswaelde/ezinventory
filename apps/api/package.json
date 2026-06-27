@@ -1,6 +1,6 @@
 {
   "name": "@ezinventory/api",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": {
     "name": "Tobias Wälde",
     "email": "tobias.waelde@gmail.com",
@@ -8,6 +8,7 @@
   },
   "private": true,
   "scripts": {
+    "prebuild": "pnpm prisma generate",
     "build": "nest build --webpack",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -17,6 +18,7 @@
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "predev": "pnpm db:push",
+    "pretest": "pnpm prisma generate",
     "dev": "pnpm start:dev",
     "db:push": "pnpm prisma format && pnpm prisma generate && pnpm prisma db push",
     "test": "jest",
