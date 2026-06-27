@@ -17,6 +17,7 @@
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "predev": "pnpm db:push",
+    "pretest": "pnpm prisma generate",
     "dev": "pnpm start:dev",
     "db:push": "pnpm prisma format && pnpm prisma generate && pnpm prisma db push",
     "test": "jest",
