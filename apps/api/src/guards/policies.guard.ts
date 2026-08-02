@@ -1,9 +1,8 @@
 import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { PolicyHandler } from '~/casl/policy-handler.interface';
+import { CHECK_POLICIES_KEY, type PolicyHandler } from '@querry-kit/nest';
 import { ENV } from '~/config/env';
-import { CHECK_POLICIES_KEY } from '~/decorators/casl/check-policies.decorator';
 
 /**
  * Guard to check policies using CASL.

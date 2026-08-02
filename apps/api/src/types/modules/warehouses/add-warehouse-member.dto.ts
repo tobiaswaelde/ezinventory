@@ -1,7 +1,7 @@
 import { WarehouseUserRole } from '@/generated/prisma/enums';
 import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyId } from '@querry-kit/nest';
 import { IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
 
 export class AddWarehouseMemberDTO {
   @ApiPropertyId()

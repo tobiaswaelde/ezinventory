@@ -1,14 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiPropertyCreatedAt,
+  ApiPropertyId,
+  ApiPropertyUpdatedAt,
+  filterCaslFields,
+} from '@querry-kit/nest';
 import { Expose } from 'class-transformer';
 import { S3Bucket } from '~/config/s3';
-import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
-import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { S3Service } from '~/services/s3.service';
 import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { FilePayload } from '~/types/modules/files';
-import { CaslUtil } from '~/util/casl';
 
 export class FileDTO {
   @Expose()
@@ -74,6 +77,6 @@ export class FileDTO {
         : null,
     });
 
-    return CaslUtil.filterKeys(dto, CaslSubject.File, ability);
+    return filterCaslFields(dto, CaslSubject.File, ability, { action: CaslAction.Read });
   }
 }

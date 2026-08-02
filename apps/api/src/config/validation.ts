@@ -1,5 +1,5 @@
 import { BadRequestException, ValidationPipeOptions } from '@nestjs/common';
-import { ValidationUtil } from '~/util/validation';
+import { ValidationUtil } from '@querry-kit/nest';
 
 /**
  * Validation options for the application

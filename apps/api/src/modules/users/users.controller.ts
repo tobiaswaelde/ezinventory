@@ -24,21 +24,29 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  ApiErrorResponses,
+  ApiFieldsQuery,
+  ApiPaginatedResponse,
+  ApiParamId,
+  ApiResourceQuery,
+  CheckPolicies,
+  FindByIdDTO,
+  FindUniqueDTO,
+  QueryDTO,
+  ResourceQuery,
+} from '@querry-kit/nest';
 import { ApiAuth, ApiTag } from '~/config/api';
 import { uploadAvatarOptions } from '~/config/file-upload';
-import { CheckPolicies } from '~/decorators/casl/check-policies.decorator';
 import { ApiFile } from '~/decorators/params/api-file.decorator';
-import { ApiParamId } from '~/decorators/params/api-param-id.decorator';
-import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
-import { ApiPaginatedResponse } from '~/decorators/responses/api-paginated-response.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PoliciesGuard } from '~/guards/policies.guard';
-import { FindByIdDTO, FindUniqueDTO, QueryDTO } from '~/lib/query-service/types';
 import { UserTypeMap } from '~/modules/users/types';
 import { UserPreferencesService } from '~/modules/users/user-preferences/user-preferences.service';
 import { UserProfileService } from '~/modules/users/user-profile/user-profile.service';
 import { UsersService } from '~/modules/users/users.service';
 import { AuthRequest } from '~/types/auth-request';
+import { AppAbility } from '~/types/casl';
 import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { UserPayload } from '~/types/modules/user';
@@ -50,7 +58,6 @@ import { CreateUserDTO } from '~/types/modules/user/create-user.dto';
 import { UpdateUserPasswordDTO } from '~/types/modules/user/update-user-password.dto';
 import { UpdateUserDTO } from '~/types/modules/user/update-user.dto';
 import { UserDTO } from '~/types/modules/user/user.dto';
-import { PaginatedDTO } from '~/types/pagination/paginated.dto';
 
 @ApiTags(ApiTag.Users)
 @ApiBearerAuth(ApiAuth.JWT)
@@ -66,25 +73,30 @@ export class UsersController {
 
   //#region query
   @Get('/')
-  @CheckPolicies((a) => a.can(CaslAction.Read, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Read, CaslSubject.User))
   @ApiOperation({ summary: 'Query users' })
+  @ApiResourceQuery()
   @ApiPaginatedResponse({ description: 'Paginated users', model: UserDTO })
   @ApiErrorResponses({
     unauthorizedCodes: [ErrorCode.Unauthorized],
     forbiddenCodes: [ErrorCode.InsufficientPermissions],
   })
   async queryUsers(@Req() req: AuthRequest, @Query() query: QueryDTO<UserTypeMap>) {
-    const { items, pageMeta } = await this.usersService.query<UserPayload>({ ...query });
-    return new PaginatedDTO(
-      await Promise.all(items.map((x) => UserDTO.fromModel(x, req.ability))),
-      pageMeta,
-    );
+    return ResourceQuery.query({
+      service: this.usersService,
+      query,
+      ability: req.ability,
+      schema: UserDTO,
+      include: { profile: true, preferences: true },
+      map: (user: UserPayload, ability) => UserDTO.fromModel(user, ability),
+    });
   }
 
   @Get('/find-by-id/:id')
-  @CheckPolicies((a) => a.can(CaslAction.Read, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Read, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to retrieve.' })
   @ApiOperation({ summary: 'Find user by ID' })
+  @ApiFieldsQuery()
   @ApiOkResponse({ description: 'User', type: UserDTO })
   @ApiErrorResponses({
     unauthorizedCodes: [ErrorCode.Unauthorized],
@@ -96,12 +108,19 @@ export class UsersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Query() query: FindByIdDTO<UserTypeMap>,
   ) {
-    const item = await this.usersService.findById<UserPayload>(id, query);
-    return UserDTO.fromModel(item, req.ability);
+    return ResourceQuery.findById({
+      service: this.usersService,
+      id,
+      query,
+      ability: req.ability,
+      schema: UserDTO,
+      include: { profile: true, preferences: true },
+      map: (user: UserPayload, ability) => UserDTO.fromModel(user, ability),
+    });
   }
 
   @Get('/find-unique')
-  @CheckPolicies((a) => a.can(CaslAction.Read, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Read, CaslSubject.User))
   @ApiOperation({ summary: 'Find unique user by field' })
   @ApiOkResponse({ description: 'Unique user', type: UserDTO })
   @ApiErrorResponses({
@@ -110,13 +129,13 @@ export class UsersController {
     notFoundCodes: [ErrorCode.ItemNotFound],
   })
   async findUnique(@Req() req: AuthRequest, @Query() query: FindUniqueDTO<UserTypeMap>) {
-    const item = await this.usersService.findUnique<UserPayload>(query);
+    const item = await this.usersService.findUnique<UserPayload>(query, req.ability);
     return UserDTO.fromModel(item, req.ability);
   }
   //#endregion
 
   @Post('/')
-  @CheckPolicies((a) => a.can(CaslAction.Create, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Create, CaslSubject.User))
   @ApiOperation({ summary: 'Create new user' })
   @ApiCreatedResponse({ description: 'User created successfully', type: UserDTO })
   @ApiErrorResponses({
@@ -130,7 +149,7 @@ export class UsersController {
   }
 
   @Patch('/:id')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to update.' })
   @ApiOperation({ summary: 'Update user by ID' })
   @ApiOkResponse({ description: 'User updated successfully', type: UserDTO })
@@ -150,7 +169,7 @@ export class UsersController {
   }
 
   @Patch('/:id/preferences')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to update preferences for.' })
   @ApiOperation({ summary: 'Update user preferences by ID' })
   @ApiOkResponse({ description: 'User preferences updated successfully', type: UserPreferencesDTO })
@@ -169,7 +188,7 @@ export class UsersController {
   }
 
   @Patch('/:id/profile')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to update profile for.' })
   @ApiOperation({ summary: 'Update user profile by ID' })
   @ApiOkResponse({ description: 'User profile updated successfully', type: UserProfileDTO })
@@ -188,7 +207,7 @@ export class UsersController {
   }
 
   @Patch('/:id/password')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to set a password for.' })
   @ApiOperation({ summary: 'Set user password by ID' })
   @ApiOkResponse({ description: 'User password updated successfully', type: UserDTO })
@@ -207,7 +226,7 @@ export class UsersController {
   }
 
   @Post('/:id/mfa/disable')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to disable MFA for.' })
   @ApiOperation({ summary: 'Disable MFA for a user by ID' })
   @ApiOkResponse({ description: 'User MFA disabled successfully', type: UserDTO })
@@ -223,7 +242,7 @@ export class UsersController {
   }
 
   @Delete('/:id')
-  @CheckPolicies((a) => a.can(CaslAction.Delete, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Delete, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to delete.' })
   @ApiOperation({ summary: 'Delete user by ID' })
   @ApiOkResponse({ description: 'User deleted successfully', type: UserDTO })
@@ -238,7 +257,7 @@ export class UsersController {
   }
 
   @Put('/:id/avatar')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to upload avatar for.' })
   @UseInterceptors(FileInterceptor('file', uploadAvatarOptions))
   @ApiFile('file')
@@ -265,7 +284,7 @@ export class UsersController {
   }
 
   @Delete('/:id/avatar')
-  @CheckPolicies((a) => a.can(CaslAction.Update, CaslSubject.User))
+  @CheckPolicies<AppAbility>((a) => a.can(CaslAction.Update, CaslSubject.User))
   @ApiParamId({ description: 'The ID of the user to delete avatar for.' })
   @ApiOperation({ summary: 'Delete avatar of user by ID' })
   @ApiOkResponse({ description: 'Updated user', type: UserDTO })

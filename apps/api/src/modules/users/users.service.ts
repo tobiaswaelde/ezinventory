@@ -5,14 +5,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { createCaslAccessibleWhere, QueryOptionsMap, QueryService } from '@querry-kit/nest';
 import sharp from 'sharp';
 import { S3Bucket } from '~/config/s3';
-import { QueryService } from '~/lib/query-service/query.service';
 import { UserTypeMap } from '~/modules/users/types';
 import { PrismaService } from '~/prisma/prisma.service';
 
 import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { S3Service } from '~/services/s3.service';
+import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { UserPayload } from '~/types/modules/user';
 import { CreateUserDTO } from '~/types/modules/user/create-user.dto';
@@ -21,11 +23,23 @@ import { UpdateUserDTO } from '~/types/modules/user/update-user.dto';
 import { CryptoUtil } from '~/util/crypto';
 
 @Injectable()
-export class UsersService extends QueryService<UserDelegate, UserTypeMap> {
+export class UsersService extends QueryService<
+  UserDelegate,
+  UserTypeMap,
+  UserDelegate,
+  QueryOptionsMap<UserTypeMap>,
+  AppAbility,
+  CaslSubject.User
+> {
   public static readonly token = 'USERS_SERVICE';
 
   constructor(protected readonly db: PrismaService) {
-    super(db.user, CaslSubject.User);
+    super(db.user, {
+      subject: CaslSubject.User,
+      accessibleWhere: createCaslAccessibleWhere<AppAbility, CaslSubject.User, CaslAction>({
+        action: CaslAction.Read,
+      }),
+    });
   }
 
   //#region CRUD

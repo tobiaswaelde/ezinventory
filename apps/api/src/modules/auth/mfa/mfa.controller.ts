@@ -16,9 +16,9 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ApiErrorResponses } from '@querry-kit/nest';
 import { instanceToPlain } from 'class-transformer';
 import { ApiAuth, ApiTag } from '~/config/api';
-import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { MfaService } from '~/modules/auth/mfa/mfa.service';
 import { AuthRequest } from '~/types/auth-request';

@@ -1,7 +1,7 @@
 import { WarehouseUserRole } from '@/generated/prisma/enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyId } from '@querry-kit/nest';
 import { Expose } from 'class-transformer';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
 import { AppAbility } from '~/types/casl';
 import { UserDTO } from '~/types/modules/user/user.dto';
 import { UserOnWarehousePayload } from '~/types/modules/warehouses';

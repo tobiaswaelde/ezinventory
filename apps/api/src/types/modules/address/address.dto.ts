@@ -1,13 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiPropertyCreatedAt,
+  ApiPropertyId,
+  ApiPropertyUpdatedAt,
+  filterCaslFields,
+} from '@querry-kit/nest';
 import { Expose } from 'class-transformer';
 import Holidays from 'date-holidays';
-import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
-import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { AddressPayload } from '~/types/modules/address';
-import { CaslUtil } from '~/util/casl';
 
 const hd = new Holidays();
 
@@ -68,6 +71,6 @@ export class AddressDTO {
 
     const dto = new AddressDTO(model);
 
-    return CaslUtil.filterKeys(dto, CaslSubject.Address, ability);
+    return filterCaslFields(dto, CaslSubject.Address, ability, { action: CaslAction.Read });
   }
 }

@@ -8,9 +8,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { QueryService } from '~/lib/query-service/query.service';
+import { createCaslAccessibleWhere, QueryOptionsMap, QueryService } from '@querry-kit/nest';
 import { WarehouseTypeMap } from '~/modules/warehouses/types';
 import { PrismaService } from '~/prisma/prisma.service';
+import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { CreateAddressDTO } from '~/types/modules/address/create-address.dto';
 import { WarehousePayload } from '~/types/modules/warehouses';
@@ -18,11 +20,23 @@ import { CreateWarehouseDTO } from '~/types/modules/warehouses/create-warehouse.
 import { UpdateWarehouseDTO } from '~/types/modules/warehouses/update-warehouse.dto';
 
 @Injectable()
-export class WarehousesService extends QueryService<WarehouseDelegate, WarehouseTypeMap> {
+export class WarehousesService extends QueryService<
+  WarehouseDelegate,
+  WarehouseTypeMap,
+  WarehouseDelegate,
+  QueryOptionsMap<WarehouseTypeMap>,
+  AppAbility,
+  CaslSubject.Warehouse
+> {
   public static readonly token = 'WAREHOUSES_SERVICE';
 
   constructor(protected readonly db: PrismaService) {
-    super(db.warehouse, CaslSubject.Warehouse);
+    super(db.warehouse, {
+      subject: CaslSubject.Warehouse,
+      accessibleWhere: createCaslAccessibleWhere<AppAbility, CaslSubject.Warehouse, CaslAction>({
+        action: CaslAction.Read,
+      }),
+    });
   }
 
   private isCreateAddressDTO(data: unknown): data is CreateAddressDTO {

@@ -14,10 +14,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiErrorResponses } from '@querry-kit/nest';
 import { ApiAuth, ApiTag } from '~/config/api';
 import { uploadAvatarOptions } from '~/config/file-upload';
 import { ApiFile } from '~/decorators/params/api-file.decorator';
-import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { UserPreferencesService } from '~/modules/users/user-preferences/user-preferences.service';
 import { UserProfileService } from '~/modules/users/user-profile/user-profile.service';

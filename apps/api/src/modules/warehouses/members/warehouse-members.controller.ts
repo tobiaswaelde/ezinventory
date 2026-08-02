@@ -19,9 +19,8 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { ApiErrorResponses, ApiParamId } from '@querry-kit/nest';
 import { ApiAuth, ApiTag } from '~/config/api';
-import { ApiParamId } from '~/decorators/params/api-param-id.decorator';
-import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PoliciesGuard } from '~/guards/policies.guard';
 import { WarehouseMembersService } from '~/modules/warehouses/members/warehouse-members.service';

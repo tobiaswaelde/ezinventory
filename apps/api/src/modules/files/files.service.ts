@@ -9,26 +9,40 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { createCaslAccessibleWhere, QueryOptionsMap, QueryService } from '@querry-kit/nest';
 import dayjs from 'dayjs';
 import { fileTypeFromBuffer } from 'file-type';
 import sharp from 'sharp';
 import { S3Bucket } from '~/config/s3';
-import { QueryService } from '~/lib/query-service/query.service';
 import { FileTypeMap } from '~/modules/files/types';
 import { PrismaService } from '~/prisma/prisma.service';
 import { S3Service } from '~/services/s3.service';
+import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { FilePayload } from '~/types/modules/files';
 import { CreateFileDTO } from '~/types/modules/files/create-file.dto';
 
 @Injectable()
-export class FilesService extends QueryService<FileDelegate, FileTypeMap> {
+export class FilesService extends QueryService<
+  FileDelegate,
+  FileTypeMap,
+  FileDelegate,
+  QueryOptionsMap<FileTypeMap>,
+  AppAbility,
+  CaslSubject.File
+> {
   public static readonly token = 'FILES_SERVICE';
 
   private readonly logger = new Logger(FilesService.token);
 
   constructor(private readonly db: PrismaService) {
-    super(db.file, CaslSubject.File);
+    super(db.file, {
+      subject: CaslSubject.File,
+      accessibleWhere: createCaslAccessibleWhere<AppAbility, CaslSubject.File, CaslAction>({
+        action: CaslAction.Read,
+      }),
+    });
   }
 
   /**

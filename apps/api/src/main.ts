@@ -1,14 +1,13 @@
 import { ClassSerializerInterceptor, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { EmptyStringToNullPipe, FieldsExceptionFilter, QueryTransformPipe } from '@querry-kit/nest';
 import { AppModule } from '~/app.module';
 import { appLogger, appOptions } from '~/config/app';
 import { ENV } from '~/config/env';
 import { setupApiDocs } from '~/config/scalar';
 import { serializationOptions } from '~/config/serialization';
 import { validationOptions } from '~/config/validation';
-import { EmptyStringToNullPipe } from '~/pipes/empty-string-to-null.pipe';
-import { QueryTransformPipe } from '~/pipes/query-transform.pipe';
 import { PrismaExceptionFilter } from '~/prisma/prisma-exception.filter';
 
 async function bootstrap() {
@@ -33,7 +32,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector), serializationOptions),
   );
-  app.useGlobalFilters(new PrismaExceptionFilter());
+  app.useGlobalFilters(new FieldsExceptionFilter(), new PrismaExceptionFilter());
 
   setupApiDocs(app);
 

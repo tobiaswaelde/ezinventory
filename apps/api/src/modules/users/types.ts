@@ -1,5 +1,5 @@
 import { Prisma } from '@/generated/prisma/client';
-import { BaseDelegateTypeMap } from '~/lib/query-service/types';
+import type { BaseDelegateTypeMap } from '@querry-kit/nest';
 
 export class UserTypeMap implements BaseDelegateTypeMap {
   select: Prisma.UserSelect;

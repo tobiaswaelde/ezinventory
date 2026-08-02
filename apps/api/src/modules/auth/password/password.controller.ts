@@ -1,8 +1,8 @@
 import { ErrorCode } from '@ezinventory/shared/types/error-code';
 import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiErrorResponses } from '@querry-kit/nest';
 import { ApiAuth, ApiTag } from '~/config/api';
-import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { PasswordService } from '~/modules/auth/password/password.service';
 import { AuthRequest } from '~/types/auth-request';

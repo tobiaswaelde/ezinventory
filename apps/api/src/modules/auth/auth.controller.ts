@@ -12,9 +12,9 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
+import { ApiErrorResponses } from '@querry-kit/nest';
 import { instanceToPlain } from 'class-transformer';
 import { ApiAuth, ApiTag } from '~/config/api';
-import { ApiErrorResponses } from '~/decorators/responses/api-error-responses.decorator';
 import { JwtAuthGuard } from '~/guards/jwt-auth.guard';
 import { LocalAuthGuard } from '~/guards/local-auth.guard';
 import { AuthService } from '~/modules/auth/auth.service';

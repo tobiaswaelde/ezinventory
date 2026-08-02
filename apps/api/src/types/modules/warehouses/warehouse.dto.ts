@@ -1,9 +1,7 @@
 import { WarehouseType } from '@/generated/prisma/enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyCreatedAt, ApiPropertyId, ApiPropertyUpdatedAt } from '@querry-kit/nest';
 import { Expose } from 'class-transformer';
-import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
-import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { AppAbility } from '~/types/casl';
 import { AddressDTO } from '~/types/modules/address/address.dto';
 import { FileDTO } from '~/types/modules/files/file.dto';
@@ -73,7 +71,7 @@ export class WarehouseDTO {
       members: await Promise.all(
         (model.members ?? []).map((member) => UsersOnWarehousesDTO.fromModel(member, ability)),
       ),
-      imageUrl: imageFile.url,
+      imageUrl: imageFile?.url,
     });
   }
 }

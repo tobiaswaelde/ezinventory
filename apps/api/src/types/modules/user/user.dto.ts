@@ -1,15 +1,18 @@
 import { UserRole } from '@/generated/prisma/enums';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiPropertyCreatedAt,
+  ApiPropertyId,
+  ApiPropertyUpdatedAt,
+  filterCaslFields,
+} from '@querry-kit/nest';
 import { Exclude, Expose } from 'class-transformer';
-import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
-import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { UserPayload } from '~/types/modules/user';
 import { UserPreferencesDTO } from '~/types/modules/user-preferences/user-preferences.dto';
 import { UserProfileDTO } from '~/types/modules/user-profile/user-profile.dto';
-import { CaslUtil } from '~/util/casl';
 
 export class UserDTO {
   @Expose()
@@ -74,6 +77,6 @@ export class UserDTO {
       profile: await UserProfileDTO.fromModel(model.profile, ability),
     });
 
-    return CaslUtil.filterKeys(dto, CaslSubject.User, ability);
+    return filterCaslFields(dto, CaslSubject.User, ability, { action: CaslAction.Read });
   }
 }

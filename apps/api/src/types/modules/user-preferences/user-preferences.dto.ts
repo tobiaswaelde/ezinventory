@@ -1,13 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  ApiPropertyCreatedAt,
+  ApiPropertyId,
+  ApiPropertyUpdatedAt,
+  filterCaslFields,
+} from '@querry-kit/nest';
 import { Expose } from 'class-transformer';
 import { TIMEZONES } from '~/config/meta/timezones';
-import { ApiPropertyCreatedAt } from '~/decorators/properties/api-property-created-at.decorator';
-import { ApiPropertyId } from '~/decorators/properties/api-property-id.decorator';
-import { ApiPropertyUpdatedAt } from '~/decorators/properties/api-property-updated-at.decorator';
 import { AppAbility } from '~/types/casl';
+import { CaslAction } from '~/types/casl/action';
 import { CaslSubject } from '~/types/casl/subject';
 import { UserPreferencesPayload } from '~/types/modules/user-preferences';
-import { CaslUtil } from '~/util/casl';
 
 export class UserPreferencesDTO {
   @Expose()
@@ -48,6 +51,6 @@ export class UserPreferencesDTO {
       ...model,
     });
 
-    return CaslUtil.filterKeys(dto, CaslSubject.UserPreferences, ability);
+    return filterCaslFields(dto, CaslSubject.UserPreferences, ability, { action: CaslAction.Read });
   }
 }
